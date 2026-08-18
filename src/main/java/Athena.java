@@ -32,6 +32,7 @@ public class Athena {
             }
             else if (nextLine.trim().equalsIgnoreCase("list")) {
                 System.out.println(UNDERSCORES);
+                System.out.println("Here are the tasks in your list:");
                 for (int i = 0; i < count; i++) {
                     System.out.println(i + 1 + ". " + items[i]);
                 }
@@ -44,9 +45,13 @@ public class Athena {
                 handleMarkCommand(nextLine, false);
             }
             else {
-                items[count++] = new Task(nextLine);
+                nextLine = nextLine.trim();
+                long slashes = nextLine.chars().filter(ch -> ch == '/').count();
+                items[count++] = slashes == 0 ? new Todo(nextLine) : slashes == 1 ? new Deadline(nextLine) : new Event(nextLine);
                 System.out.println(UNDERSCORES);
-                System.out.println("added: " + nextLine);
+                System.out.println("Got it. I've added this task:");
+                System.out.println("  " + items[count - 1]);
+                System.out.println("Now you have " + count + " tasks in the list.");
                 System.out.println(UNDERSCORES);
             }
         }
