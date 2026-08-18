@@ -1,5 +1,6 @@
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.function.Function;
 
 /**
  *
@@ -9,8 +10,7 @@ import java.util.Scanner;
  */
 public class Athena {
     private static final String UNDERSCORES = "____________________________________________________________";
-    private static Task[] items = new Task[100];
-    private static int count = 0;
+    private static final ArrayList<Task> items = new ArrayList<>();
 
     public static void main(String[] args) {
         String name = "Athena";
@@ -25,55 +25,75 @@ public class Athena {
         System.out.println("Hello! I'm " + name + ".");
         System.out.println("What can I do for you?");
         System.out.println(UNDERSCORES);
-        Scanner sc = new Scanner(System.in);
-        while (sc.hasNextLine()) {
-            System.out.println(UNDERSCORES);
-            String nextLine = sc.nextLine();
-            if (nextLine.trim().equalsIgnoreCase("bye")) {
-                System.out.println(getExitMessage());
-                break;
-            }
-            else if (nextLine.trim().equalsIgnoreCase("list")) {
-                System.out.println("Here are the tasks in your list:");
-                for (int i = 0; i < count; i++) {
-                    System.out.println(i + 1 + ". " + items[i]);
-                }
-            }
-            else if (nextLine.trim().toLowerCase().startsWith("mark")) {
-                handleMarkCommand(nextLine, true);
-            }
-            else if (nextLine.trim().toLowerCase().startsWith("unmark")) {
-                handleMarkCommand(nextLine, false);
-            }
-            else if (nextLine.trim().toLowerCase().startsWith("todo")) {
-                try {
-                    items[count++] = new Todo(nextLine.replace("todo",""));
-                    handleTaskCommand();
-                } catch (AthenaException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-            else if (nextLine.trim().toLowerCase().startsWith("deadline")) {
-                try{
-                    items[count++] = new Deadline(nextLine.replace("deadline",""));
-                    handleTaskCommand();
-                } catch (AthenaException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-            else if (nextLine.trim().toLowerCase().startsWith("event")) {
-                try{
-                    items[count++] = new Event(nextLine.replace("event",""));
-                    handleTaskCommand();
-                } catch (AthenaException e) {
-                    System.out.println(e.getMessage());
-                }
+        try (Scanner sc = new Scanner(System.in)) {
+            while (sc.hasNextLine()) {
+                System.out.println(UNDERSCORES);
+                String nextLine = sc.nextLine().trim();
+                String[] commandParts = nextLine.split("\\s+", 2);
+                Command command = Command.from(commandParts[0]);
+                String arguments = commandParts.length > 1 ? commandParts[1] : "";
 
+                switch (command) {
+                case BYE:
+                    System.out.println(getExitMessage());
+                    return;
+                case LIST:
+                    System.out.println("Here are the tasks in your list:");
+                    for (int i = 0; i < items.size(); i++) {
+                        System.out.println(i + 1 + ". " + items.get(i));
+                    }
+                    break;
+                case MARK:
+                    handleMarkCommand(arguments, true);
+                    break;
+                case UNMARK:
+                    handleMarkCommand(arguments, false);
+                    break;
+                case TODO:
+                    handleAddCommand(arguments, Todo::new);
+                    break;
+                case DEADLINE:
+                    handleAddCommand(arguments, Deadline::new);
+                    break;
+                case EVENT:
+                    handleAddCommand(arguments, Event::new);
+                    break;
+                case DELETE:
+                    handleDeleteCommand(arguments);
+                    break;
+                default:
+                    System.out.println("What are you trying to do? 😵‍💫");
+                    break;
+                }
+                System.out.println(UNDERSCORES);
             }
-            else {
-                System.out.println("What are you trying to do? 😵‍💫");
+        }
+    }
+
+    private enum Command {
+        BYE("bye"),
+        LIST("list"),
+        MARK("mark"),
+        UNMARK("unmark"),
+        TODO("todo"),
+        DEADLINE("deadline"),
+        EVENT("event"),
+        DELETE("delete"),
+        UNKNOWN("");
+
+        private final String keyword;
+
+        Command(String keyword) {
+            this.keyword = keyword;
+        }
+
+        private static Command from(String keyword) {
+            for (Command command : values()) {
+                if (command.keyword.equalsIgnoreCase(keyword)) {
+                    return command;
+                }
             }
-            System.out.println(UNDERSCORES);
+            return UNKNOWN;
         }
     }
 
@@ -82,23 +102,54 @@ public class Athena {
      * @param line
      * @param markAsDone
      */
-    private static void handleMarkCommand(String line, boolean markAsDone) {
+    private static void handleMarkCommand(String arguments, boolean markAsDone) {
         int idx;
         try {
-            idx = Integer.parseInt(line.trim().split(" ")[1]);
+            idx = Integer.parseInt(arguments.trim());
         }
         catch (NumberFormatException e) {
             System.out.println("What are you trying to mark?");
             return;
         }
-        System.out.println(markAsDone ? items[idx - 1].markDone() : items[idx - 1].unmarkDone());
-        System.out.println(items[idx - 1]);
+        System.out.println(markAsDone ? items.get(idx - 1).markDone() : items.get(idx - 1).unmarkDone());
+        System.out.println(items.get(idx - 1));
     }
 
-    private static void handleTaskCommand() {
-        System.out.println(items[count-1].getCreateMsg());
-        System.out.println("  " + items[count-1]);
-        System.out.println("Now you have " + count + " tasks in the list.");
+    private static void handleAddCommand(String arguments,
+                                         Function<String, Task> taskFactory) {
+        try {
+            Task task = taskFactory.apply(arguments);
+            items.add(task);
+            handleTaskCommand(task);
+        } catch (AthenaException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void handleTaskCommand(Task task) {
+        System.out.println(task.getCreateMsg());
+        System.out.println("  " + task);
+        System.out.println("Now you have " + items.size() + " tasks in the list.");
+    }
+
+    private static void handleDeleteCommand(String arguments) {
+        int idx;
+        Task task;
+        try {
+            idx = Integer.parseInt(arguments.trim());
+            task = items.remove(idx - 1);
+        }
+        catch (NumberFormatException e) {
+            System.out.println("What are you trying to delete?");
+            return;
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("You don't have so many tasks in the list.");
+            return;
+        }
+        System.out.println("Noted. I've removed this task:");
+        System.out.println("  " + task);
+        System.out.println("Now you have " + items.size() + " tasks in the list.");
     }
 
     /**
