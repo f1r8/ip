@@ -8,8 +8,8 @@ import java.util.Scanner;
  */
 public class Athena {
     private static final String UNDERSCORES = "____________________________________________________________";
+    private static Task[] items = new Task[100];
     public static void main(String[] args) {
-        String[] items = new String[100];
         int count = 0;
         String name = "Athena";
         String banner = "    _  _____ _   _ _____ _   _    _    \n"
@@ -30,20 +30,39 @@ public class Athena {
                 System.out.println(getExitMessage());
                 break;
             }
-            if (nextLine.trim().equalsIgnoreCase("list")) {
+            else if (nextLine.trim().equalsIgnoreCase("list")) {
                 System.out.println(UNDERSCORES);
                 for (int i = 0; i < count; i++) {
                     System.out.println(i + 1 + ". " + items[i]);
                 }
                 System.out.println(UNDERSCORES);
             }
+            else if (nextLine.trim().toLowerCase().startsWith("mark")) {
+                handleMarkCommand(nextLine, true);
+            }
+            else if (nextLine.trim().toLowerCase().startsWith("unmark")) {
+                handleMarkCommand(nextLine, false);
+            }
             else {
-                items[count++] = nextLine;
+                items[count++] = new Task(nextLine);
                 System.out.println(UNDERSCORES);
                 System.out.println("added: " + nextLine);
                 System.out.println(UNDERSCORES);
             }
         }
+    }
+
+    /**
+     * Helper for handling mark
+     * @param line
+     * @param markAsDone
+     */
+    private static void handleMarkCommand(String line, boolean markAsDone) {
+        int idx = Integer.parseInt(line.trim().split(" ")[1]);
+        System.out.println(UNDERSCORES);
+        System.out.println(markAsDone ? items[idx - 1].markDone() : items[idx - 1].unmarkDone());
+        System.out.println(items[idx - 1]);
+        System.out.println(UNDERSCORES);
     }
 
     /**
