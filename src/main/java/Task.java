@@ -15,12 +15,12 @@ public class Task {
 
     public String markDone() {
         this.setDone(true);
-        return "Nice! I've marked this task as done:";
+        return "Excellent, Your Majesty! I've marked this task as done:";
     }
 
     public String unmarkDone() {
         this.setDone(false);
-        return "OK, I've marked this task as not done yet:";
+        return "Certainly, Your Majesty. I've marked this task as not done yet:";
     }
 
     public String getStatusIcon() {
@@ -32,7 +32,7 @@ public class Task {
     }
 
     public String getCreateMsg() {
-        return "Got it. I've added this task:";
+        return "As you command, Your Majesty. I've added this task:";
     }
 
 }

@@ -10,6 +10,8 @@ import java.util.function.Function;
  */
 public class Athena {
     private static final String UNDERSCORES = "____________________________________________________________";
+    private static final String UNKNOWN_COMMAND_MESSAGE = "*Athena blinks her eyes, unsure of what you want, "
+            + "tilting her head slightly as the meaning of your words slips just out of reach.*";
     private static final ArrayList<Task> items = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -22,8 +24,8 @@ public class Athena {
 
         System.out.println(UNDERSCORES);
         System.out.println(banner);
-        System.out.println("Hello! I'm " + name + ".");
-        System.out.println("What can I do for you?");
+        System.out.println("Hello, Your Majesty! I'm " + name + ".");
+        System.out.println("How may I assist you, Your Majesty?");
         System.out.println(UNDERSCORES);
         try (Scanner sc = new Scanner(System.in)) {
             while (sc.hasNextLine()) {
@@ -38,7 +40,7 @@ public class Athena {
                     System.out.println(getExitMessage());
                     return;
                 case LIST:
-                    System.out.println("Here are the tasks in your list:");
+                    System.out.println("Your Majesty, here are the tasks in your list:");
                     for (int i = 0; i < items.size(); i++) {
                         System.out.println(i + 1 + ". " + items.get(i));
                     }
@@ -62,7 +64,7 @@ public class Athena {
                     handleDeleteCommand(arguments);
                     break;
                 default:
-                    System.out.println("What are you trying to do? 😵‍💫");
+                    System.out.println(UNKNOWN_COMMAND_MESSAGE);
                     break;
                 }
                 System.out.println(UNDERSCORES);
@@ -108,11 +110,11 @@ public class Athena {
             idx = Integer.parseInt(arguments.trim());
         }
         catch (NumberFormatException e) {
-            System.out.println("What are you trying to mark?");
+            System.out.println("Which task shall I mark, Your Majesty?");
             return;
         }
         System.out.println(markAsDone ? items.get(idx - 1).markDone() : items.get(idx - 1).unmarkDone());
-        System.out.println(items.get(idx - 1));
+        System.out.println("  " + items.get(idx - 1));
     }
 
     private static void handleAddCommand(String arguments,
@@ -129,7 +131,7 @@ public class Athena {
     private static void handleTaskCommand(Task task) {
         System.out.println(task.getCreateMsg());
         System.out.println("  " + task);
-        System.out.println("Now you have " + items.size() + " tasks in the list.");
+        System.out.println("You now have " + items.size() + " tasks in the list, Your Majesty.");
     }
 
     private static void handleDeleteCommand(String arguments) {
@@ -140,16 +142,16 @@ public class Athena {
             task = items.remove(idx - 1);
         }
         catch (NumberFormatException e) {
-            System.out.println("What are you trying to delete?");
+            System.out.println("Which task shall I remove, Your Majesty?");
             return;
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("You don't have so many tasks in the list.");
+            System.out.println("Your Majesty, there aren't that many tasks in the list.");
             return;
         }
-        System.out.println("Noted. I've removed this task:");
+        System.out.println("As you wish, Your Majesty. I've removed this task:");
         System.out.println("  " + task);
-        System.out.println("Now you have " + items.size() + " tasks in the list.");
+        System.out.println("You now have " + items.size() + " tasks in the list, Your Majesty.");
     }
 
     /**
@@ -158,7 +160,7 @@ public class Athena {
      */
     public static String getExitMessage() {
         String ans = UNDERSCORES + "\n";
-        ans += "Bye. Hope to see you again soon!\n";
+        ans += "Farewell, Your Majesty. I hope to serve you again soon!\n";
         ans += UNDERSCORES;
         return ans;
     }

@@ -6,7 +6,7 @@ public class Deadline extends Task {
         input = input.replaceAll("/by ", "/");
         String[] inputs = input.split("/");
         if (inputs.length < 2) {
-            throw new AthenaException("deadline arguments cannot be empty");
+            throw new AthenaException("Please provide a deadline and /by date, Your Majesty.");
         }
         this(inputs[0].trim(), inputs[1].trim());
     }

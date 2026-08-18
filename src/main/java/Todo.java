@@ -2,7 +2,7 @@ public class Todo extends Task {
 
     public Todo(String description) {
         if (description == "") {
-            throw new AthenaException("todo description cannot be empty");
+            throw new AthenaException("Please provide a todo description, Your Majesty.");
         }
         super(description);
     }
