@@ -7,6 +7,9 @@ public class Event extends Task {
         input = input.replaceAll("/from ", "/");
         input = input.replaceAll("/to ", "/");
         String[] inputs = input.split("/");
+        if (inputs.length < 3) {
+            throw new AthenaException("Event arguments cannot be empty");
+        }
         this(inputs[0].trim(), inputs[1].trim(), inputs[2].trim());
     }
 

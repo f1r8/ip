@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -9,8 +10,9 @@ import java.util.Scanner;
 public class Athena {
     private static final String UNDERSCORES = "____________________________________________________________";
     private static Task[] items = new Task[100];
+    private static int count = 0;
+
     public static void main(String[] args) {
-        int count = 0;
         String name = "Athena";
         String banner = "    _  _____ _   _ _____ _   _    _    \n"
                 + "   / \\|_   _| | | | ____| \\ | |  / \\   \n"
@@ -25,18 +27,17 @@ public class Athena {
         System.out.println(UNDERSCORES);
         Scanner sc = new Scanner(System.in);
         while (sc.hasNextLine()) {
+            System.out.println(UNDERSCORES);
             String nextLine = sc.nextLine();
             if (nextLine.trim().equalsIgnoreCase("bye")) {
                 System.out.println(getExitMessage());
                 break;
             }
             else if (nextLine.trim().equalsIgnoreCase("list")) {
-                System.out.println(UNDERSCORES);
                 System.out.println("Here are the tasks in your list:");
                 for (int i = 0; i < count; i++) {
                     System.out.println(i + 1 + ". " + items[i]);
                 }
-                System.out.println(UNDERSCORES);
             }
             else if (nextLine.trim().toLowerCase().startsWith("mark")) {
                 handleMarkCommand(nextLine, true);
@@ -44,16 +45,35 @@ public class Athena {
             else if (nextLine.trim().toLowerCase().startsWith("unmark")) {
                 handleMarkCommand(nextLine, false);
             }
-            else {
-                nextLine = nextLine.trim();
-                long slashes = nextLine.chars().filter(ch -> ch == '/').count();
-                items[count++] = slashes == 0 ? new Todo(nextLine) : slashes == 1 ? new Deadline(nextLine) : new Event(nextLine);
-                System.out.println(UNDERSCORES);
-                System.out.println("Got it. I've added this task:");
-                System.out.println("  " + items[count - 1]);
-                System.out.println("Now you have " + count + " tasks in the list.");
-                System.out.println(UNDERSCORES);
+            else if (nextLine.trim().toLowerCase().startsWith("todo")) {
+                try {
+                    items[count++] = new Todo(nextLine.replace("todo",""));
+                    handleTaskCommand();
+                } catch (AthenaException e) {
+                    System.out.println(e.getMessage());
+                }
             }
+            else if (nextLine.trim().toLowerCase().startsWith("deadline")) {
+                try{
+                    items[count++] = new Deadline(nextLine.replace("deadline",""));
+                    handleTaskCommand();
+                } catch (AthenaException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            else if (nextLine.trim().toLowerCase().startsWith("event")) {
+                try{
+                    items[count++] = new Event(nextLine.replace("event",""));
+                    handleTaskCommand();
+                } catch (AthenaException e) {
+                    System.out.println(e.getMessage());
+                }
+
+            }
+            else {
+                System.out.println("What are you trying to do? 😵‍💫");
+            }
+            System.out.println(UNDERSCORES);
         }
     }
 
@@ -63,11 +83,22 @@ public class Athena {
      * @param markAsDone
      */
     private static void handleMarkCommand(String line, boolean markAsDone) {
-        int idx = Integer.parseInt(line.trim().split(" ")[1]);
-        System.out.println(UNDERSCORES);
+        int idx;
+        try {
+            idx = Integer.parseInt(line.trim().split(" ")[1]);
+        }
+        catch (NumberFormatException e) {
+            System.out.println("What are you trying to mark?");
+            return;
+        }
         System.out.println(markAsDone ? items[idx - 1].markDone() : items[idx - 1].unmarkDone());
         System.out.println(items[idx - 1]);
-        System.out.println(UNDERSCORES);
+    }
+
+    private static void handleTaskCommand() {
+        System.out.println(items[count-1].getCreateMsg());
+        System.out.println("  " + items[count-1]);
+        System.out.println("Now you have " + count + " tasks in the list.");
     }
 
     /**

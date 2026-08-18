@@ -31,4 +31,8 @@ public class Task {
         return "[" + this.getStatusIcon() + "] " + this.name;
     }
 
+    public String getCreateMsg() {
+        return "Got it. I've added this task:";
+    }
+
 }
