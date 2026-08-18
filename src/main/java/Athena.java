@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  *
  * Provides major functions for the chatbot.
@@ -5,6 +7,7 @@
  * @author f1r8
  */
 public class Athena {
+    private static final String UNDERSCORES = "____________________________________________________________";
     public static void main(String[] args) {
         String name = "Athena";
         String banner = "    _  _____ _   _ _____ _   _    _    \n"
@@ -13,13 +16,34 @@ public class Athena {
                 + " / ___ \\| | |  _  | |___| |\\  |/ ___ \\ \n"
                 + "/_/   \\_\\_| |_| |_|_____|_| \\_/_/   \\_\\";
 
-        String underscores = "____________________________________________________________";
-        System.out.println(underscores);
+        System.out.println(UNDERSCORES);
         System.out.println(banner);
         System.out.println("Hello! I'm " + name + ".");
         System.out.println("What can I do for you?");
-        System.out.println(underscores);
-        System.out.println("Bye. Hope to see you again soon!");
-        System.out.println(underscores);
+        System.out.println(UNDERSCORES);
+        Scanner sc = new Scanner(System.in);
+        while (sc.hasNextLine()) {
+            String nextLine = sc.nextLine();
+            if (nextLine.trim().equalsIgnoreCase("bye")) {
+                System.out.println(getExitMessage());
+                break;
+            }
+            else {
+                System.out.println(UNDERSCORES);
+                System.out.println(nextLine);
+                System.out.println(UNDERSCORES);
+            }
+        }
+    }
+
+    /**
+     *
+     * @return exit message represented as a string
+     */
+    public static String getExitMessage() {
+        String ans = UNDERSCORES + "\n";
+        ans += "Bye. Hope to see you again soon!\n";
+        ans += UNDERSCORES;
+        return ans;
     }
 }
