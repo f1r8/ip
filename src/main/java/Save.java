@@ -81,14 +81,11 @@ public class Save {
             if (itemArray.length == 3) {
                 items.add(new Todo(Task.getStatusFromString(itemArray[1]), itemArray[2]));
             } else if (itemArray.length == 4) {
-                if (itemArray[0] == "D") {
-                    items.add(new Deadline(Task.getStatusFromString(itemArray[1]), itemArray[2], itemArray[3]));
-                } else if (itemArray[0] == "E") {
-                    items.add(new Event(Task.getStatusFromString(itemArray[1]), itemArray[2], itemArray[3]));
-                } else {
-                    throw new AthenaException("Save File Corrupted by this line: " + line);
-                }
-            } else {
+                items.add(new Deadline(Task.getStatusFromString(itemArray[1]), itemArray[2], itemArray[3]));
+            } else if (itemArray.length == 5) {
+                items.add(new Event(Task.getStatusFromString(itemArray[1]), itemArray[2], itemArray[3], itemArray[4]));
+            }
+            else {
                 throw new AthenaException("Save File Corrupted by this line: " + line);
             }
         }
