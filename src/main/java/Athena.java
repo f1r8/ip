@@ -15,6 +15,7 @@ public class Athena {
     private static final ArrayList<Task> items = new ArrayList<>();
 
     public static void main(String[] args) {
+        Save.loadItems(items);
         String name = "Athena";
         String banner = "    _  _____ _   _ _____ _   _    _    \n"
                 + "   / \\|_   _| | | | ____| \\ | |  / \\   \n"
@@ -115,6 +116,7 @@ public class Athena {
         }
         System.out.println(markAsDone ? items.get(idx - 1).markDone() : items.get(idx - 1).unmarkDone());
         System.out.println("  " + items.get(idx - 1));
+        Save.writeItems(items);
     }
 
     private static void handleAddCommand(String arguments,
@@ -123,6 +125,7 @@ public class Athena {
             Task task = taskFactory.apply(arguments);
             items.add(task);
             handleTaskCommand(task);
+            Save.writeItems(items);
         } catch (AthenaException e) {
             System.out.println(e.getMessage());
         }
@@ -140,6 +143,7 @@ public class Athena {
         try {
             idx = Integer.parseInt(arguments.trim());
             task = items.remove(idx - 1);
+            Save.writeItems(items);
         }
         catch (NumberFormatException e) {
             System.out.println("Which task shall I remove, Your Majesty?");
