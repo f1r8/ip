@@ -1,7 +1,7 @@
 package athena.task;
 
 import athena.exception.AthenaException;
-import athena.storage.Save;
+import athena.storage.Storage;
 
 /**
  * This class is used to create athena.task.Task Objects
@@ -56,7 +56,7 @@ public abstract class Task {
     }
 
     public String toSaveString() {
-        return getStoreStatusIcon() + Save.SEPARATOR + this.name;
+        return getStoreStatusIcon() + Storage.SEPARATOR + this.name;
     }
 
     public String getCreateMsg() {

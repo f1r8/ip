@@ -2,7 +2,7 @@ package athena.task;
 
 import athena.exception.AthenaException;
 import athena.parser.DateParser;
-import athena.storage.Save;
+import athena.storage.Storage;
 
 import java.time.LocalDateTime;
 
@@ -40,6 +40,6 @@ public class Event extends Task {
 
     @Override
     public String toSaveString(){
-        return "E" + Save.SEPARATOR + super.toSaveString() + Save.SEPARATOR +  this.from + Save.SEPARATOR  + this.to;
+        return "E" + Storage.SEPARATOR + super.toSaveString() + Storage.SEPARATOR +  this.from + Storage.SEPARATOR  + this.to;
     }
 }

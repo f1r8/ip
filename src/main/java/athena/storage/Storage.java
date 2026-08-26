@@ -15,7 +15,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-public class Save {
+public class Storage {
     public static final String PATH = "./data/athena.txt";
 
     public static final String SEPARATOR = " | ";

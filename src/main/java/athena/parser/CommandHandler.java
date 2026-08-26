@@ -1,14 +1,14 @@
 package athena.parser;
 
 import athena.Athena;
-import athena.storage.Save;
+import athena.storage.Storage;
 import athena.ui.UI;
 import athena.exception.AthenaException;
 import athena.task.*;
 
 import java.util.function.Function;
 
-public class Parser {
+public class CommandHandler {
     private enum Command {
         BYE("bye"),
         LIST("list"),
@@ -92,7 +92,7 @@ public class Parser {
         }
         UI.println(markAsDone ? TaskList.get(idx - 1).markDone() : TaskList.get(idx - 1).unmarkDone());
         UI.println("  " + TaskList.get(idx - 1));
-        Save.writeItems(TaskList.getItems());
+        Storage.writeItems(TaskList.getItems());
     }
 
     private static void handleAddCommand(String arguments,
@@ -101,7 +101,7 @@ public class Parser {
             Task task = taskFactory.apply(arguments);
             TaskList.add(task);
             handleTaskCommand(task);
-            Save.writeItems(TaskList.getItems());
+            Storage.writeItems(TaskList.getItems());
         } catch (AthenaException e) {
             UI.println(e.getMessage());
         }
@@ -119,7 +119,7 @@ public class Parser {
         try {
             idx = Integer.parseInt(arguments.trim());
             task = TaskList.remove(idx - 1);
-            Save.writeItems(TaskList.getItems());
+            Storage.writeItems(TaskList.getItems());
         }
         catch (NumberFormatException e) {
             UI.println("Which task shall I remove, Your Majesty?");
@@ -144,6 +144,6 @@ public class Parser {
         ans += Athena.UNDERSCORES;
         return ans;
     }
-    private static final String UNKNOWN_COMMAND_MESSAGE = "Athena blinks her eyes, unsure of what you want, "
+    private static final String UNKNOWN_COMMAND_MESSAGE = "*Athena blinks her eyes, unsure of what you want, "
             + "tilting her head slightly as the meaning of your words slips just out of reach.*";
 }

@@ -1,7 +1,7 @@
 package athena.task;
 
 import athena.exception.AthenaException;
-import athena.storage.Save;
+import athena.storage.Storage;
 
 public class Todo extends Task {
 
@@ -26,6 +26,6 @@ public class Todo extends Task {
 
     @Override
     public String toSaveString(){
-        return "T" + Save.SEPARATOR + super.toSaveString();
+        return "T" + Storage.SEPARATOR + super.toSaveString();
     }
 }

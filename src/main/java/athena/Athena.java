@@ -1,7 +1,7 @@
 package athena;
 
-import athena.parser.Parser;
-import athena.storage.Save;
+import athena.parser.CommandHandler;
+import athena.storage.Storage;
 import athena.task.TaskList;
 import athena.ui.UI;
 
@@ -16,11 +16,11 @@ import java.util.Scanner;
 public class Athena {
     public static final String UNDERSCORES = "____________________________________________________________";
     public static void main(String[] args) {
-        boolean saved = Save.loadItems(TaskList.getItems());
+        boolean saved = Storage.loadItems(TaskList.getItems());
         if (saved) {
             UI.println("Items successfully loaded.");
         } else {
-            UI.println("File not found at: " + Save.PATH);
+            UI.println("File not found at: " + athena.storage.Storage.PATH);
         }
         String name = "Athena";
         String banner = "    _  _____ _   _ _____ _   _    _    \n"
@@ -37,7 +37,7 @@ public class Athena {
         try (Scanner sc = new Scanner(UI.IN)) {
             while (sc.hasNextLine()) {
                 UI.println(UNDERSCORES);
-                if (Parser.handleCommand(sc.nextLine())) {
+                if (CommandHandler.handleCommand(sc.nextLine())) {
                     return;
                 }
                 UI.println(UNDERSCORES);

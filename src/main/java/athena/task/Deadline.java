@@ -2,7 +2,7 @@ package athena.task;
 
 import athena.exception.AthenaException;
 import athena.parser.DateParser;
-import athena.storage.Save;
+import athena.storage.Storage;
 
 import java.time.LocalDateTime;
 
@@ -36,6 +36,6 @@ public class Deadline extends Task {
 
     @Override
     public String toSaveString(){
-        return "D" + Save.SEPARATOR + super.toSaveString() + Save.SEPARATOR + this.by;
+        return "D" + Storage.SEPARATOR + super.toSaveString() + Storage.SEPARATOR + this.by;
     }
 }
