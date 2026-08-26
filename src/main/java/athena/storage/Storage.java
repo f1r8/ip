@@ -16,17 +16,21 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class Storage {
-    public static final String PATH = "./data/athena.txt";
+    private String path;
 
     public static final String SEPARATOR = " | ";
 
     public static final String NEWLINE = System.lineSeparator();
 
-    public static Path getPath() {
-        return Paths.get(PATH);
+    public Storage(String path) {
+        this.path = path;
     }
 
-    public static void write(String content) {
+    private Path getPath() {
+        return Paths.get(path);
+    }
+
+    public void write(String content) {
         ensureFileExists();
         try {
             Files.writeString(getPath(), content, StandardOpenOption.APPEND);
@@ -36,8 +40,8 @@ public class Storage {
         }
     }
 
-    public static void ensureFileExists() {
-        File file = new File(PATH);
+    public void ensureFileExists() {
+        File file = new File(path);
         try {
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
@@ -52,7 +56,7 @@ public class Storage {
         }
     }
 
-    public static void overWrite(String content) {
+    public void overWrite(String content) {
         ensureFileExists();
         try {
             Files.writeString(getPath(), content);
@@ -62,7 +66,7 @@ public class Storage {
         }
     }
 
-    public static String read() {
+    public String read() {
         try {
             String content = Files.readString(getPath());
             return content;
@@ -71,7 +75,7 @@ public class Storage {
         }
     }
 
-    public static void writeItems(ArrayList<Task> items) {
+    public void writeItems(ArrayList<Task> items) {
         String content = "";
         for (Task item : items) {
             content += item.toSaveString() + NEWLINE;
@@ -79,7 +83,7 @@ public class Storage {
         overWrite(content);
     }
 
-    public static boolean loadItems(ArrayList<Task> items) {
+    public boolean loadItems(ArrayList<Task> items) {
         String input = read();
         if (input.equals("")) return false;
         String[] lines = input.split(NEWLINE);
@@ -93,7 +97,7 @@ public class Storage {
                 items.add(new Event(Task.getStatusFromString(itemArray[1]), itemArray[2], itemArray[3], itemArray[4]));
             }
             else {
-                throw new AthenaException("athena.storage.Save File Corrupted by this line: " + line);
+                throw new AthenaException("Storage File Corrupted by this line: " + line);
             }
         }
         return true;

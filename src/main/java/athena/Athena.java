@@ -14,13 +14,20 @@ import java.util.Scanner;
  * @author f1r8
  */
 public class Athena {
+    public static final String path = "./data/athena.txt";
     public static final String UNDERSCORES = "____________________________________________________________";
+
     public static void main(String[] args) {
-        boolean saved = Storage.loadItems(TaskList.getItems());
+        Storage storage = new Storage(path);
+        UI ui = new UI(System.in, System.out);
+        TaskList taskList = new TaskList();
+        CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
+
+        boolean saved = storage.loadItems(taskList.getItems());
         if (saved) {
-            UI.println("Items successfully loaded.");
+            ui.println("Items successfully loaded.");
         } else {
-            UI.println("File not found at: " + athena.storage.Storage.PATH);
+            ui.println("File not found at: " + path);
         }
         String name = "Athena";
         String banner = "    _  _____ _   _ _____ _   _    _    \n"
@@ -29,19 +36,17 @@ public class Athena {
                 + " / ___ \\| | |  _  | |___| |\\  |/ ___ \\ \n"
                 + "/_/   \\_\\_| |_| |_|_____|_| \\_/_/   \\_\\";
 
-        UI.println(UNDERSCORES);
-        UI.println(banner);
-        UI.println("Hello, Your Majesty! I'm " + name + ".");
-        UI.println("How may I assist you, Your Majesty?");
-        UI.println(UNDERSCORES);
-        try (Scanner sc = new Scanner(UI.IN)) {
-            while (sc.hasNextLine()) {
-                UI.println(UNDERSCORES);
-                if (CommandHandler.handleCommand(sc.nextLine())) {
-                    return;
-                }
-                UI.println(UNDERSCORES);
+        ui.println(UNDERSCORES);
+        ui.println(banner);
+        ui.println("Hello, Your Majesty! I'm " + name + ".");
+        ui.println("How may I assist you, Your Majesty?");
+        ui.println(UNDERSCORES);
+        while (ui.hasNextLine()) {
+            ui.println(UNDERSCORES);
+            if (commandHandler.handleCommand(ui.nextLine())) {
+                return;
             }
+            ui.println(UNDERSCORES);
         }
     }
 

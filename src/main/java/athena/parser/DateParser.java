@@ -19,7 +19,7 @@ public class DateParser {
             return LocalDateTime.parse(input, formatter);
         }
         catch (DateTimeParseException e) {
-            throw new AthenaException("Invalid date format, please use 'yyyy-mm-dd HHmm' (e.g. 2001-09-11 1911)");
+            throw new AthenaException("Invalid date format, please use 'yyyy-MM-dd HHmm' (e.g. 2001-09-11 1911)");
         }
     }
 }

@@ -10,11 +10,13 @@ public abstract class Task {
     private String name;
     private boolean done;
     public Task(String name) {
-        this.done = false;
-        this.name = name;
+        this(false, name);
     }
 
     public Task(Boolean done, String name) {
+        if (name.equals("")) {
+            throw new AthenaException("Task name cannot be empty");
+        }
         this.done = done;
         this.name = name;
     }

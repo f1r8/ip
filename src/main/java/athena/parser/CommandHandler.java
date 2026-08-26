@@ -9,6 +9,17 @@ import athena.task.*;
 import java.util.function.Function;
 
 public class CommandHandler {
+
+    private final Storage storage;
+    private final UI ui;
+    private final TaskList taskList;
+
+    public CommandHandler(Storage storage, UI ui, TaskList taskList) {
+        this.storage = storage;
+        this.ui = ui;
+        this.taskList = taskList;
+    }
+
     private enum Command {
         BYE("bye"),
         LIST("list"),
@@ -35,7 +46,7 @@ public class CommandHandler {
             return UNKNOWN;
         }
     }
-    public static boolean handleCommand(String nextLine) {
+    public boolean handleCommand(String nextLine) {
         nextLine = nextLine.trim();
         String[] commandParts = nextLine.split("\\s+", 2);
         Command command = Command.from(commandParts[0]);
@@ -43,12 +54,12 @@ public class CommandHandler {
 
         switch (command) {
         case BYE:
-            UI.println(getExitMessage());
+            ui.println(getExitMessage());
             return true;
         case LIST:
-            UI.println("Your Majesty, here are the tasks in your list:");
-            for (int i = 0; i < TaskList.size(); i++) {
-                UI.println(i + 1 + ". " + TaskList.get(i));
+            ui.println("Your Majesty, here are the tasks in your list:");
+            for (int i = 0; i < taskList.size(); i++) {
+                ui.println(i + 1 + ". " + taskList.get(i));
             }
             break;
         case MARK:
@@ -70,7 +81,7 @@ public class CommandHandler {
             handleDeleteCommand(arguments);
             break;
         default:
-            UI.println(UNKNOWN_COMMAND_MESSAGE);
+            ui.println(UNKNOWN_COMMAND_MESSAGE);
             break;
         }
         return false;
@@ -81,69 +92,72 @@ public class CommandHandler {
      * @param arguments
      * @param markAsDone
      */
-    private static void handleMarkCommand(String arguments, boolean markAsDone) {
+    private void handleMarkCommand(String arguments, boolean markAsDone) {
         int idx;
         try {
             idx = Integer.parseInt(arguments.trim());
+            ui.println(markAsDone ? taskList.get(idx - 1).markDone() : taskList.get(idx - 1).unmarkDone());
         }
         catch (NumberFormatException e) {
-            UI.println("Which task shall I mark, Your Majesty?");
+            ui.println("Which task shall I mark, Your Majesty?");
+            return;
+        } catch (IndexOutOfBoundsException e) {
+            ui.println("Your Majesty, there aren't that many tasks in the list.");
             return;
         }
-        UI.println(markAsDone ? TaskList.get(idx - 1).markDone() : TaskList.get(idx - 1).unmarkDone());
-        UI.println("  " + TaskList.get(idx - 1));
-        Storage.writeItems(TaskList.getItems());
+        ui.println("  " + taskList.get(idx - 1));
+        storage.writeItems(taskList.getItems());
     }
 
-    private static void handleAddCommand(String arguments,
+    private void handleAddCommand(String arguments,
                                          Function<String, Task> taskFactory) {
         try {
             Task task = taskFactory.apply(arguments);
-            TaskList.add(task);
+            taskList.add(task);
             handleTaskCommand(task);
-            Storage.writeItems(TaskList.getItems());
+            storage.writeItems(taskList.getItems());
         } catch (AthenaException e) {
-            UI.println(e.getMessage());
+            ui.println(e.getMessage());
         }
     }
 
-    private static void handleTaskCommand(Task task) {
-        UI.println(task.getCreateMsg());
-        UI.println("  " + task);
-        UI.println("You now have " + TaskList.size() + " tasks in the list, Your Majesty.");
+    private void handleTaskCommand(Task task) {
+        ui.println(task.getCreateMsg());
+        ui.println("  " + task);
+        ui.println("You now have " + taskList.size() + " tasks in the list, Your Majesty.");
     }
 
-    private static void handleDeleteCommand(String arguments) {
+    private void handleDeleteCommand(String arguments) {
         int idx;
         Task task;
         try {
             idx = Integer.parseInt(arguments.trim());
-            task = TaskList.remove(idx - 1);
-            Storage.writeItems(TaskList.getItems());
+            task = taskList.remove(idx - 1);
+            storage.writeItems(taskList.getItems());
         }
         catch (NumberFormatException e) {
-            UI.println("Which task shall I remove, Your Majesty?");
+            ui.println("Which task shall I remove, Your Majesty?");
             return;
         }
-        catch (ArrayIndexOutOfBoundsException e) {
-            UI.println("Your Majesty, there aren't that many tasks in the list.");
+        catch (IndexOutOfBoundsException e) {
+            ui.println("Your Majesty, there aren't that many tasks in the list.");
             return;
         }
-        UI.println("As you wish, Your Majesty. I've removed this task:");
-        UI.println("  " + task);
-        UI.println("You now have " + TaskList.size() + " tasks in the list, Your Majesty.");
+        ui.println("As you wish, Your Majesty. I've removed this task:");
+        ui.println("  " + task);
+        ui.println("You now have " + taskList.size() + " tasks in the list, Your Majesty.");
     }
 
     /**
      *
      * @return exit message represented as a string
      */
-    public static String getExitMessage() {
+    private static String getExitMessage() {
         String ans = Athena.UNDERSCORES + "\n";
         ans += "Farewell, Your Majesty. I hope to serve you again soon!\n";
         ans += Athena.UNDERSCORES;
         return ans;
     }
     private static final String UNKNOWN_COMMAND_MESSAGE = "*Athena blinks her eyes, unsure of what you want, "
-            + "tilting her head slightly as the meaning of your words slips just out of reach.*";
+            + "tilting \nher head slightly as the meaning of your words slips just \nout of reach.*";
 }

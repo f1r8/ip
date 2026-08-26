@@ -3,22 +3,22 @@ package athena.task;
 import java.util.ArrayList;
 
 public class TaskList {
-    private static final ArrayList<Task> items = new ArrayList<>();
+    private ArrayList<Task> items = new ArrayList<>();
 
-    public static ArrayList<Task> getItems() {
+    public ArrayList<Task> getItems() {
         return items;
     }
 
-    public static int size() {
+    public int size() {
         return items.size();
     }
-    public static Task get(int index) {
+    public Task get(int index) {
         return items.get(index);
     }
-    public static void add(Task task) {
+    public void add(Task task) {
         items.add(task);
     }
-    public static Task remove(int index) {
+    public Task remove(int index) {
         return items.remove(index);
     }
 }

@@ -1,10 +1,29 @@
 package athena.ui;
 
 import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.Scanner;
 
 public class UI {
-    public static void println(String output) {
-        System.out.println(output);
+    private final InputStream inputStream;
+    private final PrintStream outputStream;
+    private final Scanner sc;
+
+    public UI(InputStream inputStream, PrintStream outputStream) {
+        this.inputStream = inputStream;
+        this.outputStream = outputStream;
+        this.sc = new Scanner(inputStream);
     }
-    public static final InputStream IN = System.in;
+
+    public void println(String output) {
+        outputStream.println(output);
+    }
+
+    public boolean hasNextLine() {
+        return sc.hasNextLine();
+    }
+
+    public String nextLine() {
+        return sc.nextLine();
+    }
 }
