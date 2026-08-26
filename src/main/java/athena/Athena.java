@@ -1,6 +1,6 @@
-import java.util.ArrayList;
+package athena;
+
 import java.util.Scanner;
-import java.util.function.Function;
 
 /**
  *

@@ -1,3 +1,5 @@
+package athena;
+
 import java.io.InputStream;
 
 public class UI {

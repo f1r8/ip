@@ -1,3 +1,5 @@
+package athena;
+
 import java.util.function.Function;
 
 public class Parser {
@@ -136,6 +138,6 @@ public class Parser {
         ans += Athena.UNDERSCORES;
         return ans;
     }
-    private static final String UNKNOWN_COMMAND_MESSAGE = "*Athena blinks her eyes, unsure of what you want, "
+    private static final String UNKNOWN_COMMAND_MESSAGE = "*athena.Athena blinks her eyes, unsure of what you want, "
             + "tilting her head slightly as the meaning of your words slips just out of reach.*";
 }

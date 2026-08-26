@@ -1,11 +1,11 @@
 ---
 name: test-ui
-description: Run command-driven UI or console tests from a project test plan, compare each program's combined console output with its expected output, stop immediately on the first failure, and record the console input, output, and result. Use when a user provides lists of commands and expected outputs or asks to exercise a CLI/UI program reproducibly.
+description: Run command-driven athena.UI or console tests from a project test plan, compare each program's combined console output with its expected output, stop immediately on the first failure, and record the console input, output, and result. Use when a user provides lists of commands and expected outputs or asks to exercise a CLI/athena.UI program reproducibly.
 ---
 
-# Test UI
+# Test athena.UI
 
-Run the project's command-driven UI test plan and preserve a readable test-session record.
+Run the project's command-driven athena.UI test plan and preserve a readable test-session record.
 
 ## Prepare the plan
 

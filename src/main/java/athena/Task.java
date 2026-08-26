@@ -1,5 +1,7 @@
+package athena;
+
 /**
- * This class is used to create Task Objects
+ * This class is used to create athena.Task Objects
  */
 public abstract class Task {
     private String name;
