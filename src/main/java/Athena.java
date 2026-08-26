@@ -12,10 +12,9 @@ public class Athena {
     private static final String UNDERSCORES = "____________________________________________________________";
     private static final String UNKNOWN_COMMAND_MESSAGE = "*Athena blinks her eyes, unsure of what you want, "
             + "tilting her head slightly as the meaning of your words slips just out of reach.*";
-    private static final ArrayList<Task> items = new ArrayList<>();
 
     public static void main(String[] args) {
-        boolean saved = Save.loadItems(items);
+        boolean saved = Save.loadItems(TaskList.getItems());
         if (saved) {
             UI.println("Items successfully loaded.");
         } else {
@@ -47,8 +46,8 @@ public class Athena {
                     return;
                 case LIST:
                     UI.println("Your Majesty, here are the tasks in your list:");
-                    for (int i = 0; i < items.size(); i++) {
-                        UI.println(i + 1 + ". " + items.get(i));
+                    for (int i = 0; i < TaskList.size(); i++) {
+                        UI.println(i + 1 + ". " + TaskList.get(i));
                     }
                     break;
                 case MARK:
@@ -107,7 +106,7 @@ public class Athena {
 
     /**
      * Helper for handling mark
-     * @param line
+     * @param arguments
      * @param markAsDone
      */
     private static void handleMarkCommand(String arguments, boolean markAsDone) {
@@ -119,18 +118,18 @@ public class Athena {
             UI.println("Which task shall I mark, Your Majesty?");
             return;
         }
-        UI.println(markAsDone ? items.get(idx - 1).markDone() : items.get(idx - 1).unmarkDone());
-        UI.println("  " + items.get(idx - 1));
-        Save.writeItems(items);
+        UI.println(markAsDone ? TaskList.get(idx - 1).markDone() : TaskList.get(idx - 1).unmarkDone());
+        UI.println("  " + TaskList.get(idx - 1));
+        Save.writeItems(TaskList.getItems());
     }
 
     private static void handleAddCommand(String arguments,
                                          Function<String, Task> taskFactory) {
         try {
             Task task = taskFactory.apply(arguments);
-            items.add(task);
+            TaskList.add(task);
             handleTaskCommand(task);
-            Save.writeItems(items);
+            Save.writeItems(TaskList.getItems());
         } catch (AthenaException e) {
             UI.println(e.getMessage());
         }
@@ -139,7 +138,7 @@ public class Athena {
     private static void handleTaskCommand(Task task) {
         UI.println(task.getCreateMsg());
         UI.println("  " + task);
-        UI.println("You now have " + items.size() + " tasks in the list, Your Majesty.");
+        UI.println("You now have " + TaskList.size() + " tasks in the list, Your Majesty.");
     }
 
     private static void handleDeleteCommand(String arguments) {
@@ -147,8 +146,8 @@ public class Athena {
         Task task;
         try {
             idx = Integer.parseInt(arguments.trim());
-            task = items.remove(idx - 1);
-            Save.writeItems(items);
+            task = TaskList.remove(idx - 1);
+            Save.writeItems(TaskList.getItems());
         }
         catch (NumberFormatException e) {
             UI.println("Which task shall I remove, Your Majesty?");
@@ -160,7 +159,7 @@ public class Athena {
         }
         UI.println("As you wish, Your Majesty. I've removed this task:");
         UI.println("  " + task);
-        UI.println("You now have " + items.size() + " tasks in the list, Your Majesty.");
+        UI.println("You now have " + TaskList.size() + " tasks in the list, Your Majesty.");
     }
 
     /**
