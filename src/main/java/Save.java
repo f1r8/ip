@@ -18,12 +18,13 @@ public class Save {
         return Paths.get(PATH);
     }
 
-    public void write(String content) {
+    public static void write(String content) {
+        ensureFileExists();
         try {
             Files.writeString(getPath(), content, StandardOpenOption.APPEND);
         }
         catch (IOException e){
-            System.err.println(e.getMessage());
+            throw new AthenaException("Unable to append to file");
         }
     }
 
@@ -39,7 +40,6 @@ public class Save {
                 file.createNewFile();
             }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
             throw new AthenaException("Fatal Error. Data File cannot be created.");
         }
     }
@@ -50,7 +50,7 @@ public class Save {
             Files.writeString(getPath(), content);
         }
         catch (IOException e){
-            System.err.println(e.getMessage());
+            throw new AthenaException("Something went wrong overwriting the file");
         }
     }
 
@@ -59,7 +59,6 @@ public class Save {
             String content = Files.readString(getPath());
             return content;
         } catch(IOException e) {
-            System.out.println("File not found at: " + PATH);
             return "";
         }
     }
@@ -72,9 +71,9 @@ public class Save {
         overWrite(content);
     }
 
-    public static void loadItems(ArrayList<Task> items) {
+    public static boolean loadItems(ArrayList<Task> items) {
         String input = read();
-        if (input == "") return;
+        if (input.equals("")) return false;
         String[] lines = input.split(NEWLINE);
         for (String line : lines) {
             String[] itemArray = line.split(Pattern.quote(SEPARATOR));
@@ -89,6 +88,7 @@ public class Save {
                 throw new AthenaException("Save File Corrupted by this line: " + line);
             }
         }
+        return true;
     }
 
 }

@@ -15,7 +15,12 @@ public class Athena {
     private static final ArrayList<Task> items = new ArrayList<>();
 
     public static void main(String[] args) {
-        Save.loadItems(items);
+        boolean saved = Save.loadItems(items);
+        if (saved) {
+            UI.println("Items successfully loaded.");
+        } else {
+            UI.println("File not found at: " + Save.PATH);
+        }
         String name = "Athena";
         String banner = "    _  _____ _   _ _____ _   _    _    \n"
                 + "   / \\|_   _| | | | ____| \\ | |  / \\   \n"
@@ -23,14 +28,14 @@ public class Athena {
                 + " / ___ \\| | |  _  | |___| |\\  |/ ___ \\ \n"
                 + "/_/   \\_\\_| |_| |_|_____|_| \\_/_/   \\_\\";
 
-        System.out.println(UNDERSCORES);
-        System.out.println(banner);
-        System.out.println("Hello, Your Majesty! I'm " + name + ".");
-        System.out.println("How may I assist you, Your Majesty?");
-        System.out.println(UNDERSCORES);
-        try (Scanner sc = new Scanner(System.in)) {
+        UI.println(UNDERSCORES);
+        UI.println(banner);
+        UI.println("Hello, Your Majesty! I'm " + name + ".");
+        UI.println("How may I assist you, Your Majesty?");
+        UI.println(UNDERSCORES);
+        try (Scanner sc = new Scanner(UI.IN)) {
             while (sc.hasNextLine()) {
-                System.out.println(UNDERSCORES);
+                UI.println(UNDERSCORES);
                 String nextLine = sc.nextLine().trim();
                 String[] commandParts = nextLine.split("\\s+", 2);
                 Command command = Command.from(commandParts[0]);
@@ -38,12 +43,12 @@ public class Athena {
 
                 switch (command) {
                 case BYE:
-                    System.out.println(getExitMessage());
+                    UI.println(getExitMessage());
                     return;
                 case LIST:
-                    System.out.println("Your Majesty, here are the tasks in your list:");
+                    UI.println("Your Majesty, here are the tasks in your list:");
                     for (int i = 0; i < items.size(); i++) {
-                        System.out.println(i + 1 + ". " + items.get(i));
+                        UI.println(i + 1 + ". " + items.get(i));
                     }
                     break;
                 case MARK:
@@ -65,10 +70,10 @@ public class Athena {
                     handleDeleteCommand(arguments);
                     break;
                 default:
-                    System.out.println(UNKNOWN_COMMAND_MESSAGE);
+                    UI.println(UNKNOWN_COMMAND_MESSAGE);
                     break;
                 }
-                System.out.println(UNDERSCORES);
+                UI.println(UNDERSCORES);
             }
         }
     }
@@ -111,11 +116,11 @@ public class Athena {
             idx = Integer.parseInt(arguments.trim());
         }
         catch (NumberFormatException e) {
-            System.out.println("Which task shall I mark, Your Majesty?");
+            UI.println("Which task shall I mark, Your Majesty?");
             return;
         }
-        System.out.println(markAsDone ? items.get(idx - 1).markDone() : items.get(idx - 1).unmarkDone());
-        System.out.println("  " + items.get(idx - 1));
+        UI.println(markAsDone ? items.get(idx - 1).markDone() : items.get(idx - 1).unmarkDone());
+        UI.println("  " + items.get(idx - 1));
         Save.writeItems(items);
     }
 
@@ -127,14 +132,14 @@ public class Athena {
             handleTaskCommand(task);
             Save.writeItems(items);
         } catch (AthenaException e) {
-            System.out.println(e.getMessage());
+            UI.println(e.getMessage());
         }
     }
 
     private static void handleTaskCommand(Task task) {
-        System.out.println(task.getCreateMsg());
-        System.out.println("  " + task);
-        System.out.println("You now have " + items.size() + " tasks in the list, Your Majesty.");
+        UI.println(task.getCreateMsg());
+        UI.println("  " + task);
+        UI.println("You now have " + items.size() + " tasks in the list, Your Majesty.");
     }
 
     private static void handleDeleteCommand(String arguments) {
@@ -146,16 +151,16 @@ public class Athena {
             Save.writeItems(items);
         }
         catch (NumberFormatException e) {
-            System.out.println("Which task shall I remove, Your Majesty?");
+            UI.println("Which task shall I remove, Your Majesty?");
             return;
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Your Majesty, there aren't that many tasks in the list.");
+            UI.println("Your Majesty, there aren't that many tasks in the list.");
             return;
         }
-        System.out.println("As you wish, Your Majesty. I've removed this task:");
-        System.out.println("  " + task);
-        System.out.println("You now have " + items.size() + " tasks in the list, Your Majesty.");
+        UI.println("As you wish, Your Majesty. I've removed this task:");
+        UI.println("  " + task);
+        UI.println("You now have " + items.size() + " tasks in the list, Your Majesty.");
     }
 
     /**
