@@ -1,7 +1,10 @@
-package athena;
+package athena.task;
+
+import athena.exception.AthenaException;
+import athena.storage.Save;
 
 /**
- * This class is used to create athena.Task Objects
+ * This class is used to create athena.task.Task Objects
  */
 public abstract class Task {
     private String name;

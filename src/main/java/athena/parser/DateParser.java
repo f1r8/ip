@@ -1,11 +1,13 @@
-package athena;
+package athena.parser;
+
+import athena.exception.AthenaException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class DateParser {
-    public static DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy, HHmm");
+    public static DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy, HH:mm");
 
     public static String formatOutput(LocalDateTime date){
         return outputFormatter.format(date);

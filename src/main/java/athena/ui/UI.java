@@ -1,4 +1,4 @@
-package athena;
+package athena.ui;
 
 import java.io.InputStream;
 

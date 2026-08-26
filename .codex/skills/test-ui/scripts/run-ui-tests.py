@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run command-driven athena.UI tests described in a Markdown test plan."""
+"""Run command-driven athena.ui.UI tests described in a Markdown test plan."""
 from __future__ import annotations
 
 import argparse
@@ -156,7 +156,7 @@ def fence(value: str) -> str:
 
 def render_session(plan_path: Path, started: str, results: list[CaseResult], status: str) -> str:
     lines = [
-        "# athena.UI test session",
+        "# athena.ui.UI test session",
         "",
         f"- Plan: `{plan_path}`",
         f"- Started: {started}",
@@ -196,7 +196,7 @@ def render_session(plan_path: Path, started: str, results: list[CaseResult], sta
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Run athena.UI tests from a Markdown plan.")
+    parser = argparse.ArgumentParser(description="Run athena.ui.UI tests from a Markdown plan.")
     parser.add_argument("--plan", default="test/ui-test-plan.md", help="Markdown test plan")
     parser.add_argument("--session", default="test/ui-test-session.md", help="session log destination")
     parser.add_argument("--cwd", default=".", help="working directory for commands")

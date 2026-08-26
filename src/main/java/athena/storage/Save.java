@@ -1,4 +1,10 @@
-package athena;
+package athena.storage;
+
+import athena.exception.AthenaException;
+import athena.task.Deadline;
+import athena.task.Event;
+import athena.task.Task;
+import athena.task.Todo;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,7 +93,7 @@ public class Save {
                 items.add(new Event(Task.getStatusFromString(itemArray[1]), itemArray[2], itemArray[3], itemArray[4]));
             }
             else {
-                throw new AthenaException("athena.Save File Corrupted by this line: " + line);
+                throw new AthenaException("athena.storage.Save File Corrupted by this line: " + line);
             }
         }
         return true;
