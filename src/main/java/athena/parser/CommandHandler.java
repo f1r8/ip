@@ -2,24 +2,37 @@ package athena.parser;
 
 import athena.Athena;
 import athena.storage.Storage;
-import athena.ui.UI;
+import athena.ui.Ui;
 import athena.exception.AthenaException;
 import athena.task.*;
 
 import java.util.function.Function;
 
+/**
+ * Handles Commands for Athena application.
+ */
 public class CommandHandler {
 
     private final Storage storage;
-    private final UI ui;
+    private final Ui ui;
     private final TaskList taskList;
 
-    public CommandHandler(Storage storage, UI ui, TaskList taskList) {
+    /**
+     * Constructs a CommandHandler object.
+     *
+     * @param storage Storage object for persistent data storage.
+     * @param ui Ui object for printing and receiving inputs.
+     * @param taskList TaskList object that stores data in memory.
+     */
+    public CommandHandler(Storage storage, Ui ui, TaskList taskList) {
         this.storage = storage;
         this.ui = ui;
         this.taskList = taskList;
     }
 
+    /**
+     * Specifies valid commands.
+     */
     private enum Command {
         BYE("bye"),
         LIST("list"),
@@ -46,6 +59,13 @@ public class CommandHandler {
             return UNKNOWN;
         }
     }
+
+    /**
+     * Orchestrator for various Athena application commands.
+     *
+     * @param nextLine takes String as input from Ui.
+     * @return true if the user wants to terminate the application.
+     */
     public boolean handleCommand(String nextLine) {
         nextLine = nextLine.trim();
         String[] commandParts = nextLine.split("\\s+", 2);
@@ -88,9 +108,10 @@ public class CommandHandler {
     }
 
     /**
-     * Helper for handling mark
-     * @param arguments
-     * @param markAsDone
+     * Helper for handling mark or unmark.
+     *
+     * @param arguments Specifies the index of the task to mark or unmark.
+     * @param markAsDone true for mark, false for unmark.
      */
     private void handleMarkCommand(String arguments, boolean markAsDone) {
         int idx;
@@ -122,7 +143,7 @@ public class CommandHandler {
     }
 
     private void handleTaskCommand(Task task) {
-        ui.println(task.getCreateMsg());
+        ui.println(Task.getCreateMsg());
         ui.println("  " + task);
         ui.println("You now have " + taskList.size() + " tasks in the list, Your Majesty.");
     }

@@ -3,8 +3,16 @@ package athena.task;
 import athena.exception.AthenaException;
 import athena.storage.Storage;
 
+/**
+ * Todo Class for Athena application.
+ */
 public class Todo extends Task {
 
+    /**
+     * Constructs a Todo object.
+     *
+     * @param description command line input to construct the object.
+     */
     public Todo(String description) {
         if (description == "") {
             throw new AthenaException("Please provide a todo description, Your Majesty.");
@@ -12,6 +20,12 @@ public class Todo extends Task {
         super(description);
     }
 
+    /**
+     * Constructs a Todo object.
+     *
+     * @param done true if the todo is done, false otherwise.
+     * @param description Describes the Todo object.
+     */
     public Todo(boolean done, String description) {
         if (description == "") {
             throw new AthenaException("Please provide a todo description, Your Majesty.");
@@ -19,11 +33,21 @@ public class Todo extends Task {
         super(done, description);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return The task in the format "[T] {Task}".
+     */
     @Override
     public String toString() {
         return "[T]" + super.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return The task in the format "T{Separator}{Task}".
+     */
     @Override
     public String toSaveString(){
         return "T" + Storage.SEPARATOR + super.toSaveString();

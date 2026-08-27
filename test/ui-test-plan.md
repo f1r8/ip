@@ -1,6 +1,6 @@
-# athena.ui.UI test plan
+# athena.ui.Ui test plan
 
-Record every command-driven athena.ui.UI test here before running the test session. Use one test case per command, in execution order. Include the aim, exact standard input, and exact combined console output expected from the program. Record prerequisites such as the build command, runtime version, working directory, and environment variables near the top of this file.
+Record every command-driven athena.ui.Ui test here before running the test session. Use one test case per command, in execution order. Include the aim, exact standard input, and exact combined console output expected from the program. Record prerequisites such as the build command, runtime version, working directory, and environment variables near the top of this file.
 
 The `test-ui` skill runs this plan with `scripts/run-ui-tests.py`. It normalizes only line endings and the final newline when comparing output; all other characters must match. It stops at the first failed, timed-out, or unexpectedly terminated command.
 
