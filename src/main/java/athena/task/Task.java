@@ -39,22 +39,16 @@ public abstract class Task {
 
     /**
      * Marks a Task object as done.
-     *
-     * @return The String to be printed to command line.
      */
-    public String markDone() {
+    public void markDone() {
         this.setDone(true);
-        return "Excellent, Your Majesty! I've marked this task as done:";
     }
 
     /**
      * Unmarks a Task object as not done.
-     *
-     * @return The String to be printed to command line.
      */
-    public String unmarkDone() {
+    public void unmarkDone() {
         this.setDone(false);
-        return "Certainly, Your Majesty. I've marked this task as not done yet:";
     }
 
     /**
@@ -107,15 +101,6 @@ public abstract class Task {
      */
     public String getSaveString() {
         return getStoreStatusIcon() + Storage.SAVE_SEPARATOR + this.name;
-    }
-
-    /**
-     * Retrieves the message on task creation.
-     *
-     * @return Task creation message.
-     */
-    public static String getCreateMsg() {
-        return "As you command, Your Majesty. I've added this task:";
     }
 
 }

@@ -1,7 +1,7 @@
 # Athena UI test session
 
 - Plan: `C:\Users\jiang\Duke\ip\test\ui-test-plan.md`
-- Started: 2026-08-28T22:50:26+08:00
+- Started: 2026-08-28T23:44:43+08:00
 - Status: **PASSED**
 
 ## Build
@@ -17,7 +17,7 @@
 > Task :classes UP-TO-DATE
 > Task :shadowJar UP-TO-DATE
 
-BUILD SUCCESSFUL in 4s
+BUILD SUCCESSFUL in 1s
 2 actionable tasks: 2 up-to-date
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html
 
@@ -389,6 +389,82 @@ ____________________________________________________________
 *Athena blinks her eyes, unsure of what you want, tilting
 her head slightly as the meaning of your words slips just
 out of reach.*
+____________________________________________________________
+````
+
+### Result: PASS
+
+## Test case 6: Find matching tasks
+
+- Aim: Verify that the find command prints only matching tasks and numbers the matches from one.
+- Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
+- Working directory: isolated temporary directory
+- Exit code: `0` (expected `0`)
+
+### Console input
+
+````text
+todo Read the project brief
+todo Submit the final report
+find report
+````
+
+### Actual console output
+
+````text
+File not found at: ./data/athena.txt
+____________________________________________________________
+    _  _____ _   _ _____ _   _    _    
+   / \|_   _| | | | ____| \ | |  / \   
+  / _ \ | | | |_| |  _| |  \| | / _ \  
+ / ___ \| | |  _  | |___| |\  |/ ___ \ 
+/_/   \_\_| |_| |_|_____|_| \_/_/   \_\
+Hello, Your Majesty! I'm Athena.
+How may I assist you, Your Majesty?
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added this task:
+  [T][ ] Read the project brief
+You now have 1 tasks in the list, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added this task:
+  [T][ ] Submit the final report
+You now have 2 tasks in the list, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Your Majesty, here are the matching tasks in your list:
+1. [T][ ] Submit the final report
+____________________________________________________________
+
+````
+
+### Expected console output
+
+````text
+File not found at: ./data/athena.txt
+____________________________________________________________
+    _  _____ _   _ _____ _   _    _
+   / \|_   _| | | | ____| \ | |  / \
+  / _ \ | | | |_| |  _| |  \| | / _ \
+ / ___ \| | |  _  | |___| |\  |/ ___ \
+/_/   \_\_| |_| |_|_____|_| \_/_/   \_\
+Hello, Your Majesty! I'm Athena.
+How may I assist you, Your Majesty?
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added this task:
+  [T][ ] Read the project brief
+You now have 1 tasks in the list, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added this task:
+  [T][ ] Submit the final report
+You now have 2 tasks in the list, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Your Majesty, here are the matching tasks in your list:
+1. [T][ ] Submit the final report
 ____________________________________________________________
 ````
 

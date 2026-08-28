@@ -236,3 +236,46 @@ ____________________________________________________________
 ```
 
 Expected exit code: 0
+
+## Test case 6: Find matching tasks
+
+Aim: Verify that the find command prints only matching tasks and numbers the matches from one.
+
+Inputs:
+
+```text
+todo Read the project brief
+todo Submit the final report
+find report
+```
+
+Expected output:
+
+```text
+File not found at: ./data/athena.txt
+____________________________________________________________
+    _  _____ _   _ _____ _   _    _
+   / \|_   _| | | | ____| \ | |  / \
+  / _ \ | | | |_| |  _| |  \| | / _ \
+ / ___ \| | |  _  | |___| |\  |/ ___ \
+/_/   \_\_| |_| |_|_____|_| \_/_/   \_\
+Hello, Your Majesty! I'm Athena.
+How may I assist you, Your Majesty?
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added this task:
+  [T][ ] Read the project brief
+You now have 1 tasks in the list, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added this task:
+  [T][ ] Submit the final report
+You now have 2 tasks in the list, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Your Majesty, here are the matching tasks in your list:
+1. [T][ ] Submit the final report
+____________________________________________________________
+```
+
+Expected exit code: 0

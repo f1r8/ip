@@ -11,8 +11,6 @@ import athena.ui.Ui;
 public class Athena {
     /** Path where application data is stored */
     public static final String PATH = "./data/athena.txt";
-    /** Cosmetic String for printing */
-    public static final String UNDERSCORES = "____________________________________________________________";
 
     /**
      * Entry point of Athena application.
@@ -27,31 +25,14 @@ public class Athena {
         TaskList taskList = new TaskList();
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
 
-        boolean isLoaded = storage.areItemsLoaded(taskList.getItems());
-        if (isLoaded) {
-            ui.println("Items successfully loaded.");
-        } else {
-            ui.println("File not found at: " + PATH);
-        }
-        String name = "Athena";
-        String banner = """
-                    _  _____ _   _ _____ _   _    _   \s
-                   / \\|_   _| | | | ____| \\ | |  / \\  \s
-                  / _ \\ | | | |_| |  _| |  \\| | / _ \\ \s
-                 / ___ \\| | |  _  | |___| |\\  |/ ___ \\\s
-                /_/   \\_\\_| |_| |_|_____|_| \\_/_/   \\_\\""";
-
-        ui.println(UNDERSCORES);
-        ui.println(banner);
-        ui.println("Hello, Your Majesty! I'm " + name + ".");
-        ui.println("How may I assist you, Your Majesty?");
-        ui.println(UNDERSCORES);
+        ui.showLoadingStatus(storage.areItemsLoaded(taskList.getItems()), PATH);
+        ui.showWelcome();
         while (ui.hasNextLine()) {
-            ui.println(UNDERSCORES);
+            ui.showDivider();
             if (commandHandler.isExitCommand(ui.nextLine())) {
                 return;
             }
-            ui.println(UNDERSCORES);
+            ui.showDivider();
         }
     }
 

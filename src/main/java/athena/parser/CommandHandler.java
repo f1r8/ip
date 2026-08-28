@@ -1,6 +1,5 @@
 package athena.parser;
 
-import athena.Athena;
 import athena.exception.AthenaException;
 import athena.storage.Storage;
 import athena.task.Deadline;
@@ -10,16 +9,14 @@ import athena.task.TaskList;
 import athena.task.Todo;
 import athena.ui.Ui;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 /**
  * Handles Commands for Athena application.
  */
 public class CommandHandler {
-
-    private static final String UNKNOWN_COMMAND_MESSAGE = "*Athena blinks her eyes, unsure of what you want, "
-            + "tilting \nher head slightly as the meaning of your words slips just \nout of reach.*";
-
     private final Storage storage;
     private final Ui ui;
     private final TaskList taskList;
@@ -82,13 +79,10 @@ public class CommandHandler {
 
         switch (command) {
             case BYE:
-                ui.println(getExitMessage());
+                ui.showGoodbye();
                 return true;
             case LIST:
-                ui.println("Your Majesty, here are the tasks in your list:");
-                for (int i = 0; i < taskList.size(); i++) {
-                    ui.println(i + 1 + ". " + taskList.get(i));
-                }
+                ui.showTaskList(taskList.getItems());
                 break;
             case MARK:
                 handleMarkCommand(arguments, true);
@@ -109,17 +103,17 @@ public class CommandHandler {
                 handleDeleteCommand(arguments);
                 break;
             case FIND:
-                ui.println("Your Majesty, here are the matching tasks in your list:");
-                int counter = 1;
+                List<Task> matchingTasks = new ArrayList<>();
                 for (int i = 0; i < taskList.size(); i++) {
-                    String s = taskList.get(i).toString();
-                    if (s.contains(arguments)) {
-                        ui.println(counter++ + ". " + s);
+                    Task task = taskList.get(i);
+                    if (task.toString().contains(arguments)) {
+                        matchingTasks.add(task);
                     }
                 }
+                ui.showMatchingTasks(matchingTasks);
                 break;
             default:
-                ui.println(UNKNOWN_COMMAND_MESSAGE);
+                ui.showUnknownCommand();
                 break;
         }
         return false;
@@ -135,15 +129,17 @@ public class CommandHandler {
         try {
             int idx = Integer.parseInt(arguments.trim());
             Task task = taskList.get(idx - 1);
-            ui.println(shouldMarkAsDone
-                    ? task.markDone()
-                    : task.unmarkDone());
-            ui.println("  " + task);
+            if (shouldMarkAsDone) {
+                task.markDone();
+            } else {
+                task.unmarkDone();
+            }
+            ui.showTaskStatusChanged(task, shouldMarkAsDone);
             storage.writeItems(taskList.getItems());
         } catch (NumberFormatException e) {
-            ui.println("Which task shall I mark, Your Majesty?");
+            ui.showMissingMarkIndex();
         } catch (IndexOutOfBoundsException e) {
-            ui.println("Your Majesty, there aren't that many tasks in the list.");
+            ui.showInvalidTaskIndex();
         }
     }
 
@@ -154,14 +150,12 @@ public class CommandHandler {
             handleTaskCommand(task);
             storage.writeItems(taskList.getItems());
         } catch (AthenaException e) {
-            ui.println(e.getMessage());
+            ui.showError(e.getMessage());
         }
     }
 
     private void handleTaskCommand(Task task) {
-        ui.println(Task.getCreateMsg());
-        ui.println("  " + task);
-        ui.println("You now have " + taskList.size() + " tasks in the list, Your Majesty.");
+        ui.showTaskAdded(task, taskList.size());
     }
 
     private void handleDeleteCommand(String arguments) {
@@ -169,24 +163,11 @@ public class CommandHandler {
             int idx = Integer.parseInt(arguments.trim());
             Task task = taskList.remove(idx - 1);
             storage.writeItems(taskList.getItems());
-            ui.println("As you wish, Your Majesty. I've removed this task:");
-            ui.println("  " + task);
-            ui.println("You now have " + taskList.size() + " tasks in the list, Your Majesty.");
+            ui.showTaskDeleted(task, taskList.size());
         } catch (NumberFormatException e) {
-            ui.println("Which task shall I remove, Your Majesty?");
+            ui.showMissingDeleteIndex();
         } catch (IndexOutOfBoundsException e) {
-            ui.println("Your Majesty, there aren't that many tasks in the list.");
+            ui.showInvalidTaskIndex();
         }
-    }
-
-    /**
-     *
-     * @return exit message represented as a string
-     */
-    private static String getExitMessage() {
-        String ans = Athena.UNDERSCORES + "\n";
-        ans += "Farewell, Your Majesty. I hope to serve you again soon!\n";
-        ans += Athena.UNDERSCORES;
-        return ans;
     }
 }
