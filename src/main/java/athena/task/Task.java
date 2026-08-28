@@ -7,22 +7,23 @@ import athena.storage.Storage;
  * This class is used to create athena.task.Task Objects
  */
 public abstract class Task {
-    private String name;
-    private boolean done;
+    private final String name;
+    private boolean isDone;
+
     public Task(String name) {
         this(false, name);
     }
 
-    public Task(Boolean done, String name) {
-        if (name.equals("")) {
+    public Task(Boolean isDone, String name) {
+        if (name.isEmpty()) {
             throw new AthenaException("Task name cannot be empty");
         }
-        this.done = done;
+        this.isDone = isDone;
         this.name = name;
     }
 
-    public void setDone(boolean done) {
-        this.done = done;
+    public void setDone(boolean isDone) {
+        this.isDone = isDone;
     }
 
     public String markDone() {
@@ -36,7 +37,7 @@ public abstract class Task {
     }
 
     public String getStatusIcon() {
-        return this.done ? "X" : " ";
+        return this.isDone ? "X" : " ";
     }
 
     @Override
@@ -45,10 +46,10 @@ public abstract class Task {
     }
 
     public String getStoreStatusIcon() {
-        return this.done ? "1" : "0";
+        return this.isDone ? "1" : "0";
     }
 
-    public static boolean getStatusFromString(String status) {
+    public static boolean isDoneFromStatus(String status) {
         if (status.equals("1")) {
             return true;
         } else if (status.equals("0")) {
@@ -57,8 +58,8 @@ public abstract class Task {
         throw new AthenaException("Error converting save string to num: " + status);
     }
 
-    public String toSaveString() {
-        return getStoreStatusIcon() + Storage.SEPARATOR + this.name;
+    public String getSaveString() {
+        return getStoreStatusIcon() + Storage.SAVE_SEPARATOR + this.name;
     }
 
     public String getCreateMsg() {

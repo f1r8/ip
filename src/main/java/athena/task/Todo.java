@@ -12,11 +12,11 @@ public class Todo extends Task {
         super(description);
     }
 
-    public Todo(boolean done, String description) {
+    public Todo(boolean isDone, String description) {
         if (description == "") {
             throw new AthenaException("Please provide a todo description, Your Majesty.");
         }
-        super(done, description);
+        super(isDone, description);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class Todo extends Task {
     }
 
     @Override
-    public String toSaveString(){
-        return "T" + Storage.SEPARATOR + super.toSaveString();
+    public String getSaveString() {
+        return "T" + Storage.SAVE_SEPARATOR + super.getSaveString();
     }
 }

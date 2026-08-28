@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 public class Event extends Task {
 
-    protected LocalDateTime from;
-    protected LocalDateTime to;
+    private final LocalDateTime from;
+    private final LocalDateTime to;
 
     public Event(String input) {
         input = input.replaceAll("/from ", "/");
@@ -27,19 +27,21 @@ public class Event extends Task {
         this.to = DateParser.parse(to);
     }
 
-    public Event(boolean done, String description, String from, String to) {
-        super(done, description);
+    public Event(boolean isDone, String description, String from, String to) {
+        super(isDone, description);
         this.from = LocalDateTime.parse(from);
         this.to = LocalDateTime.parse(to);
     }
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + DateParser.formatOutput(this.from) + ", to: " + DateParser.formatOutput(this.to)  + ")";
+        return "[E]" + super.toString() + " (from: " + DateParser.formatOutput(this.from)
+                + ", to: " + DateParser.formatOutput(this.to) + ")";
     }
 
     @Override
-    public String toSaveString(){
-        return "E" + Storage.SEPARATOR + super.toSaveString() + Storage.SEPARATOR +  this.from + Storage.SEPARATOR  + this.to;
+    public String getSaveString() {
+        return "E" + Storage.SAVE_SEPARATOR + super.getSaveString() + Storage.SAVE_SEPARATOR
+                + this.from + Storage.SAVE_SEPARATOR + this.to;
     }
 }

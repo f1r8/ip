@@ -12,12 +12,15 @@ public class TaskList {
     public int size() {
         return items.size();
     }
+
     public Task get(int index) {
         return items.get(index);
     }
+
     public void add(Task task) {
         items.add(task);
     }
+
     public Task remove(int index) {
         return items.remove(index);
     }

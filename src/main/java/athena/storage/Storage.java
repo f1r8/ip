@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class Storage {
+    public static final String SAVE_SEPARATOR = " | ";
+
+    public static final String SAVE_NEWLINE = System.lineSeparator();
+
     private String path;
-
-    public static final String SEPARATOR = " | ";
-
-    public static final String NEWLINE = System.lineSeparator();
 
     public Storage(String path) {
         this.path = path;
@@ -34,8 +34,7 @@ public class Storage {
         ensureFileExists();
         try {
             Files.writeString(getPath(), content, StandardOpenOption.APPEND);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             throw new AthenaException("Unable to append to file");
         }
     }
@@ -60,8 +59,7 @@ public class Storage {
         ensureFileExists();
         try {
             Files.writeString(getPath(), content);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             throw new AthenaException("Something went wrong overwriting the file");
         }
     }
@@ -70,7 +68,7 @@ public class Storage {
         try {
             String content = Files.readString(getPath());
             return content;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return "";
         }
     }
@@ -78,25 +76,26 @@ public class Storage {
     public void writeItems(ArrayList<Task> items) {
         String content = "";
         for (Task item : items) {
-            content += item.toSaveString() + NEWLINE;
+            content += item.getSaveString() + SAVE_NEWLINE;
         }
         overwrite(content);
     }
 
-    public boolean loadItems(ArrayList<Task> items) {
+    public boolean areItemsLoaded(ArrayList<Task> tasks) {
         String input = read();
-        if (input.equals("")) return false;
-        String[] lines = input.split(NEWLINE);
+        if (input.equals("")) {
+            return false;
+        }
+        String[] lines = input.split(SAVE_NEWLINE);
         for (String line : lines) {
-            String[] itemArray = line.split(Pattern.quote(SEPARATOR));
-            if (itemArray.length == 3) {
-                items.add(new Todo(Task.getStatusFromString(itemArray[1]), itemArray[2]));
-            } else if (itemArray.length == 4) {
-                items.add(new Deadline(Task.getStatusFromString(itemArray[1]), itemArray[2], itemArray[3]));
-            } else if (itemArray.length == 5) {
-                items.add(new Event(Task.getStatusFromString(itemArray[1]), itemArray[2], itemArray[3], itemArray[4]));
-            }
-            else {
+            String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
+            if (items.length == 3) {
+                tasks.add(new Todo(Task.isDoneFromStatus(items[1]), items[2]));
+            } else if (items.length == 4) {
+                tasks.add(new Deadline(Task.isDoneFromStatus(items[1]), items[2], items[3]));
+            } else if (items.length == 5) {
+                tasks.add(new Event(Task.isDoneFromStatus(items[1]), items[2], items[3], items[4]));
+            } else {
                 throw new AthenaException("Storage File Corrupted by this line: " + line);
             }
         }

@@ -4,17 +4,18 @@ import athena.task.Task;
 
 import java.util.ArrayList;
 
-public class StorageStub extends Storage{
-    public StorageStub(){
+public class StorageStub extends Storage {
+    public StorageStub() {
         super(null);
     }
+
     @Override
-    public boolean loadItems(java.util.ArrayList items) {
+    public boolean areItemsLoaded(java.util.ArrayList tasks) {
         return true;
     }
 
     @Override
     public void writeItems(ArrayList<Task> items) {
-        //Do Nothing
+        // Do Nothing
     }
 }

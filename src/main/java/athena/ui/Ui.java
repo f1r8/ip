@@ -4,15 +4,13 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-public class UI {
-    private final InputStream inputStream;
+public class Ui {
     private final PrintStream outputStream;
-    private final Scanner sc;
+    private final Scanner scanner;
 
-    public UI(InputStream inputStream, PrintStream outputStream) {
-        this.inputStream = inputStream;
+    public Ui(InputStream inputStream, PrintStream outputStream) {
         this.outputStream = outputStream;
-        this.sc = new Scanner(inputStream);
+        this.scanner = new Scanner(inputStream);
     }
 
     public void println(String output) {
@@ -20,10 +18,10 @@ public class UI {
     }
 
     public boolean hasNextLine() {
-        return sc.hasNextLine();
+        return scanner.hasNextLine();
     }
 
     public String nextLine() {
-        return sc.nextLine();
+        return scanner.nextLine();
     }
 }

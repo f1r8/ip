@@ -3,9 +3,7 @@ package athena;
 import athena.parser.CommandHandler;
 import athena.storage.Storage;
 import athena.task.TaskList;
-import athena.ui.UI;
-
-import java.util.Scanner;
+import athena.ui.Ui;
 
 /**
  *
@@ -19,22 +17,23 @@ public class Athena {
 
     public static void main(String[] args) {
         Storage storage = new Storage(PATH);
-        UI ui = new UI(System.in, System.out);
+        Ui ui = new Ui(System.in, System.out);
         TaskList taskList = new TaskList();
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
 
-        boolean saved = storage.loadItems(taskList.getItems());
-        if (saved) {
+        boolean isLoaded = storage.areItemsLoaded(taskList.getItems());
+        if (isLoaded) {
             ui.println("Items successfully loaded.");
         } else {
             ui.println("File not found at: " + PATH);
         }
         String name = "Athena";
-        String banner = "    _  _____ _   _ _____ _   _    _    \n"
-                + "   / \\|_   _| | | | ____| \\ | |  / \\   \n"
-                + "  / _ \\ | | | |_| |  _| |  \\| | / _ \\  \n"
-                + " / ___ \\| | |  _  | |___| |\\  |/ ___ \\ \n"
-                + "/_/   \\_\\_| |_| |_|_____|_| \\_/_/   \\_\\";
+        String banner = """
+                    _  _____ _   _ _____ _   _    _   \s
+                   / \\|_   _| | | | ____| \\ | |  / \\  \s
+                  / _ \\ | | | |_| |  _| |  \\| | / _ \\ \s
+                 / ___ \\| | |  _  | |___| |\\  |/ ___ \\\s
+                /_/   \\_\\_| |_| |_|_____|_| \\_/_/   \\_\\""";
 
         ui.println(UNDERSCORES);
         ui.println(banner);
@@ -43,7 +42,7 @@ public class Athena {
         ui.println(UNDERSCORES);
         while (ui.hasNextLine()) {
             ui.println(UNDERSCORES);
-            if (commandHandler.handleCommand(ui.nextLine())) {
+            if (commandHandler.isExitCommand(ui.nextLine())) {
                 return;
             }
             ui.println(UNDERSCORES);
