@@ -43,6 +43,17 @@ class CommandHandlerTest {
     }
 
     @Test
+    void isExitCommand_list_printsNumberedTasks() {
+        taskList.add(new Todo("Read book"));
+        taskList.add(new Todo("Write report"));
+
+        commandHandler.isExitCommand("list");
+
+        assertTrue(outContent.toString().contains("1. [T][ ] Read book"));
+        assertTrue(outContent.toString().contains("2. [T][ ] Write report"));
+    }
+
+    @Test
     void isExitCommand_todo_addedTodoTask() {
         commandHandler.isExitCommand("todo Use 1 letter variable names like i,j,k");
         assertEquals(1, taskList.size());
@@ -80,6 +91,15 @@ class CommandHandlerTest {
     void isExitCommand_unknown_printBlinkEyes() {
         commandHandler.isExitCommand("67 67 67 67");
         assertTrue(outContent.toString().contains("blinks her eyes"));
+    }
+
+    @Test
+    void isExitCommand_mixedCaseWithWhitespace_commandRecognized() {
+        boolean shouldExit = commandHandler.isExitCommand("  ToDo Read book  ");
+
+        assertFalse(shouldExit);
+        assertEquals(1, taskList.size());
+        assertEquals("[T][ ] Read book", taskList.get(0).toString());
     }
 
     @Test
@@ -155,6 +175,67 @@ class CommandHandlerTest {
     void isExitCommand_deleteOutOfRangeIndex_printErrorMessage() {
         commandHandler.isExitCommand("delete 67");
         assertTrue(outContent.toString().contains("many tasks in the list"));
+        assertEquals(0, taskList.size());
+    }
+
+    @Test
+    void isExitCommand_markMissingIndex_printErrorMessage() {
+        commandHandler.isExitCommand("mark");
+
+        assertTrue(outContent.toString().contains("Which task shall I mark"));
+    }
+
+    @Test
+    void isExitCommand_unmarkNonNumericIndex_printErrorMessage() {
+        commandHandler.isExitCommand("unmark first");
+
+        assertTrue(outContent.toString().contains("Which task shall I mark"));
+    }
+
+    @Test
+    void isExitCommand_deleteMissingIndex_printErrorMessage() {
+        commandHandler.isExitCommand("delete");
+
+        assertTrue(outContent.toString().contains("Which task shall I remove"));
+    }
+
+    @Test
+    void isExitCommand_findMatchingTasks_onlyMatchesPrinted() {
+        taskList.add(new Todo("Read project brief"));
+        taskList.add(new Todo("Submit final report"));
+        taskList.add(new Todo("Review report"));
+
+        commandHandler.isExitCommand("find report");
+
+        String output = outContent.toString();
+        assertTrue(output.contains("1. [T][ ] Submit final report"));
+        assertTrue(output.contains("2. [T][ ] Review report"));
+        assertFalse(output.contains("Read project brief"));
+    }
+
+    @Test
+    void isExitCommand_findNoMatchingTasks_headingOnlyPrinted() {
+        taskList.add(new Todo("Read project brief"));
+
+        commandHandler.isExitCommand("find report");
+
+        assertEquals("Your Majesty, here are the matching tasks in your list:"
+                + System.lineSeparator(), outContent.toString());
+    }
+
+    @Test
+    void isExitCommand_invalidDeadlineDate_printErrorAndDoesNotAddTask() {
+        commandHandler.isExitCommand("deadline Submit report /by 31-12-2026 23:59");
+
+        assertTrue(outContent.toString().contains("Invalid date format"));
+        assertEquals(0, taskList.size());
+    }
+
+    @Test
+    void isExitCommand_invalidEventDate_printErrorAndDoesNotAddTask() {
+        commandHandler.isExitCommand("event Team meeting /from invalid /to 2026-12-30 1500");
+
+        assertTrue(outContent.toString().contains("Invalid date format"));
         assertEquals(0, taskList.size());
     }
 }
