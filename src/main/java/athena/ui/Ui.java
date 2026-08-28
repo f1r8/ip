@@ -4,21 +4,20 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+public class Ui {
 /**
  * Ui class of the Athena application.
  */
 public class Ui {
-    private final InputStream inputStream;
     private final PrintStream outputStream;
-    private final Scanner sc;
+    private final Scanner scanner;
 
     /**
      * Constructs a Ui object.
      */
     public Ui(InputStream inputStream, PrintStream outputStream) {
-        this.inputStream = inputStream;
         this.outputStream = outputStream;
-        this.sc = new Scanner(inputStream);
+        this.scanner = new Scanner(inputStream);
     }
 
     /**
@@ -36,7 +35,7 @@ public class Ui {
      * @return true if there is another line, false otherwise.
      */
     public boolean hasNextLine() {
-        return sc.hasNextLine();
+        return scanner.hasNextLine();
     }
 
     /**
@@ -45,6 +44,6 @@ public class Ui {
      * @return The next line of the inputStream.
      */
     public String nextLine() {
-        return sc.nextLine();
+        return scanner.nextLine();
     }
 }

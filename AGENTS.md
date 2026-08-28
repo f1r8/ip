@@ -36,8 +36,10 @@ Do not commit or push unless explicitly asked.
 
 ## Code-update verification
 
-After every code update:
+After every update to application code, tests, build configuration, or test tooling:
 
-1. Review `test/ui-test-plan.md`. Update it when the change affects covered behavior, inputs, expected output, prerequisites, or test commands; leave it unchanged only when no test coverage is affected.
-2. Invoke the project skill `$test-ui` from the repository root to run the plan and record the console session.
-3. Show the test-session record, including each command, console input, actual output, expected output, and result. If a case fails, stop immediately and report the actual and expected outputs; do not continue with later cases or claim them as passed.
+1. From the repository root, review `test/ui-test-plan.md`. Add or revise cases when the change affects behavior, inputs, expected output, prerequisites, or commands. Preserve the plan unchanged only when its coverage and expectations remain accurate.
+2. Invoke the project skill `$test-ui`. If project-skill discovery is unavailable, load `.codex/skills/test-ui/SKILL.md` directly and follow it; do not substitute an ad hoc UI run.
+3. Let the skill build the current JAR and run the plan. Do not use its `--skip-build` option for this verification.
+4. Show `test/ui-test-session.md`, including every executed case's command, console input, actual output, expected output, exit code, and result.
+5. On the first failure, stop immediately and report the actual and expected outputs. Do not execute later cases, change an expectation merely to match an unintended result, or claim unexecuted cases passed.

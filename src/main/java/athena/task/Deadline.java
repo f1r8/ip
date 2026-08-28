@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  */
 public class Deadline extends Task {
 
-    private LocalDateTime by;
+    private final LocalDateTime by;
 
     /**
      * Constructs a Deadline object.
@@ -41,12 +41,12 @@ public class Deadline extends Task {
     /**
      * Constructs a Deadline object.
      *
-     * @param done
+     * @param isDone
      * @param description
      * @param by
      */
-    public Deadline(boolean done, String description, String by) {
-        super(done, description);
+    public Deadline(boolean isDone, String description, String by) {
+        super(isDone, description);
         this.by = LocalDateTime.parse(by);
     }
 
@@ -66,7 +66,7 @@ public class Deadline extends Task {
      * @return The task in the format "D{Separator}{Task}{Separator}{Date}".
      */
     @Override
-    public String toSaveString(){
-        return "D" + Storage.SEPARATOR + super.toSaveString() + Storage.SEPARATOR + this.by;
+    public String getSaveString() {
+        return "D" + Storage.SAVE_SEPARATOR + super.getSaveString() + Storage.SAVE_SEPARATOR + this.by;
     }
 }

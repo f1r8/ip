@@ -23,14 +23,14 @@ public class Todo extends Task {
     /**
      * Constructs a Todo object.
      *
-     * @param done true if the todo is done, false otherwise.
+     * @param isDone true if the todo is done, false otherwise.
      * @param description Describes the Todo object.
      */
-    public Todo(boolean done, String description) {
+    public Todo(boolean isDone, String description) {
         if (description == "") {
             throw new AthenaException("Please provide a todo description, Your Majesty.");
         }
-        super(done, description);
+        super(isDone, description);
     }
 
     /**
@@ -49,7 +49,7 @@ public class Todo extends Task {
      * @return The task in the format "T{Separator}{Task}".
      */
     @Override
-    public String toSaveString(){
-        return "T" + Storage.SEPARATOR + super.toSaveString();
+    public String getSaveString() {
+        return "T" + Storage.SAVE_SEPARATOR + super.getSaveString();
     }
 }

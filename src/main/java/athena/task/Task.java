@@ -7,8 +7,9 @@ import athena.storage.Storage;
  * Task class for Athena application.
  */
 public abstract class Task {
-    private String name;
-    private boolean done;
+    private final String name;
+    private boolean isDone;
+
     public Task(String name) {
         this(false, name);
     }
@@ -16,24 +17,24 @@ public abstract class Task {
     /**
      * Constructs a Task object.
      *
-     * @param done true if the task is complete, false otherwise.
+     * @param isDone true if the task is complete, false otherwise.
      * @param name Description of the Task object.
      */
-    public Task(Boolean done, String name) {
-        if (name.equals("")) {
+    public Task(Boolean isDone, String name) {
+        if (name.isEmpty()) {
             throw new AthenaException("Task name cannot be empty");
         }
-        this.done = done;
+        this.isDone = isDone;
         this.name = name;
     }
 
     /**
      * Sets a Task object as done or not done.
      *
-     * @param done true if the task is complete, false otherwise.
+     * @param isDone true if the task is complete, false otherwise.
      */
-    public void setDone(boolean done) {
-        this.done = done;
+    public void setDone(boolean isDone) {
+        this.isDone = isDone;
     }
 
     /**
@@ -62,7 +63,7 @@ public abstract class Task {
      * @return String of the status icon.
      */
     public String getStatusIcon() {
-        return this.done ? "X" : " ";
+        return this.isDone ? "X" : " ";
     }
 
     /**
@@ -81,7 +82,7 @@ public abstract class Task {
      * @return String of the storage status icon.
      */
     public String getStoreStatusIcon() {
-        return this.done ? "1" : "0";
+        return this.isDone ? "1" : "0";
     }
 
     /**
@@ -90,7 +91,7 @@ public abstract class Task {
      * @param status String of the storage status icon.
      * @return true if the task is complete, false otherwise.
      */
-    public static boolean getStatusFromString(String status) {
+    public static boolean isDoneFromStatus(String status) {
         if (status.equals("1")) {
             return true;
         } else if (status.equals("0")) {
@@ -104,8 +105,8 @@ public abstract class Task {
      *
      * @return Storage String.
      */
-    public String toSaveString() {
-        return getStoreStatusIcon() + Storage.SEPARATOR + this.name;
+    public String getSaveString() {
+        return getStoreStatusIcon() + Storage.SAVE_SEPARATOR + this.name;
     }
 
     /**

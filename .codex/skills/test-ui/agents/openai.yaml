@@ -1,4 +1,4 @@
 interface:
-  display_name: "Test UI Commands"
-  short_description: "Run UI tests from a markdown plan"
-  default_prompt: "Use $test-ui to run the commands in test/ui-test-plan.md and show the test session."
+  display_name: "Test Athena UI"
+  short_description: "Run Athena CLI tests and record the session"
+  default_prompt: "Use $test-ui to update and run test/ui-test-plan.md, then show the fail-fast console session."

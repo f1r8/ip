@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
  */
 public class Event extends Task {
 
-    private LocalDateTime from;
-    private LocalDateTime to;
+    private final LocalDateTime from;
+    private final LocalDateTime to;
 
     /**
      * Constructs an Event object.
@@ -50,8 +50,8 @@ public class Event extends Task {
      * @param from Date when the Event starts.
      * @param to Date when the Event ends.
      */
-    public Event(boolean done, String description, String from, String to) {
-        super(done, description);
+    public Event(boolean isDone, String description, String from, String to) {
+        super(isDone, description);
         this.from = LocalDateTime.parse(from);
         this.to = LocalDateTime.parse(to);
     }
@@ -63,7 +63,8 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + DateParser.formatOutput(this.from) + ", to: " + DateParser.formatOutput(this.to)  + ")";
+        return "[E]" + super.toString() + " (from: " + DateParser.formatOutput(this.from)
+                + ", to: " + DateParser.formatOutput(this.to) + ")";
     }
 
     /**
@@ -72,7 +73,8 @@ public class Event extends Task {
      * @return The task in the format "E{Separator}{Task}{Separator}{startDate}{Separator}{endDate}".
      */
     @Override
-    public String toSaveString(){
-        return "E" + Storage.SEPARATOR + super.toSaveString() + Storage.SEPARATOR +  this.from + Storage.SEPARATOR  + this.to;
+    public String getSaveString() {
+        return "E" + Storage.SAVE_SEPARATOR + super.getSaveString() + Storage.SAVE_SEPARATOR
+                + this.from + Storage.SAVE_SEPARATOR + this.to;
     }
 }
