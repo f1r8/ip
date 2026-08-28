@@ -29,6 +29,7 @@ public class CommandHandler {
         DEADLINE("deadline"),
         EVENT("event"),
         DELETE("delete"),
+        FIND("find"),
         UNKNOWN("");
 
         private final String keyword;
@@ -79,6 +80,16 @@ public class CommandHandler {
             break;
         case DELETE:
             handleDeleteCommand(arguments);
+            break;
+        case FIND:
+            ui.println("Your Majesty, here are the matching tasks in your list:");
+            int counter = 1;
+            for (int i = 0; i < taskList.size(); i++) {
+                String s = taskList.get(i).toString();
+                if (s.contains(arguments)) {
+                    ui.println(String.valueOf(counter++) + ". " + s);
+                }
+            }
             break;
         default:
             ui.println(UNKNOWN_COMMAND_MESSAGE);
