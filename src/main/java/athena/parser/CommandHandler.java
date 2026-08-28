@@ -114,7 +114,7 @@ public class CommandHandler {
                 for (int i = 0; i < taskList.size(); i++) {
                     String s = taskList.get(i).toString();
                     if (s.contains(arguments)) {
-                        ui.println(String.valueOf(counter++) + ". " + s);
+                        ui.println(counter++ + ". " + s);
                     }
                 }
                 break;
@@ -126,9 +126,10 @@ public class CommandHandler {
     }
 
     /**
-     * Helper for handling mark
-     * @param arguments
-     * @param shouldMarkAsDone
+     * Helper for handling mark/unmark.
+     *
+     * @param arguments String arguments for handling mark/unmark.
+     * @param shouldMarkAsDone true if task should be marked, false if unmarked.
      */
     private void handleMarkCommand(String arguments, boolean shouldMarkAsDone) {
         try {
