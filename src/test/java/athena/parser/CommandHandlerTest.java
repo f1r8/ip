@@ -1,13 +1,12 @@
 package athena.parser;
 
-import athena.exception.AthenaException;
 import athena.storage.Storage;
 import athena.storage.StorageStub;
 import athena.task.Deadline;
 import athena.task.Event;
 import athena.task.TaskList;
 import athena.task.Todo;
-import athena.ui.UI;
+import athena.ui.Ui;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +28,7 @@ class CommandHandlerTest {
         outContent = new ByteArrayOutputStream();
         PrintStream testOut = new PrintStream(outContent);
         InputStream testIn = new ByteArrayInputStream("".getBytes());
-        UI ui = new UI(testIn, testOut);
+        Ui ui = new Ui(testIn, testOut);
         Storage storage = new StorageStub();
         taskList = new TaskList();
         commandHandler = new CommandHandler(storage, ui, taskList);

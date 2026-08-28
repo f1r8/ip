@@ -15,13 +15,23 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+/**
+ * Storage class for the Athena application.
+ */
 public class Storage {
     private String path;
 
+    /** Separator for storing things in a single line */
     public static final String SEPARATOR = " | ";
 
+    /** Fetches the lineSeparator of the current Operating System */
     public static final String NEWLINE = System.lineSeparator();
 
+    /**
+     * Constructor for a Storage object.
+     *
+     * @param path Path of the file on the system used for storing or retrieving data.
+     */
     public Storage(String path) {
         this.path = path;
     }
@@ -30,6 +40,11 @@ public class Storage {
         return Paths.get(path);
     }
 
+    /**
+     * Appends to the file.
+     *
+     * @param content Content to be written.
+     */
     public void write(String content) {
         ensureFileExists();
         try {
@@ -40,6 +55,10 @@ public class Storage {
         }
     }
 
+    /**
+     * Ensure that the file exists.
+     * If it doesn't exist, attempts to create the relevant directories and the file itself.
+     */
     public void ensureFileExists() {
         File file = new File(path);
         try {
@@ -56,6 +75,11 @@ public class Storage {
         }
     }
 
+    /**
+     * Overwrites the content in the storage file.
+     *
+     * @param content Content to be written to storage.
+     */
     public void overwrite(String content) {
         ensureFileExists();
         try {
@@ -66,6 +90,11 @@ public class Storage {
         }
     }
 
+    /**
+     * Attempts to read from the storage file.
+     *
+     * @return the content in the file or an empty string if the file does not exist.
+     */
     public String read() {
         try {
             String content = Files.readString(getPath());
@@ -75,6 +104,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Preprocesses tasks to Strings.
+     * Passes the Strings to {@link overWrite(String)} to be written to storage.
+     *
+     * @param items Tasks to be written.
+     */
     public void writeItems(ArrayList<Task> items) {
         String content = "";
         for (Task item : items) {
@@ -83,6 +118,13 @@ public class Storage {
         overwrite(content);
     }
 
+    /**
+     * Loads tasks from storage.
+     * Uses {@link #read()} to get Strings from storage.
+     *
+     * @param items Tasks read from storage.
+     * @return true if items are loaded, false otherwise.
+     */
     public boolean loadItems(ArrayList<Task> items) {
         String input = read();
         if (input.equals("")) return false;

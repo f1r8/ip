@@ -6,13 +6,27 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Parse Dates for Athena application.
+ */
 public class DateParser {
+    /** Default date and time pattern for the application output */
     public static DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy, HH:mm");
 
+    /**
+     * Converts LocalDateTime objects into Strings.
+     *
+     * @return Date and time formatted with the default format.
+     */
     public static String formatOutput(LocalDateTime date){
         return outputFormatter.format(date);
     }
 
+    /**
+     * Converts Strings into LocalDateTime objects.
+     *
+     * @return LocalDateTime objects.
+     */
     public static LocalDateTime parse(String input) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
         try {

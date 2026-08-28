@@ -3,23 +3,27 @@ package athena;
 import athena.parser.CommandHandler;
 import athena.storage.Storage;
 import athena.task.TaskList;
-import athena.ui.UI;
-
-import java.util.Scanner;
+import athena.ui.Ui;
 
 /**
- *
- * Provides major functions for the chatbot.
- *
- * @author f1r8
+ * Orchestrator for the Athena application.
  */
 public class Athena {
+    /** Path where application data is stored */
     public static final String PATH = "./data/athena.txt";
+    /** Cosmetic String for printing */
     public static final String UNDERSCORES = "____________________________________________________________";
 
+    /**
+     * Entry point of Athena application.
+     * Initializes Storage, UI, TaskList and CommandHandler.
+     * Contains messages to print when entering and leaving the application.
+     *
+     * @param args Unused command-line argument.
+     */
     public static void main(String[] args) {
         Storage storage = new Storage(PATH);
-        UI ui = new UI(System.in, System.out);
+        Ui ui = new Ui(System.in, System.out);
         TaskList taskList = new TaskList();
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
 
