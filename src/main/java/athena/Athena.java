@@ -14,11 +14,11 @@ import java.util.Scanner;
  * @author f1r8
  */
 public class Athena {
-    public static final String path = "./data/athena.txt";
+    public static final String PATH = "./data/athena.txt";
     public static final String UNDERSCORES = "____________________________________________________________";
 
     public static void main(String[] args) {
-        Storage storage = new Storage(path);
+        Storage storage = new Storage(PATH);
         UI ui = new UI(System.in, System.out);
         TaskList taskList = new TaskList();
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
@@ -27,7 +27,7 @@ public class Athena {
         if (saved) {
             ui.println("Items successfully loaded.");
         } else {
-            ui.println("File not found at: " + path);
+            ui.println("File not found at: " + PATH);
         }
         String name = "Athena";
         String banner = "    _  _____ _   _ _____ _   _    _    \n"

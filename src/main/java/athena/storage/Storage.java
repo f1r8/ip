@@ -56,7 +56,7 @@ public class Storage {
         }
     }
 
-    public void overWrite(String content) {
+    public void overwrite(String content) {
         ensureFileExists();
         try {
             Files.writeString(getPath(), content);
@@ -80,7 +80,7 @@ public class Storage {
         for (Task item : items) {
             content += item.toSaveString() + NEWLINE;
         }
-        overWrite(content);
+        overwrite(content);
     }
 
     public boolean loadItems(ArrayList<Task> items) {
