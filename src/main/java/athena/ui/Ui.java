@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-public class Ui {
 /**
  * Ui class of the Athena application.
  */
