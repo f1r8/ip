@@ -16,28 +16,28 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
- * Storage class for the Athena application.
+ * Persists Athena tasks in a local text file.
  */
 public class Storage {
-    /** Separator for storing things in a single line */
+    /** Separator between fields in a saved task */
     public static final String SAVE_SEPARATOR = " | ";
 
-    /** Fetches the lineSeparator of the current Operating System */
+    /** Line separator used between saved tasks */
     public static final String SAVE_NEWLINE = System.lineSeparator();
 
-    private String path;
+    private final String filePath;
 
     /**
-     * Constructor for a Storage object.
+     * Constructs storage backed by the file at the specified path.
      *
      * @param path Path of the file on the system used for storing or retrieving data.
      */
     public Storage(String path) {
-        this.path = path;
+        this.filePath = path;
     }
 
     private Path getPath() {
-        return Paths.get(path);
+        return Paths.get(filePath);
     }
 
     /**
@@ -55,11 +55,10 @@ public class Storage {
     }
 
     /**
-     * Ensure that the file exists.
-     * If it doesn't exist, attempts to create the relevant directories and the file itself.
+     * Ensures that the storage file and its parent directories exist.
      */
     public void ensureFileExists() {
-        File file = new File(path);
+        File file = new File(filePath);
         try {
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
@@ -89,7 +88,7 @@ public class Storage {
     }
 
     /**
-     * Attempts to read from the storage file.
+     * Reads the storage file if it exists.
      *
      * @return the content in the file or an empty string if the file does not exist.
      */
@@ -103,8 +102,7 @@ public class Storage {
     }
 
     /**
-     * Preprocesses tasks to Strings.
-     * Passes the Strings to {@link overwrite(String)} to be written to storage.
+     * Serializes tasks and writes them to storage.
      *
      * @param items Tasks to be written.
      */
@@ -117,8 +115,7 @@ public class Storage {
     }
 
     /**
-     * Loads tasks from storage.
-     * Uses {@link #read()} to get Strings from storage.
+     * Loads tasks from storage into the supplied list.
      *
      * @param tasks Tasks read from storage.
      * @return true if items are loaded, false otherwise.
@@ -128,6 +125,7 @@ public class Storage {
         if (input.equals("")) {
             return false;
         }
+
         String[] lines = input.split(SAVE_NEWLINE);
         for (String line : lines) {
             String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
@@ -143,5 +141,4 @@ public class Storage {
         }
         return true;
     }
-
 }

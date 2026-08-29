@@ -7,11 +7,11 @@ import athena.storage.Storage;
 import java.time.LocalDateTime;
 
 /**
- * Deadline class of the Athena application.
+ * Represents an Athena task that must be completed by a specific date and time.
  */
 public class Deadline extends Task {
 
-    private final LocalDateTime by;
+    private final LocalDateTime deadline;
 
     /**
      * Constructs a Deadline object.
@@ -35,19 +35,19 @@ public class Deadline extends Task {
      */
     public Deadline(String description, String by) {
         super(description);
-        this.by = DateParser.parse(by);
+        this.deadline = DateParser.parse(by);
     }
 
     /**
      * Constructs a Deadline object.
      *
-     * @param isDone
-     * @param description
-     * @param by
+     * @param isDone True if the deadline is complete, false otherwise.
+     * @param description Description of the deadline.
+     * @param by Saved deadline date and time.
      */
     public Deadline(boolean isDone, String description, String by) {
         super(isDone, description);
-        this.by = LocalDateTime.parse(by);
+        this.deadline = LocalDateTime.parse(by);
     }
 
     /**
@@ -57,7 +57,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + DateParser.formatOutput(this.by) + ")";
+        return "[D]" + super.toString() + " (by: " + DateParser.formatOutput(this.deadline) + ")";
     }
 
     /**
@@ -67,6 +67,7 @@ public class Deadline extends Task {
      */
     @Override
     public String getSaveString() {
-        return "D" + Storage.SAVE_SEPARATOR + super.getSaveString() + Storage.SAVE_SEPARATOR + this.by;
+        return "D" + Storage.SAVE_SEPARATOR + super.getSaveString()
+                + Storage.SAVE_SEPARATOR + this.deadline;
     }
 }

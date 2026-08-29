@@ -1,13 +1,13 @@
 package athena.exception;
 
 /**
- * Exception class for handled errors in Athena application.
+ * Represents a handled error in the Athena application.
  */
 public class AthenaException extends RuntimeException {
     /**
      * Constructs an AthenaException object.
      *
-     * @param message Error Message.
+     * @param message Error message to display.
      */
     public AthenaException(String message) {
         super(message);

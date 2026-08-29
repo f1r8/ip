@@ -1,10 +1,10 @@
 package athena.storage;
 
+import athena.exception.AthenaException;
 import athena.task.Deadline;
 import athena.task.Event;
 import athena.task.Task;
 import athena.task.Todo;
-import athena.exception.AthenaException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -120,7 +120,7 @@ class StorageTest {
     }
 
     @Test
-    void writeItems_fileDoesntExist_createsFile(@TempDir Path tempDir) throws IOException {
+    void writeItems_fileDoesNotExist_createsFile(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("duke.txt");
         Storage storage = new Storage(path.toString());
         assertFalse(Files.exists(path));

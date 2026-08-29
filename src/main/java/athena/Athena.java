@@ -6,35 +6,37 @@ import athena.task.TaskList;
 import athena.ui.Ui;
 
 /**
- * Orchestrator for the Athena application.
+ * Starts and coordinates the Athena application.
  */
 public class Athena {
     /** Path where application data is stored */
-    public static final String PATH = "./data/athena.txt";
+    public static final String DATA_FILE_PATH = "./data/athena.txt";
 
     /**
-     * Entry point of Athena application.
-     * Initializes Storage, UI, TaskList and CommandHandler.
-     * Contains messages to print when entering and leaving the application.
+     * Constructs an Athena application orchestrator.
+     */
+    public Athena() {
+    }
+
+    /**
+     * Starts the Athena application and processes commands until the user exits.
      *
-     * @param args Unused command-line argument.
+     * @param args Command-line arguments; currently unused.
      */
     public static void main(String[] args) {
-        Storage storage = new Storage(PATH);
+        Storage storage = new Storage(DATA_FILE_PATH);
         Ui ui = new Ui(System.in, System.out);
         TaskList taskList = new TaskList();
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
 
-        ui.showLoadingStatus(storage.areItemsLoaded(taskList.getItems()), PATH);
+        ui.showLoadingStatus(storage.areItemsLoaded(taskList.getItems()), DATA_FILE_PATH);
         ui.showWelcome();
         while (ui.hasNextLine()) {
             ui.showDivider();
-            if (commandHandler.isExitCommand(ui.nextLine())) {
+            if (commandHandler.isExitCommand(ui.readNextLine())) {
                 return;
             }
             ui.showDivider();
         }
     }
-
-
 }

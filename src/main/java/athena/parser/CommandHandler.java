@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Handles Commands for Athena application.
+ * Parses and executes commands for the Athena application.
  */
 public class CommandHandler {
     private final Storage storage;
@@ -66,10 +66,10 @@ public class CommandHandler {
     }
 
     /**
-     * Orchestrator for various Athena application commands.
+     * Executes an Athena command and reports whether the application should exit.
      *
-     * @param nextLine takes String as input from Ui.
-     * @return true if the user wants to terminate the application.
+     * @param nextLine User input read by the UI.
+     * @return True if the user wants to terminate the application.
      */
     public boolean isExitCommand(String nextLine) {
         nextLine = nextLine.trim();
@@ -127,8 +127,8 @@ public class CommandHandler {
      */
     private void handleMarkCommand(String arguments, boolean shouldMarkAsDone) {
         try {
-            int idx = Integer.parseInt(arguments.trim());
-            Task task = taskList.get(idx - 1);
+            int index = Integer.parseInt(arguments.trim());
+            Task task = taskList.get(index - 1);
             if (shouldMarkAsDone) {
                 task.markDone();
             } else {
@@ -160,8 +160,8 @@ public class CommandHandler {
 
     private void handleDeleteCommand(String arguments) {
         try {
-            int idx = Integer.parseInt(arguments.trim());
-            Task task = taskList.remove(idx - 1);
+            int index = Integer.parseInt(arguments.trim());
+            Task task = taskList.remove(index - 1);
             storage.writeItems(taskList.getItems());
             ui.showTaskDeleted(task, taskList.size());
         } catch (NumberFormatException e) {

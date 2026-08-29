@@ -10,12 +10,12 @@ public class StorageStub extends Storage {
     }
 
     @Override
-    public boolean areItemsLoaded(java.util.ArrayList tasks) {
+    public boolean areItemsLoaded(ArrayList<Task> tasks) {
         return true;
     }
 
     @Override
     public void writeItems(ArrayList<Task> items) {
-        // Do Nothing
+        //Do nothing
     }
 }

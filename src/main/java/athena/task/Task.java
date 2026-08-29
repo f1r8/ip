@@ -4,12 +4,17 @@ import athena.exception.AthenaException;
 import athena.storage.Storage;
 
 /**
- * Task class for Athena application.
+ * Represents the common state and behavior of an Athena task.
  */
 public abstract class Task {
     private final String name;
     private boolean isDone;
 
+    /**
+     * Constructs an incomplete task with the specified description.
+     *
+     * @param name Description of the task.
+     */
     public Task(String name) {
         this(false, name);
     }
@@ -20,7 +25,7 @@ public abstract class Task {
      * @param isDone true if the task is complete, false otherwise.
      * @param name Description of the Task object.
      */
-    public Task(Boolean isDone, String name) {
+    public Task(boolean isDone, String name) {
         if (name.isEmpty()) {
             throw new AthenaException("Task name cannot be empty");
         }
@@ -80,10 +85,10 @@ public abstract class Task {
     }
 
     /**
-     * Get the status from the storage status icon.
+     * Returns whether a saved status represents a completed task.
      *
      * @param status String of the storage status icon.
-     * @return true if the task is complete, false otherwise.
+     * @return True if the task is complete, false otherwise.
      */
     public static boolean isDoneFromStatus(String status) {
         if (status.equals("1")) {
@@ -102,5 +107,4 @@ public abstract class Task {
     public String getSaveString() {
         return getStoreStatusIcon() + Storage.SAVE_SEPARATOR + this.name;
     }
-
 }

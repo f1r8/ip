@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Ui class of the Athena application.
+ * Reads console input and displays Athena's user-facing messages.
  */
 public class Ui {
     private static final String DIVIDER = "____________________________________________________________";
@@ -24,6 +24,9 @@ public class Ui {
 
     /**
      * Constructs a Ui object.
+     *
+     * @param inputStream Console input to read.
+     * @param outputStream Console output to write.
      */
     public Ui(InputStream inputStream, PrintStream outputStream) {
         this.outputStream = outputStream;
@@ -44,7 +47,7 @@ public class Ui {
      *
      * @return The next line of the inputStream.
      */
-    public String nextLine() {
+    public String readNextLine() {
         return scanner.nextLine();
     }
 

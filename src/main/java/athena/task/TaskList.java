@@ -3,10 +3,16 @@ package athena.task;
 import java.util.ArrayList;
 
 /**
- * TaskList class of the Athena application.
+ * Stores the in-memory collection of Athena tasks.
  */
 public class TaskList {
-    private ArrayList<Task> tasks = new ArrayList<>();
+    private final ArrayList<Task> tasks = new ArrayList<>();
+
+    /**
+     * Constructs an empty task list.
+     */
+    public TaskList() {
+    }
 
     /**
      * Retrieves the items from the TaskList wrapper.

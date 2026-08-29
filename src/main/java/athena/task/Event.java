@@ -7,12 +7,12 @@ import athena.storage.Storage;
 import java.time.LocalDateTime;
 
 /**
- * Event class for Athena application
+ * Represents an Athena task scheduled between two dates and times.
  */
 public class Event extends Task {
 
-    private final LocalDateTime from;
-    private final LocalDateTime to;
+    private final LocalDateTime startDateTime;
+    private final LocalDateTime endDateTime;
 
     /**
      * Constructs an Event object.
@@ -38,22 +38,22 @@ public class Event extends Task {
      */
     public Event(String description, String from, String to) {
         super(description);
-        this.from = DateParser.parse(from);
-        this.to = DateParser.parse(to);
+        this.startDateTime = DateParser.parse(from);
+        this.endDateTime = DateParser.parse(to);
     }
 
     /**
      * Constructs an Event object.
      *
-     * @param done true if the Event is completed, false otherwise.
+     * @param isDone True if the event is completed, false otherwise.
      * @param description Describes the Event object.
      * @param from Date when the Event starts.
      * @param to Date when the Event ends.
      */
     public Event(boolean isDone, String description, String from, String to) {
         super(isDone, description);
-        this.from = LocalDateTime.parse(from);
-        this.to = LocalDateTime.parse(to);
+        this.startDateTime = LocalDateTime.parse(from);
+        this.endDateTime = LocalDateTime.parse(to);
     }
 
     /**
@@ -63,8 +63,8 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + DateParser.formatOutput(this.from)
-                + ", to: " + DateParser.formatOutput(this.to) + ")";
+        return "[E]" + super.toString() + " (from: " + DateParser.formatOutput(this.startDateTime)
+                + ", to: " + DateParser.formatOutput(this.endDateTime) + ")";
     }
 
     /**
@@ -75,6 +75,6 @@ public class Event extends Task {
     @Override
     public String getSaveString() {
         return "E" + Storage.SAVE_SEPARATOR + super.getSaveString() + Storage.SAVE_SEPARATOR
-                + this.from + Storage.SAVE_SEPARATOR + this.to;
+                + this.startDateTime + Storage.SAVE_SEPARATOR + this.endDateTime;
     }
 }

@@ -36,9 +36,9 @@ class UiTest {
         ui = createUi("first" + System.lineSeparator() + "second" + System.lineSeparator());
 
         assertTrue(ui.hasNextLine());
-        assertEquals("first", ui.nextLine());
+        assertEquals("first", ui.readNextLine());
         assertTrue(ui.hasNextLine());
-        assertEquals("second", ui.nextLine());
+        assertEquals("second", ui.readNextLine());
         assertFalse(ui.hasNextLine());
     }
 
