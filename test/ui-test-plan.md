@@ -161,7 +161,8 @@ Expected exit code: 0
 
 ## Test case 4: Reject incomplete commands
 
-Aim: Verify that missing descriptions, dates, and task indexes produce the intended guidance without terminating the session.
+Aim: Verify that missing descriptions, dates, task indexes, and search keywords produce the intended guidance
+without terminating the session.
 
 Inputs:
 
@@ -171,6 +172,7 @@ deadline Submit report
 event Team meeting /from 2026-12-30 1400
 mark not-a-number
 delete 1
+find
 ```
 
 Expected output:
@@ -200,6 +202,9 @@ Which task shall I mark, Your Majesty?
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, there aren't that many tasks in the list.
+____________________________________________________________
+____________________________________________________________
+What shall I search for, Your Majesty?
 ____________________________________________________________
 ```
 
@@ -239,13 +244,14 @@ Expected exit code: 0
 
 ## Test case 6: Find matching tasks
 
-Aim: Verify that the find command prints only matching tasks and numbers the matches from one.
+Aim: Verify that the find command matches case-insensitively, prints only matching tasks, and numbers the
+matches from one.
 
 Inputs:
 
 ```text
 todo Read the project brief
-todo Submit the final report
+todo Submit the Final REPORT
 find report
 ```
 
@@ -269,12 +275,12 @@ You now have 1 tasks in the list, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
 As you command, Your Majesty. I've added this task:
-  [T][ ] Submit the final report
+  [T][ ] Submit the Final REPORT
 You now have 2 tasks in the list, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, here are the matching tasks in your list:
-1. [T][ ] Submit the final report
+1. [T][ ] Submit the Final REPORT
 ____________________________________________________________
 ```
 

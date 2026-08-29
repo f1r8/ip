@@ -202,15 +202,25 @@ class CommandHandlerTest {
     @Test
     void isExitCommand_findMatchingTasks_onlyMatchesPrinted() {
         taskList.add(new Todo("Read project brief"));
-        taskList.add(new Todo("Submit final report"));
-        taskList.add(new Todo("Review report"));
+        taskList.add(new Todo("Submit Final Report"));
+        taskList.add(new Todo("Review REPORT"));
 
         commandHandler.isExitCommand("find report");
 
         String output = outContent.toString();
-        assertTrue(output.contains("1. [T][ ] Submit final report"));
-        assertTrue(output.contains("2. [T][ ] Review report"));
+        assertTrue(output.contains("1. [T][ ] Submit Final Report"));
+        assertTrue(output.contains("2. [T][ ] Review REPORT"));
         assertFalse(output.contains("Read project brief"));
+    }
+
+    @Test
+    void isExitCommand_findMissingKeyword_printErrorMessage() {
+        taskList.add(new Todo("Read project brief"));
+
+        commandHandler.isExitCommand("find");
+
+        assertEquals("What shall I search for, Your Majesty?"
+                + System.lineSeparator(), outContent.toString());
     }
 
     @Test

@@ -111,6 +111,13 @@ public class Ui {
     }
 
     /**
+     * Prompts the user to provide a keyword for a find command.
+     */
+    public void showMissingFindKeyword() {
+        println("What shall I search for, Your Majesty?");
+    }
+
+    /**
      * Shows the response for an unrecognized command.
      */
     public void showUnknownCommand() {

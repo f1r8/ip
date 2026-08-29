@@ -1,7 +1,7 @@
 # Athena UI test session
 
 - Plan: `C:\Users\jiang\Duke\ip\test\ui-test-plan.md`
-- Started: 2026-08-29T09:16:26+08:00
+- Started: 2026-08-29T09:42:43+08:00
 - Status: **PASSED**
 
 ## Build
@@ -15,10 +15,10 @@
 > Task :compileJava
 > Task :processResources NO-SOURCE
 > Task :classes
-> Task :shadowJar UP-TO-DATE
+> Task :shadowJar
 
-BUILD SUCCESSFUL in 2s
-2 actionable tasks: 1 executed, 1 up-to-date
+BUILD SUCCESSFUL in 4s
+2 actionable tasks: 2 executed
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html
 
 ````
@@ -260,7 +260,7 @@ ____________________________________________________________
 
 ## Test case 4: Reject incomplete commands
 
-- Aim: Verify that missing descriptions, dates, and task indexes produce the intended guidance without terminating the session.
+- Aim: Verify that missing descriptions, dates, task indexes, and search keywords produce the intended guidance
 - Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
 - Working directory: isolated temporary directory
 - Exit code: `0` (expected `0`)
@@ -273,6 +273,7 @@ deadline Submit report
 event Team meeting /from 2026-12-30 1400
 mark not-a-number
 delete 1
+find
 ````
 
 ### Actual console output
@@ -302,6 +303,9 @@ Which task shall I mark, Your Majesty?
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, there aren't that many tasks in the list.
+____________________________________________________________
+____________________________________________________________
+What shall I search for, Your Majesty?
 ____________________________________________________________
 
 ````
@@ -333,6 +337,9 @@ Which task shall I mark, Your Majesty?
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, there aren't that many tasks in the list.
+____________________________________________________________
+____________________________________________________________
+What shall I search for, Your Majesty?
 ____________________________________________________________
 ````
 
@@ -396,7 +403,7 @@ ____________________________________________________________
 
 ## Test case 6: Find matching tasks
 
-- Aim: Verify that the find command prints only matching tasks and numbers the matches from one.
+- Aim: Verify that the find command matches case-insensitively, prints only matching tasks, and numbers the
 - Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
 - Working directory: isolated temporary directory
 - Exit code: `0` (expected `0`)
@@ -405,7 +412,7 @@ ____________________________________________________________
 
 ````text
 todo Read the project brief
-todo Submit the final report
+todo Submit the Final REPORT
 find report
 ````
 
@@ -429,12 +436,12 @@ You now have 1 tasks in the list, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
 As you command, Your Majesty. I've added this task:
-  [T][ ] Submit the final report
+  [T][ ] Submit the Final REPORT
 You now have 2 tasks in the list, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, here are the matching tasks in your list:
-1. [T][ ] Submit the final report
+1. [T][ ] Submit the Final REPORT
 ____________________________________________________________
 
 ````
@@ -459,12 +466,12 @@ You now have 1 tasks in the list, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
 As you command, Your Majesty. I've added this task:
-  [T][ ] Submit the final report
+  [T][ ] Submit the Final REPORT
 You now have 2 tasks in the list, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, here are the matching tasks in your list:
-1. [T][ ] Submit the final report
+1. [T][ ] Submit the Final REPORT
 ____________________________________________________________
 ````
 

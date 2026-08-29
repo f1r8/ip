@@ -116,6 +116,13 @@ class UiTest {
     }
 
     @Test
+    void showMissingFindKeyword_promptPrinted() {
+        ui.showMissingFindKeyword();
+
+        assertOutput("What shall I search for, Your Majesty?\n");
+    }
+
+    @Test
     void showUnknownCommand_unknownCommandMessagePrinted() {
         ui.showUnknownCommand();
 

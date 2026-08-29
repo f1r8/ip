@@ -11,6 +11,7 @@ import athena.ui.Ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 /**
@@ -103,14 +104,7 @@ public class CommandHandler {
                 handleDeleteCommand(arguments);
                 break;
             case FIND:
-                List<Task> matchingTasks = new ArrayList<>();
-                for (int i = 0; i < taskList.size(); i++) {
-                    Task task = taskList.get(i);
-                    if (task.toString().contains(arguments)) {
-                        matchingTasks.add(task);
-                    }
-                }
-                ui.showMatchingTasks(matchingTasks);
+                handleFindCommand(arguments);
                 break;
             default:
                 ui.showUnknownCommand();
@@ -169,5 +163,23 @@ public class CommandHandler {
         } catch (IndexOutOfBoundsException e) {
             ui.showInvalidTaskIndex();
         }
+    }
+
+    private void handleFindCommand(String arguments) {
+        if (arguments.isBlank()) {
+            ui.showMissingFindKeyword();
+            return;
+        }
+
+        String normalizedKeyword = arguments.toLowerCase(Locale.ROOT);
+        List<Task> matchingTasks = new ArrayList<>();
+        for (int i = 0; i < taskList.size(); i++) {
+            Task task = taskList.get(i);
+            String normalizedTask = task.toString().toLowerCase(Locale.ROOT);
+            if (normalizedTask.contains(normalizedKeyword)) {
+                matchingTasks.add(task);
+            }
+        }
+        ui.showMatchingTasks(matchingTasks);
     }
 }
