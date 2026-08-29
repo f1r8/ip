@@ -34,6 +34,8 @@ Invoke and follow the project skill `$seedu-java-coding-standard` whenever creat
 
 ## Git
 
+Invoke and follow the project skill `$seedu-git-standard` for every commit. Also invoke it whenever creating, proposing, or reviewing a commit message, or creating, renaming, proposing, or reviewing a branch name. Every commit message and branch name must comply with that skill.
+
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.

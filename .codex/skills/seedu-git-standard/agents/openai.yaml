@@ -1,0 +1,4 @@
+interface:
+  display_name: "SE-EDU Git Standard"
+  short_description: "Apply Athena Git commit and branch conventions"
+  default_prompt: "Use $seedu-git-standard to create or review a compliant Git commit message or branch name."
