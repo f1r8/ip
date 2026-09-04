@@ -1,4 +1,4 @@
-# athena.Athena project template
+# Athena project template
 
 This is a project template for a greenfield Java project named _Athena_. Given below are instructions on how to use it.
 
