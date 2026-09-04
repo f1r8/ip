@@ -1,10 +1,10 @@
 package athena.parser;
 
-import athena.exception.AthenaException;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import athena.exception.AthenaException;
 
 /**
  * Parse Dates for Athena application.
