@@ -159,9 +159,9 @@ public class CommandHandler {
     }
 
     private void handleTaskCommand(Task task) {
-        ui.println(Task.getCreateMsg());
-        ui.println("  " + task);
-        ui.println("You now have " + taskList.size() + " tasks in the list, Your Majesty.");
+        ui.println(Task.getCreateMsg(),
+                "  " + task,
+                "You now have " + taskList.size() + " tasks in the list, Your Majesty.");
     }
 
     private void handleDeleteCommand(String arguments) {
@@ -169,9 +169,9 @@ public class CommandHandler {
             int idx = Integer.parseInt(arguments.trim());
             Task task = taskList.remove(idx - 1);
             storage.writeItems(taskList.getItems());
-            ui.println("As you wish, Your Majesty. I've removed this task:");
-            ui.println("  " + task);
-            ui.println("You now have " + taskList.size() + " tasks in the list, Your Majesty.");
+            ui.println("As you wish, Your Majesty. I've removed this task:",
+                    "  " + task,
+                    "You now have " + taskList.size() + " tasks in the list, Your Majesty.");
         } catch (NumberFormatException e) {
             ui.println("Which task shall I remove, Your Majesty?");
         } catch (IndexOutOfBoundsException e) {
