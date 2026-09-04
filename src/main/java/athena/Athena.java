@@ -1,14 +1,14 @@
 package athena;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import athena.exception.AthenaException;
 import athena.parser.CommandHandler;
 import athena.parser.CommandResult;
 import athena.storage.Storage;
 import athena.task.TaskList;
 import athena.ui.Ui;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 
 /**
  * Starts and coordinates the Athena application.

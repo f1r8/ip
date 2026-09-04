@@ -1,12 +1,13 @@
 package athena.task;
 
-import athena.exception.AthenaException;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.format.DateTimeParseException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import athena.exception.AthenaException;
 
 /**
  * Tests event parsing, restoration, validation, and formatting.
@@ -43,8 +44,8 @@ class EventTest {
 
     @Test
     void constructor_missingFromDate_exceptionThrown() {
-        AthenaException exception = assertThrows(AthenaException.class,
-                () -> new Event("Team meeting /to 2026-12-30 1500"));
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                new Event("Team meeting /to 2026-12-30 1500"));
 
         assertEquals("Please provide an event with /from and /to times, Your Majesty.",
                 exception.getMessage());
@@ -52,31 +53,31 @@ class EventTest {
 
     @Test
     void constructor_missingToDate_exceptionThrown() {
-        assertThrows(AthenaException.class,
-                () -> new Event("Team meeting /from 2026-12-30 1400"));
+        assertThrows(AthenaException.class, () ->
+                new Event("Team meeting /from 2026-12-30 1400"));
     }
 
     @Test
     void constructor_emptyDescription_exceptionThrown() {
-        assertThrows(AthenaException.class,
-                () -> new Event("", "2026-12-30 1400", "2026-12-30 1500"));
+        assertThrows(AthenaException.class, () ->
+                new Event("", "2026-12-30 1400", "2026-12-30 1500"));
     }
 
     @Test
     void constructor_invalidStartDate_exceptionThrown() {
-        assertThrows(AthenaException.class,
-                () -> new Event("Team meeting", "30-12-2026 14:00", "2026-12-30 1500"));
+        assertThrows(AthenaException.class, () ->
+                new Event("Team meeting", "30-12-2026 14:00", "2026-12-30 1500"));
     }
 
     @Test
     void constructor_invalidEndDate_exceptionThrown() {
-        assertThrows(AthenaException.class,
-                () -> new Event("Team meeting", "2026-12-30 1400", "30-12-2026 15:00"));
+        assertThrows(AthenaException.class, () ->
+                new Event("Team meeting", "2026-12-30 1400", "30-12-2026 15:00"));
     }
 
     @Test
     void constructor_invalidSavedDate_exceptionThrown() {
-        assertThrows(DateTimeParseException.class,
-                () -> new Event(false, "Team meeting", "invalid", "2026-12-30T15:00"));
+        assertThrows(DateTimeParseException.class, () ->
+                new Event(false, "Team meeting", "invalid", "2026-12-30T15:00"));
     }
 }

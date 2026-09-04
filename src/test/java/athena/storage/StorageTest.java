@@ -1,23 +1,24 @@
 package athena.storage;
 
-import athena.exception.AthenaException;
-import athena.task.Deadline;
-import athena.task.Event;
-import athena.task.Task;
-import athena.task.Todo;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import athena.exception.AthenaException;
+import athena.task.Deadline;
+import athena.task.Event;
+import athena.task.Task;
+import athena.task.Todo;
 
 /**
  * Tests file creation, reading, writing, and task restoration.
@@ -38,8 +39,8 @@ class StorageTest {
     void write_pathIsDirectory_exceptionThrown(@TempDir Path tempDir) {
         Storage storage = new Storage(tempDir.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class,
-                () -> storage.write("content"));
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                storage.write("content"));
 
         assertEquals("Unable to append to file", exception.getMessage());
     }
@@ -79,8 +80,8 @@ class StorageTest {
     void overwrite_pathIsDirectory_exceptionThrown(@TempDir Path tempDir) {
         Storage storage = new Storage(tempDir.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class,
-                () -> storage.overwrite("content"));
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                storage.overwrite("content"));
 
         assertEquals("Something went wrong overwriting the file", exception.getMessage());
     }
@@ -180,8 +181,8 @@ class StorageTest {
         Files.writeString(path, "not a valid saved task");
         Storage storage = new Storage(path.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class,
-                () -> storage.areItemsLoaded(new ArrayList<>()));
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                storage.areItemsLoaded(new ArrayList<>()));
 
         assertEquals("Storage File Corrupted by this line: not a valid saved task",
                 exception.getMessage());
@@ -193,8 +194,8 @@ class StorageTest {
         Files.writeString(path, "T | X | Read book");
         Storage storage = new Storage(path.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class,
-                () -> storage.areItemsLoaded(new ArrayList<>()));
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                storage.areItemsLoaded(new ArrayList<>()));
 
         assertEquals("Error converting save string to num: X", exception.getMessage());
     }

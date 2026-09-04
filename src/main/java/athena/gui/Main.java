@@ -1,13 +1,13 @@
 package athena.gui;
 
+import java.io.IOException;
+
 import athena.Athena;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 /**
  * A GUI for Athena using FXML.
@@ -27,7 +27,7 @@ public class Main extends Application {
             stage.setResizable(false);
             stage.setMinHeight(600.0);
             stage.setMinWidth(400.0);
-            fxmlLoader.<MainWindow>getController().setAthena(athena);  // inject the Athena instance
+            fxmlLoader.<MainWindow>getController().setAthena(athena); // inject the Athena instance
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,10 +1,11 @@
 package athena.task;
 
-import athena.exception.AthenaException;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+import athena.exception.AthenaException;
 
 /**
  * Tests todo construction, validation, display, and storage formatting.
@@ -29,10 +30,10 @@ class TodoTest {
 
     @Test
     void constructors_emptyDescription_exceptionThrown() {
-        AthenaException newTodoException = assertThrows(AthenaException.class,
-                () -> new Todo(""));
-        AthenaException savedTodoException = assertThrows(AthenaException.class,
-                () -> new Todo(true, ""));
+        AthenaException newTodoException = assertThrows(AthenaException.class, () ->
+                new Todo(""));
+        AthenaException savedTodoException = assertThrows(AthenaException.class, () ->
+                new Todo(true, ""));
 
         assertEquals("Please provide a todo description, Your Majesty.", newTodoException.getMessage());
         assertEquals("Please provide a todo description, Your Majesty.", savedTodoException.getMessage());

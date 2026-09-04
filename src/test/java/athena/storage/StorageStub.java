@@ -1,9 +1,8 @@
 package athena.storage;
 
-import athena.task.Task;
-
-import java.util.ArrayList;
 import java.util.List;
+
+import athena.task.Task;
 
 /**
  * A stub for {@link Storage} that overrides file I/O behaviour for testing purposes.

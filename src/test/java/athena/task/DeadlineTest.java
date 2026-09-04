@@ -1,12 +1,13 @@
 package athena.task;
 
-import athena.exception.AthenaException;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.format.DateTimeParseException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import athena.exception.AthenaException;
 
 /**
  * Tests deadline parsing, restoration, validation, and formatting.
@@ -38,8 +39,8 @@ class DeadlineTest {
 
     @Test
     void constructor_missingByDate_exceptionThrown() {
-        AthenaException exception = assertThrows(AthenaException.class,
-                () -> new Deadline("Submit report"));
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                new Deadline("Submit report"));
 
         assertEquals("Please provide a deadline and /by date, Your Majesty.", exception.getMessage());
     }
@@ -51,13 +52,13 @@ class DeadlineTest {
 
     @Test
     void constructor_invalidCommandDate_exceptionThrown() {
-        assertThrows(AthenaException.class,
-                () -> new Deadline("Submit report", "31-12-2026 23:59"));
+        assertThrows(AthenaException.class, () ->
+                new Deadline("Submit report", "31-12-2026 23:59"));
     }
 
     @Test
     void constructor_invalidSavedDate_exceptionThrown() {
-        assertThrows(DateTimeParseException.class,
-                () -> new Deadline(false, "Submit report", "31-12-2026 23:59"));
+        assertThrows(DateTimeParseException.class, () ->
+                new Deadline(false, "Submit report", "31-12-2026 23:59"));
     }
 }

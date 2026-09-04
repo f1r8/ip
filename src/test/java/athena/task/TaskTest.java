@@ -1,12 +1,13 @@
 package athena.task;
 
-import athena.exception.AthenaException;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+import athena.exception.AthenaException;
 
 /**
  * Tests the common state and storage behavior inherited by every task type.
@@ -89,8 +90,8 @@ class TaskTest {
 
     @Test
     void isDoneFromStatus_unknownStatus_exceptionThrown() {
-        AthenaException exception = assertThrows(AthenaException.class,
-                () -> Task.isDoneFromStatus("X"));
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                Task.isDoneFromStatus("X"));
 
         assertEquals("Error converting save string to num: X", exception.getMessage());
     }

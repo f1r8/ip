@@ -1,20 +1,19 @@
 package athena.storage;
 
-import athena.exception.AthenaException;
-import athena.task.Deadline;
-import athena.task.Event;
-import athena.task.Task;
-import athena.task.Todo;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import athena.exception.AthenaException;
+import athena.task.Deadline;
+import athena.task.Event;
+import athena.task.Task;
+import athena.task.Todo;
 
 /**
  * Persists Athena tasks in a local text file.

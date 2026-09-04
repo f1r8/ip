@@ -3,8 +3,6 @@ package athena.task;
 import athena.exception.AthenaException;
 import athena.storage.Storage;
 
-import java.util.Objects;
-
 /**
  * Represents an Athena task without an associated date or time.
  */

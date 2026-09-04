@@ -1,11 +1,11 @@
 package athena.ui;
 
-import athena.task.Task;
-
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
+
+import athena.task.Task;
 
 /**
  * Reads console input and displays Athena's user-facing messages.
@@ -216,9 +216,5 @@ public class Ui {
 
     private void showTaskCount(int taskCount) {
         println("You now have " + taskCount + " tasks in the list, Your Majesty.");
-    }
-
-    private void println(String output) {
-        outputStream.println(output);
     }
 }

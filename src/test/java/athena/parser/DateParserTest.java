@@ -1,12 +1,13 @@
 package athena.parser;
 
-import athena.exception.AthenaException;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import athena.exception.AthenaException;
 
 /**
  * Tests date parsing and display formatting used by dated tasks.
@@ -29,8 +30,8 @@ class DateParserTest {
 
     @Test
     void parse_wrongFormat_exceptionThrown() {
-        AthenaException exception = assertThrows(AthenaException.class,
-                () -> DateParser.parse("31-12-2026 23:59"));
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                DateParser.parse("31-12-2026 23:59"));
 
         assertEquals("Invalid date format, please use "
                 + "'yyyy-MM-dd HHmm' (e.g. 2001-09-11 1911)", exception.getMessage());
