@@ -34,7 +34,7 @@ The SE-EDU rules override the fallback guide when they differ. In particular, us
 
 - Put every class in a package and keep one top-level class per source file.
 - List every imported type explicitly; never use wildcard imports.
-- Keep imports consistent with the existing project order: non-static application and third-party imports in one ASCII-sorted block, Java library imports in a second ASCII-sorted block, and static imports in a final ASCII-sorted block. Separate present blocks with one blank line.
+- Follow the Checkstyle import order: static imports first, standard `java` and `javax` imports second, `org` imports third, `com` imports fourth, and all remaining imports (including application imports) last. Sort each group in ASCII order and separate present groups with one blank line.
 - Attach array brackets to the type, such as `String[] arguments`, not to the variable.
 - Declare one variable per declaration. Initialize variables where declared when a real initial value is available, declare them close to first use, and keep them in the smallest practical scope.
 - Do not expose public class variables unless they are constants or fields of a behavior-free data class.
