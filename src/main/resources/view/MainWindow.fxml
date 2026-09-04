@@ -11,7 +11,7 @@
             prefHeight="600.0" prefWidth="400.0"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="athena.MainWindow">
+            fx:controller="athena.gui.MainWindow">
     <children>
         <TextField fx:id="userInput"
                    layoutY="558.0"

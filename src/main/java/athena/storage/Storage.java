@@ -1,5 +1,11 @@
 package athena.storage;
 
+import athena.exception.AthenaException;
+import athena.task.Deadline;
+import athena.task.Event;
+import athena.task.Task;
+import athena.task.Todo;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,13 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
-
-import athena.exception.AthenaException;
-import athena.task.Deadline;
-import athena.task.Event;
-import athena.task.Task;
-import athena.task.Todo;
 
 /**
  * Persists Athena tasks in a local text file.
@@ -68,7 +69,7 @@ public class Storage {
             if (!file.exists()) {
                 file.createNewFile();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new AthenaException("Fatal Error. Data File cannot be created.");
         }
     }
@@ -106,7 +107,7 @@ public class Storage {
      *
      * @param items Tasks to be written.
      */
-    public void writeItems(ArrayList<Task> items) {
+    public void writeItems(List<Task> items) {
         String content = "";
         for (Task item : items) {
             content += item.getSaveString() + SAVE_NEWLINE;
@@ -120,9 +121,9 @@ public class Storage {
      * @param tasks Tasks read from storage.
      * @return true if items are loaded, false otherwise.
      */
-    public boolean areItemsLoaded(ArrayList<Task> tasks) {
+    public boolean areItemsLoaded(List<Task> tasks) {
         String input = read();
-        if (input.equals("")) {
+        if (input.isEmpty()) {
             return false;
         }
 

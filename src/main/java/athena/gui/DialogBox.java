@@ -1,7 +1,4 @@
-package athena;
-
-import java.io.IOException;
-import java.util.Collections;
+package athena.gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +10,9 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+
+import java.io.IOException;
+import java.util.Collections;
 
 /**
  * Represents a dialog box consisting of an ImageView to represent the speaker's face
@@ -42,9 +42,9 @@ public class DialogBox extends HBox {
      * Flips the dialog box such that the ImageView is on the left and text on the right.
      */
     private void flip() {
-        ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
-        Collections.reverse(tmp);
-        getChildren().setAll(tmp);
+        ObservableList<Node> observableNodes = FXCollections.observableArrayList(this.getChildren());
+        Collections.reverse(observableNodes);
+        getChildren().setAll(observableNodes);
         setAlignment(Pos.TOP_LEFT);
     }
 
@@ -52,9 +52,9 @@ public class DialogBox extends HBox {
         return new DialogBox(text, img);
     }
 
-    public static DialogBox getDukeDialog(String text, Image img) {
-        var db = new DialogBox(text, img);
-        db.flip();
-        return db;
+    public static DialogBox getAthenaDialog(String text, Image img) {
+        var dialogBox = new DialogBox(text, img);
+        dialogBox.flip();
+        return dialogBox;
     }
 }

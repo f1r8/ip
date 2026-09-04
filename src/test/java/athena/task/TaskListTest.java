@@ -18,7 +18,7 @@ class TaskListTest {
         TaskList taskList = new TaskList();
 
         assertEquals(0, taskList.size());
-        assertEquals(List.of(), taskList.getItems());
+        assertEquals(List.of(), taskList.getTasks());
     }
 
     @Test
@@ -33,7 +33,7 @@ class TaskListTest {
         assertEquals(2, taskList.size());
         assertSame(first, taskList.get(0));
         assertSame(second, taskList.get(1));
-        assertEquals(List.of(first, second), taskList.getItems());
+        assertEquals(List.of(first, second), taskList.getTasks());
     }
 
     @Test

@@ -3,6 +3,8 @@ package athena.task;
 import athena.exception.AthenaException;
 import athena.storage.Storage;
 
+import java.util.Objects;
+
 /**
  * Represents an Athena task without an associated date or time.
  */
@@ -14,7 +16,7 @@ public class Todo extends Task {
      * @param description Command-line input used to construct the todo.
      */
     public Todo(String description) {
-        if (description == "") {
+        if (description.isEmpty()) {
             throw new AthenaException("Please provide a todo description, Your Majesty.");
         }
         super(description);
@@ -27,7 +29,7 @@ public class Todo extends Task {
      * @param description Describes the Todo object.
      */
     public Todo(boolean isDone, String description) {
-        if (description == "") {
+        if (description.isEmpty()) {
             throw new AthenaException("Please provide a todo description, Your Majesty.");
         }
         super(isDone, description);

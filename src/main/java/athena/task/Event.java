@@ -1,10 +1,10 @@
 package athena.task;
 
-import java.time.LocalDateTime;
-
 import athena.exception.AthenaException;
 import athena.parser.DateParser;
 import athena.storage.Storage;
+
+import java.time.LocalDateTime;
 
 /**
  * Represents an Athena task scheduled between two dates and times.

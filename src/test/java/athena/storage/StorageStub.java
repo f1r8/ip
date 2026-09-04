@@ -1,8 +1,9 @@
 package athena.storage;
 
-import java.util.ArrayList;
-
 import athena.task.Task;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A stub for {@link Storage} that overrides file I/O behaviour for testing purposes.
@@ -24,7 +25,7 @@ public class StorageStub extends Storage {
      * @return {@code true} always.
      */
     @Override
-    public boolean areItemsLoaded(ArrayList<Task> tasks) {
+    public boolean areItemsLoaded(List<Task> tasks) {
         return true;
     }
 
@@ -34,7 +35,7 @@ public class StorageStub extends Storage {
      * @param items The list of items to write (ignored).
      */
     @Override
-    public void writeItems(ArrayList<Task> items) {
+    public void writeItems(List<Task> items) {
         //Do nothing
     }
 }

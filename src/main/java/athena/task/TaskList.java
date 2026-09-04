@@ -1,12 +1,13 @@
 package athena.task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stores the in-memory collection of Athena tasks.
  */
 public class TaskList {
-    private final ArrayList<Task> tasks = new ArrayList<>();
+    private final List<Task> tasks = new ArrayList<>();
 
     /**
      * Constructs an empty task list.
@@ -19,7 +20,7 @@ public class TaskList {
      *
      * @return The ArrayList of Tasks.
      */
-    public ArrayList<Task> getItems() {
+    public List<Task> getTasks() {
         return tasks;
     }
 

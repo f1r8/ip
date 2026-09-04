@@ -1,4 +1,4 @@
-package athena;
+package athena.gui;
 
 import javafx.application.Application;
 

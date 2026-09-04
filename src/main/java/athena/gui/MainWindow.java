@@ -1,5 +1,6 @@
-package athena;
+package athena.gui;
 
+import athena.Athena;
 import athena.exception.AthenaException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -26,7 +27,7 @@ public class MainWindow extends AnchorPane {
     private Athena athena;
 
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
-    private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaDuke.png"));
+    private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaAthena.png"));
 
     @FXML
     public void initialize() {
@@ -34,8 +35,8 @@ public class MainWindow extends AnchorPane {
     }
 
     /** Injects the Athena instance */
-    public void setAthena(Athena a) {
-        athena = a;
+    public void setAthena(Athena athena) {
+        this.athena = athena;
     }
 
     /**
@@ -49,7 +50,7 @@ public class MainWindow extends AnchorPane {
             String response = athena.getResponse(input);
             dialogContainer.getChildren().addAll(
                     DialogBox.getUserDialog(input, userImage),
-                    DialogBox.getDukeDialog(response, athenaImage)
+                    DialogBox.getAthenaDialog(response, athenaImage)
             );
             userInput.clear();
         } catch (AthenaException e) {

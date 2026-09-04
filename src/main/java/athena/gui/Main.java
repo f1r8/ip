@@ -1,12 +1,13 @@
-package athena;
+package athena.gui;
 
-import java.io.IOException;
-
+import athena.Athena;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 /**
  * A GUI for Athena using FXML.
@@ -19,8 +20,8 @@ public class Main extends Application {
     public void start(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
-            AnchorPane ap = fxmlLoader.load();
-            Scene scene = new Scene(ap);
+            AnchorPane anchorPane = fxmlLoader.load();
+            Scene scene = new Scene(anchorPane);
             stage.setScene(scene);
             stage.setTitle("Athena");
             stage.setResizable(false);

@@ -1,21 +1,23 @@
 package athena.storage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import athena.exception.AthenaException;
+import athena.task.Deadline;
+import athena.task.Event;
+import athena.task.Task;
+import athena.task.Todo;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import athena.task.Deadline;
-import athena.task.Event;
-import athena.task.Task;
-import athena.task.Todo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests file creation, reading, writing, and task restoration.
@@ -134,7 +136,7 @@ class StorageTest {
         ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(new Todo("Do not use bullet points in git commit body"));
         storage.writeItems(tasks);
-        assertEquals(tasks.get(0).getSaveString() + Storage.SAVE_NEWLINE, Files.readString(path));
+        assertEquals(tasks.getFirst().getSaveString() + Storage.SAVE_NEWLINE, Files.readString(path));
 
         storage.writeItems(new ArrayList<>());
         assertEquals("", Files.readString(path));

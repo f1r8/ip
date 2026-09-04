@@ -1,8 +1,5 @@
 package athena.parser;
 
-import java.util.function.Function;
-
-import athena.Athena;
 import athena.exception.AthenaException;
 import athena.storage.Storage;
 import athena.task.Deadline;
@@ -12,6 +9,9 @@ import athena.task.TaskList;
 import athena.task.Todo;
 import athena.ui.Ui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 
 /**
@@ -67,23 +67,23 @@ public class CommandHandler {
     }
 
     /**
-     * Executes an Athena command and reports whether the application should exit.
+     * Handles an Athena command and returns the resulting application state.
      *
-     * @param nextLine User input read by the UI.
-     * @return True if the user wants to terminate the application.
+     * @param inputLine User input read by the UI.
+     * @return Result indicating whether Athena should continue or exit.
      */
-    public boolean isExitCommand(String nextLine) {
-        nextLine = nextLine.trim();
-        String[] commandParts = nextLine.split("\\s+", 2);
+    public CommandResult handleCommand(String inputLine) {
+        inputLine = inputLine.trim();
+        String[] commandParts = inputLine.split("\\s+", 2);
         Command command = Command.search(commandParts[0]);
         String arguments = commandParts.length > 1 ? commandParts[1] : "";
 
         switch (command) {
             case BYE:
                 ui.showGoodbye();
-                return true;
+                return CommandResult.EXIT;
             case LIST:
-                ui.showTaskList(taskList.getItems());
+                ui.showTaskList(taskList.getTasks());
                 break;
             case MARK:
                 handleMarkCommand(arguments, true);
@@ -92,13 +92,13 @@ public class CommandHandler {
                 handleMarkCommand(arguments, false);
                 break;
             case TODO:
-                handleAddCommand(arguments, Todo::new);
+                createAndAddTask(arguments, Todo::new);
                 break;
             case DEADLINE:
-                handleAddCommand(arguments, Deadline::new);
+                createAndAddTask(arguments, Deadline::new);
                 break;
             case EVENT:
-                handleAddCommand(arguments, Event::new);
+                createAndAddTask(arguments, Event::new);
                 break;
             case DELETE:
                 handleDeleteCommand(arguments);
@@ -110,7 +110,7 @@ public class CommandHandler {
                 ui.showUnknownCommand();
                 break;
         }
-        return false;
+        return CommandResult.CONTINUE;
     }
 
     /**
@@ -129,7 +129,7 @@ public class CommandHandler {
                 task.unmarkDone();
             }
             ui.showTaskStatusChanged(task, shouldMarkAsDone);
-            storage.writeItems(taskList.getItems());
+            storage.writeItems(taskList.getTasks());
         } catch (NumberFormatException e) {
             ui.showMissingMarkIndex();
         } catch (IndexOutOfBoundsException e) {
@@ -137,12 +137,12 @@ public class CommandHandler {
         }
     }
 
-    private void handleAddCommand(String arguments, Function<String, Task> taskFactory) {
+    private void createAndAddTask(String arguments, Function<String, Task> taskFactory) {
         try {
             Task task = taskFactory.apply(arguments);
             taskList.add(task);
             handleTaskCommand(task);
-            storage.writeItems(taskList.getItems());
+            storage.writeItems(taskList.getTasks());
         } catch (AthenaException e) {
             ui.showError(e.getMessage());
         }
@@ -156,7 +156,7 @@ public class CommandHandler {
         try {
             int index = Integer.parseInt(arguments.trim());
             Task task = taskList.remove(index - 1);
-            storage.writeItems(taskList.getItems());
+            storage.writeItems(taskList.getTasks());
             ui.showTaskDeleted(task, taskList.size());
         } catch (NumberFormatException e) {
             ui.showMissingDeleteIndex();
