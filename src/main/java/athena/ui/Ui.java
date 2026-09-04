@@ -22,10 +22,12 @@ public class Ui {
     /**
      * Prints the output to the specified outputStream.
      *
-     * @param output String to be printed.
+     * @param lines Strings to be printed.
      */
-    public void println(String output) {
-        outputStream.println(output);
+    public void println(String... lines) {
+        for (String line : lines) {
+            outputStream.println(line);
+        }
     }
 
     /**
