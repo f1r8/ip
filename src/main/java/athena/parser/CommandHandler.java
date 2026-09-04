@@ -1,5 +1,7 @@
 package athena.parser;
 
+import java.util.function.Function;
+
 import athena.Athena;
 import athena.exception.AthenaException;
 import athena.storage.Storage;
@@ -9,8 +11,6 @@ import athena.task.Task;
 import athena.task.TaskList;
 import athena.task.Todo;
 import athena.ui.Ui;
-
-import java.util.function.Function;
 
 /**
  * Handles Commands for Athena application.
@@ -180,7 +180,6 @@ public class CommandHandler {
     }
 
     /**
-     *
      * @return exit message represented as a string
      */
     private static String getExitMessage() {
