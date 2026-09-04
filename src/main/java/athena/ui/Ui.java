@@ -34,6 +34,17 @@ public class Ui {
     }
 
     /**
+     * Prints the output to the specified outputStream.
+     *
+     * @param lines Strings to be printed.
+     */
+    public void println(String... lines) {
+        for (String line : lines) {
+            outputStream.println(line);
+        }
+    }
+
+    /**
      * Checks if the inputStream has another line.
      *
      * @return true if there is another line, false otherwise.

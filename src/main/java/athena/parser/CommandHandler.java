@@ -1,5 +1,8 @@
 package athena.parser;
 
+import java.util.function.Function;
+
+import athena.Athena;
 import athena.exception.AthenaException;
 import athena.storage.Storage;
 import athena.task.Deadline;
@@ -9,9 +12,6 @@ import athena.task.TaskList;
 import athena.task.Todo;
 import athena.ui.Ui;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.function.Function;
 
 /**
