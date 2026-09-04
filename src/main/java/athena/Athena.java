@@ -1,5 +1,9 @@
 package athena;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import athena.exception.AthenaException;
 import athena.parser.CommandHandler;
 import athena.storage.Storage;
 import athena.task.TaskList;
@@ -13,6 +17,23 @@ public class Athena {
     public static final String PATH = "./data/athena.txt";
     /** Cosmetic String for printing */
     public static final String UNDERSCORES = "____________________________________________________________";
+
+    private CommandHandler commandHandler;
+
+    private ByteArrayOutputStream outputBuffer;
+
+    public Athena() {
+        Storage storage = new Storage(PATH);
+
+        outputBuffer = new ByteArrayOutputStream();
+        PrintStream guiOut = new PrintStream(outputBuffer);
+        Ui ui = new Ui(System.in, guiOut);
+
+        TaskList taskList = new TaskList();
+        commandHandler = new CommandHandler(storage, ui, taskList);
+
+        storage.areItemsLoaded(taskList.getItems());
+    }
 
     /**
      * Entry point of Athena application.
@@ -55,5 +76,11 @@ public class Athena {
         }
     }
 
-
+    public String getResponse(String input) {
+        outputBuffer.reset();
+        if (commandHandler.isExitCommand(input)) {
+            throw new AthenaException("Exiting...");
+        }
+        return outputBuffer.toString();
+    }
 }
