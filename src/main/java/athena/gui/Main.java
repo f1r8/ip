@@ -27,7 +27,7 @@ public class Main extends Application {
             stage.setResizable(false);
             stage.setMinHeight(600.0);
             stage.setMinWidth(400.0);
-            fxmlLoader.<MainWindow>getController().setAthena(athena); // inject the Athena instance
+            fxmlLoader.<MainWindow>getController().setCommandResponder(athena);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

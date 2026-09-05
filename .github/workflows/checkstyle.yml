@@ -1,4 +1,4 @@
-name: Checkstyle
+name: Checks
 
 on:
   push:
@@ -10,6 +10,24 @@ permissions:
   contents: read
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: "25"
+          cache: gradle
+
+      - name: Run tests
+        run: |
+          chmod +x gradlew
+          xvfb-run --auto-servernum ./gradlew test --no-daemon
+
   checkstyle:
     runs-on: ubuntu-latest
 

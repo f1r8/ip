@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import athena.exception.AthenaException;
+import athena.gui.CommandResponder;
 import athena.parser.CommandHandler;
 import athena.parser.CommandResult;
 import athena.storage.Storage;
@@ -13,7 +14,7 @@ import athena.ui.Ui;
 /**
  * Starts and coordinates the Athena application.
  */
-public class Athena {
+public class Athena implements CommandResponder {
     /** Path where application data is stored */
     public static final String DATA_FILE_PATH = "./data/athena.txt";
 
@@ -59,6 +60,7 @@ public class Athena {
         }
     }
 
+    @Override
     public String getResponse(String input) {
         outputBuffer.reset();
         if (commandHandler.handleCommand(input) == CommandResult.EXIT) {

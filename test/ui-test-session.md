@@ -1,7 +1,7 @@
 # Athena UI test session
 
 - Plan: `C:\Users\jiang\Duke\ip\test\ui-test-plan.md`
-- Started: 2026-09-05T00:22:15+08:00
+- Started: 2026-09-05T09:13:45+08:00
 - Status: **PASSED**
 
 ## Build
@@ -15,10 +15,10 @@
 > Task :compileJava UP-TO-DATE
 > Task :processResources UP-TO-DATE
 > Task :classes UP-TO-DATE
-> Task :shadowJar
+> Task :shadowJar UP-TO-DATE
 
-BUILD SUCCESSFUL in 9s
-3 actionable tasks: 1 executed, 2 up-to-date
+BUILD SUCCESSFUL in 1s
+3 actionable tasks: 3 up-to-date
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html
 
 ````
@@ -28,7 +28,7 @@ Consider enabling configuration cache to speed up this build: https://docs.gradl
 ## Test case 1: Exit cleanly
 
 - Aim: Verify that Athena starts with an empty isolated store and prints its farewell message for `bye`.
-- Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
+- Command: `java -cp "C:/Users/jiang/Duke/ip/build/libs/athena.jar" athena.Athena`
 - Working directory: isolated temporary directory
 - Exit code: `0` (expected `0`)
 
@@ -82,7 +82,7 @@ ____________________________________________________________
 ## Test case 2: Manage a todo through its lifecycle
 
 - Aim: Verify adding, listing, marking, unmarking, and deleting a todo in one stateful session.
-- Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
+- Command: `java -cp "C:/Users/jiang/Duke/ip/build/libs/athena.jar" athena.Athena`
 - Working directory: isolated temporary directory
 - Exit code: `0` (expected `0`)
 
@@ -183,7 +183,7 @@ ____________________________________________________________
 ## Test case 3: Add dated tasks
 
 - Aim: Verify deadline and event commands parse dates and display their formatted times.
-- Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
+- Command: `java -cp "C:/Users/jiang/Duke/ip/build/libs/athena.jar" athena.Athena`
 - Working directory: isolated temporary directory
 - Exit code: `0` (expected `0`)
 
@@ -261,7 +261,7 @@ ____________________________________________________________
 ## Test case 4: Reject incomplete commands
 
 - Aim: Verify that missing descriptions, dates, task indexes, and search keywords produce the intended guidance
-- Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
+- Command: `java -cp "C:/Users/jiang/Duke/ip/build/libs/athena.jar" athena.Athena`
 - Working directory: isolated temporary directory
 - Exit code: `0` (expected `0`)
 
@@ -348,7 +348,7 @@ ____________________________________________________________
 ## Test case 5: Reject an unknown command
 
 - Aim: Verify that an unrecognized command produces Athena's unknown-command response.
-- Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
+- Command: `java -cp "C:/Users/jiang/Duke/ip/build/libs/athena.jar" athena.Athena`
 - Working directory: isolated temporary directory
 - Exit code: `0` (expected `0`)
 
@@ -404,7 +404,7 @@ ____________________________________________________________
 ## Test case 6: Find matching tasks
 
 - Aim: Verify that the find command matches case-insensitively, prints only matching tasks, and numbers the
-- Command: `java -jar "C:/Users/jiang/Duke/ip/build/libs/athena.jar"`
+- Command: `java -cp "C:/Users/jiang/Duke/ip/build/libs/athena.jar" athena.Athena`
 - Working directory: isolated temporary directory
 - Exit code: `0` (expected `0`)
 

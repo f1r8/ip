@@ -19,9 +19,14 @@ repositories {
 }
 
 dependencies {
+    String hamcrestVersion = '3.0'
     String jUnitVersion = '5.14.4'
+    String testFxVersion = '4.0.18'
 
+    testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
+    testImplementation "org.testfx:testfx-core:${testFxVersion}"
+    testImplementation "org.testfx:testfx-junit5:${testFxVersion}"
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
@@ -57,7 +62,7 @@ test {
 }
 
 application {
-    mainClass.set("athena.Athena")
+    mainClass.set("athena.gui.Launcher")
 }
 
 jar {

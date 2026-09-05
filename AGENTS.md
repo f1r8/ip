@@ -47,5 +47,9 @@ After every update to application code, tests, build configuration, or test tool
 1. From the repository root, review `test/ui-test-plan.md`. Add or revise cases when the change affects behavior, inputs, expected output, prerequisites, or commands. Preserve the plan unchanged only when its coverage and expectations remain accurate.
 2. Invoke the project skill `$test-ui`. If project-skill discovery is unavailable, load `.codex/skills/test-ui/SKILL.md` directly and follow it; do not substitute an ad hoc UI run.
 3. Let the skill build the current JAR and run the plan. Do not use its `--skip-build` option for this verification.
-4. Show `test/ui-test-session.md`, including every executed case's command, console input, actual output, expected output, exit code, and result.
-5. On the first failure, stop immediately and report the actual and expected outputs. Do not execute later cases, change an expectation merely to match an unintended result, or claim unexecuted cases passed.
+4. On the first build or UI-test failure, stop immediately and show `test/ui-test-session.md`. For a UI-test failure, report the actual and expected outputs. Do not execute later cases, change an expectation merely to match an unintended result, or claim unexecuted cases passed.
+5. Only after every UI test case passes, run Checkstyle from the repository root:
+   * On Windows: `gradlew.bat --console=plain checkstyleMain checkstyleTest`
+   * On Unix: `./gradlew --console=plain checkstyleMain checkstyleTest`
+6. If Checkstyle fails, stop and report its command and violations. Code-update verification passes only when both the UI test plan and Checkstyle pass.
+7. Show `test/ui-test-session.md`, including every executed case's command, console input, actual output, expected output, exit code, and result, and report the Checkstyle result.

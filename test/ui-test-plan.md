@@ -21,7 +21,7 @@ gradlew.bat --console=plain shadowJar
 - Program command:
 
 ```text
-java -jar "{repo}/build/libs/athena.jar"
+java -cp "{repo}/build/libs/athena.jar" athena.Athena
 ```
 
 - Default per-test timeout: 30 seconds

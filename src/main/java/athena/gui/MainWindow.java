@@ -1,6 +1,5 @@
 package athena.gui;
 
-import athena.Athena;
 import athena.exception.AthenaException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -24,7 +23,8 @@ public class MainWindow extends AnchorPane {
     @FXML
     private Button sendButton;
 
-    private Athena athena;
+    private CommandResponder commandResponder;
+    private Runnable exitHandler = Platform::exit;
 
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
     private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaAthena.png"));
@@ -34,9 +34,14 @@ public class MainWindow extends AnchorPane {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
 
-    /** Injects the Athena instance */
-    public void setAthena(Athena athena) {
-        this.athena = athena;
+    /** Sets the component that processes user commands */
+    void setCommandResponder(CommandResponder commandResponder) {
+        this.commandResponder = commandResponder;
+    }
+
+    /** Sets the action used to exit the application */
+    void setExitHandler(Runnable exitHandler) {
+        this.exitHandler = exitHandler;
     }
 
     /**
@@ -47,14 +52,14 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() {
         try {
             String input = userInput.getText();
-            String response = athena.getResponse(input);
+            String response = commandResponder.getResponse(input);
             dialogContainer.getChildren().addAll(
                     DialogBox.getUserDialog(input, userImage),
                     DialogBox.getAthenaDialog(response, athenaImage)
             );
             userInput.clear();
         } catch (AthenaException e) {
-            Platform.exit();
+            exitHandler.run();
         }
     }
 }
