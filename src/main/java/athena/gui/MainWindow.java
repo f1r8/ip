@@ -26,8 +26,7 @@ public class MainWindow extends AnchorPane {
     private CommandResponder commandResponder;
     private Runnable exitHandler = Platform::exit;
 
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
-    private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaAthena.png"));
+    private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaAthena.jpg"));
 
     @FXML
     public void initialize() {
@@ -54,7 +53,7 @@ public class MainWindow extends AnchorPane {
             String input = userInput.getText();
             String response = commandResponder.getResponse(input);
             dialogContainer.getChildren().addAll(
-                    DialogBox.getUserDialog(input, userImage),
+                    DialogBox.getUserDialog(input),
                     DialogBox.getAthenaDialog(response, athenaImage)
             );
             userInput.clear();

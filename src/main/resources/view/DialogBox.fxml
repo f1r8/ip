@@ -4,16 +4,36 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-<fx:root alignment="TOP_RIGHT"
-         maxHeight="1.7976931348623157E308"
-         maxWidth="1.7976931348623157E308"
-         prefWidth="400.0"
-         type="javafx.scene.layout.HBox"
-         xmlns="http://javafx.com/javafx/17"
-         xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.SVGPath?>
+
+<fx:root alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="400.0" stylesheets="@../css/dialog-box.css" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <Label fx:id="dialog" text="Label" wrapText="true" minHeight="-Infinity"/>
-    <ImageView fx:id="displayPicture" fitHeight="99.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true" />
+    <StackPane fx:id="bubbleContainer" alignment="BOTTOM_RIGHT" HBox.hgrow="ALWAYS">
+      <children>
+        <Label fx:id="dialog" minHeight="-Infinity" styleClass="bubble" text="Label" wrapText="true">
+               <StackPane.margin>
+                  <Insets left="47.0" right="11.0" />
+               </StackPane.margin>
+               <padding>
+                  <Insets bottom="6.0" left="6.0" right="6.0" top="6.0" />
+               </padding></Label>
+        <Pane fx:id="tail" maxHeight="12.0" maxWidth="14.0" minHeight="12.0" minWidth="14.0" prefHeight="12.0" prefWidth="14.0">
+          <children>
+            <Region fx:id="tailFill" maxHeight="12.0" maxWidth="14.0" minHeight="12.0" minWidth="14.0" prefHeight="12.0" prefWidth="14.0" styleClass="bubble" />
+            <SVGPath fx:id="tailOutline" content="M 3 0 C 4 6 8 9 14 9 C 11 10 8 11 3 12" />
+          </children>
+        </Pane>
+      </children>
+    </StackPane>
+    <ImageView fx:id="displayPicture" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+      <clip>
+        <Circle centerX="25" centerY="25" radius="25" />
+      </clip>
+    </ImageView>
   </children>
   <padding>
     <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />

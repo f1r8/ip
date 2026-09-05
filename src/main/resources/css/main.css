@@ -1,0 +1,70 @@
+.root {
+    main-color: rgb(237, 255, 242);       /* Create a looked-up color called "main-color" within root. */
+    -fx-background-color: main-color;
+    -fx-background-image: url("../images/background.jpg");
+    -fx-background-size: cover;
+    -fx-background-size: 430px 240px;
+    -fx-background-repeat: repeat;
+    -fx-font-family: "Inter 18pt";
+}
+
+.text-field {
+    -fx-background-color: #F0FFF0;
+    -fx-font: 20px "Inter 18pt";
+    -fx-prompt-text-fill: #6E836A;
+}
+
+.button {
+    -fx-background-color: #32CD32;
+    -fx-font: bold 16px "Inter 18pt";
+}
+
+/* A vibrant leaf-green primary action for sending messages. */
+#sendButton {
+    -fx-background-color: #22A447;
+    -fx-border-color: transparent;
+    -fx-border-width: 3px;
+    -fx-text-fill: #FFFFFF;
+}
+
+#sendButton:hover {
+    -fx-background-color: #168A38;
+    -fx-font: bold 17px "Inter 18pt";
+}
+
+#sendButton:pressed {
+    -fx-background-color: #0F6E2D;
+    -fx-border-color: #A8F0B9;
+    -fx-font: bold 15px "Inter 18pt";
+}
+
+.label .text,
+.text-field .text,
+.button .text {
+    -fx-font-smoothing-type: gray;
+}
+
+.scroll-pane {
+    -fx-background-color: rgba(255,255,255,.25);
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-font-size: 10px;  /* Change width of scroll bar. */
+    -fx-background-color: main-color;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #aaaaaa;
+    -fx-background-radius: 1em;
+}
+
+/* Hides the increment and decrement buttons. */
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}

@@ -1,7 +1,7 @@
 # Athena UI test session
 
 - Plan: `C:\Users\jiang\Duke\ip\test\ui-test-plan.md`
-- Started: 2026-09-05T09:13:45+08:00
+- Started: 2026-09-05T13:11:49+08:00
 - Status: **PASSED**
 
 ## Build
@@ -12,13 +12,13 @@
 ### Console output
 
 ````text
-> Task :compileJava UP-TO-DATE
-> Task :processResources UP-TO-DATE
-> Task :classes UP-TO-DATE
-> Task :shadowJar UP-TO-DATE
+> Task :compileJava
+> Task :processResources
+> Task :classes
+> Task :shadowJar
 
-BUILD SUCCESSFUL in 1s
-3 actionable tasks: 3 up-to-date
+BUILD SUCCESSFUL in 12s
+3 actionable tasks: 3 executed
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html
 
 ````

@@ -1,0 +1,41 @@
+.bubble {
+    -fx-background-color: #DDEFD8;
+    -fx-border-color: #000000;
+    -fx-border-width: 0.1px;
+    -fx-background-radius: 1em 1em 0 1em;
+    -fx-border-radius: 1em 1em 0 1em;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 15px;
+    -fx-text-fill: #000000;
+}
+
+.reply-label {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 1em 1em 1em 0;
+    -fx-border-radius: 1em 1em 1em 0;
+}
+
+#tailFill {
+    -fx-border-width: 0;
+    -fx-shape: "M 0 0 H 3 C 4 6 8 9 14 9 C 11 10 8 11 3 12 H 0 Z";
+}
+
+#tailOutline {
+    -fx-fill: transparent;
+    -fx-stroke: #000000;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-stroke-width: 0.1px;
+}
+
+#displayPicture {
+    /* Shadow effect on image. */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 5, 5);
+
+    /* Change size of image. */
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+
+    /* Rotate image clockwise by degrees. */
+    -fx-rotate: 0;
+}

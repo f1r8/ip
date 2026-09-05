@@ -133,8 +133,8 @@ public class Ui {
      */
     public void showUnknownCommand() {
         println("*Athena blinks her eyes, unsure of what you want, tilting "
-                + "\nher head slightly as the meaning of your words slips just "
-                + "\nout of reach.*");
+                + "her head slightly as the meaning of your words slips just "
+                + "out of reach.*");
     }
 
     /**
