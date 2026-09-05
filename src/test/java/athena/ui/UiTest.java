@@ -127,8 +127,8 @@ class UiTest {
     void showUnknownCommand_unknownCommandMessagePrinted() {
         ui.showUnknownCommand();
 
-        assertOutput("*Athena blinks her eyes, unsure of what you want, tilting\n"
-                + "her head slightly as the meaning of your words slips just\n"
+        assertOutput("*Athena blinks her eyes, unsure of what you want, tilting "
+                + "her head slightly as the meaning of your words slips just "
                 + "out of reach.*\n");
     }
 

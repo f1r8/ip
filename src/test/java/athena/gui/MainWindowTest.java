@@ -153,8 +153,8 @@ class MainWindowTest {
         assertEquals(expectedText, label.getText());
         assertFalse(label.getBackground().getFills().isEmpty());
         assertEquals(isAthenaDialog ? Pos.BOTTOM_LEFT : Pos.BOTTOM_RIGHT, bubbleContainer.getAlignment());
-        assertEquals(isAthenaDialog ? 11.0 : 7.0, labelMargin.getLeft());
-        assertEquals(isAthenaDialog ? 7.0 : 11.0, labelMargin.getRight());
+        assertEquals(isAthenaDialog ? 11.0 : 47.0, labelMargin.getLeft());
+        assertEquals(isAthenaDialog ? 47.0 : 11.0, labelMargin.getRight());
         assertTrue(tailFill.getStyleClass().contains("bubble"));
         assertEquals(label.getBackground().getFills().get(0).getFill(),
                 tailFill.getBackground().getFills().get(0).getFill());

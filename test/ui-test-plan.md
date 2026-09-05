@@ -234,9 +234,7 @@ Hello, Your Majesty! I'm Athena.
 How may I assist you, Your Majesty?
 ____________________________________________________________
 ____________________________________________________________
-*Athena blinks her eyes, unsure of what you want, tilting
-her head slightly as the meaning of your words slips just
-out of reach.*
+*Athena blinks her eyes, unsure of what you want, tilting her head slightly as the meaning of your words slips just out of reach.*
 ____________________________________________________________
 ```
 
