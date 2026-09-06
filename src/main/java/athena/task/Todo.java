@@ -23,7 +23,7 @@ public class Todo extends Task {
     /**
      * Constructs a Todo object.
      *
-     * @param isDone true if the todo is done, false otherwise.
+     * @param isDone {@code true} if the todo is done, {@code false} otherwise.
      * @param description Describes the Todo object.
      */
     public Todo(boolean isDone, String description) {

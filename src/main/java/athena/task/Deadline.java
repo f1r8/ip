@@ -41,7 +41,7 @@ public class Deadline extends Task {
     /**
      * Constructs a Deadline object.
      *
-     * @param isDone True if the deadline is complete, false otherwise.
+     * @param isDone {@code true} if the deadline is complete, {@code false} otherwise.
      * @param description Description of the deadline.
      * @param by Saved deadline date and time.
      */

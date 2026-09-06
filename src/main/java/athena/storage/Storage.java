@@ -118,7 +118,7 @@ public class Storage {
      * Loads tasks from storage into the supplied list.
      *
      * @param tasks Tasks read from storage.
-     * @return true if items are loaded, false otherwise.
+     * @return {@code true} if items are loaded, {@code false} otherwise.
      */
     public boolean areItemsLoaded(List<Task> tasks) {
         String input = read();

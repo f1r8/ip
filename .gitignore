@@ -20,3 +20,6 @@ _temp/
 text-ui-test/EXPECTED-UNIX.TXT
 
 data/
+
+# Generated test artifacts
+/test/ui-test-session.md

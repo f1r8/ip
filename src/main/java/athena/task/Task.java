@@ -22,7 +22,7 @@ public abstract class Task {
     /**
      * Constructs a Task object.
      *
-     * @param isDone true if the task is complete, false otherwise.
+     * @param isDone {@code true} if the task is complete, {@code false} otherwise.
      * @param name Description of the Task object.
      */
     public Task(boolean isDone, String name) {
@@ -36,7 +36,7 @@ public abstract class Task {
     /**
      * Sets a Task object as done or not done.
      *
-     * @param isDone true if the task is complete, false otherwise.
+     * @param isDone {@code true} if the task is complete, {@code false} otherwise.
      */
     public void setDone(boolean isDone) {
         this.isDone = isDone;
@@ -88,7 +88,7 @@ public abstract class Task {
      * Returns whether a saved status represents a completed task.
      *
      * @param status String of the storage status icon.
-     * @return True if the task is complete, false otherwise.
+     * @return {@code true} if the task is complete, {@code false} otherwise.
      */
     public static boolean isDoneFromStatus(String status) {
         if (status.equals("1")) {

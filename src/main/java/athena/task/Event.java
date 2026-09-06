@@ -45,7 +45,7 @@ public class Event extends Task {
     /**
      * Constructs an Event object.
      *
-     * @param isDone True if the event is completed, false otherwise.
+     * @param isDone {@code true} if the event is completed, {@code false} otherwise.
      * @param description Describes the Event object.
      * @param from Date when the Event starts.
      * @param to Date when the Event ends.

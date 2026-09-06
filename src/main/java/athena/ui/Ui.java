@@ -47,7 +47,7 @@ public class Ui {
     /**
      * Checks if the inputStream has another line.
      *
-     * @return true if there is another line, false otherwise.
+     * @return {@code true} if there is another line, {@code false} otherwise.
      */
     public boolean hasNextLine() {
         return scanner.hasNextLine();
@@ -65,7 +65,7 @@ public class Ui {
     /**
      * Shows whether the saved tasks were loaded successfully.
      *
-     * @param isLoaded true if tasks were loaded, false if no data file was found.
+     * @param isLoaded {@code true} if tasks were loaded, {@code false} if no data file was found.
      * @param path path of the data file.
      */
     public void showLoadingStatus(boolean isLoaded, String path) {
@@ -141,7 +141,7 @@ public class Ui {
      * Shows the result of marking or unmarking a task.
      *
      * @param task task whose status changed.
-     * @param isMarked true if the task was marked done, false if it was unmarked.
+     * @param isMarked {@code true} if the task was marked done, {@code false} if it was unmarked.
      */
     public void showTaskStatusChanged(Task task, boolean isMarked) {
         println(isMarked

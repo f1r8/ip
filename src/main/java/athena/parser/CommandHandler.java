@@ -114,10 +114,10 @@ public class CommandHandler {
     }
 
     /**
-     * Helper for handling mark/unmark.
+     * Handles mark or unmark command for a task.
      *
      * @param arguments String arguments for handling mark/unmark.
-     * @param shouldMarkAsDone true if task should be marked, false if unmarked.
+     * @param shouldMarkAsDone {@code true} if task should be marked, {@code false} if unmarked.
      */
     private void handleMarkCommand(String arguments, boolean shouldMarkAsDone) {
         try {
