@@ -79,18 +79,18 @@ public abstract class Task {
     }
 
     /**
-     * Gets the Storage variant of the status icon.
+     * Returns the persisted completion status.
      *
-     * @return String of the storage status icon.
+     * @return Save-file representation of the completion status.
      */
-    public String getStoreStatusIcon() {
+    public String getSaveStatus() {
         return this.isDone ? SAVE_STATUS_DONE : SAVE_STATUS_NOT_DONE;
     }
 
     /**
      * Returns whether a saved status represents a completed task.
      *
-     * @param status String of the storage status icon.
+     * @param status Saved completion status.
      * @return {@code true} if the task is complete, {@code false} otherwise.
      */
     public static boolean isDoneFromStatus(String status) {
@@ -108,6 +108,6 @@ public abstract class Task {
      * @return Storage String.
      */
     public String getSaveString() {
-        return getStoreStatusIcon() + Storage.SAVE_SEPARATOR + this.name;
+        return getSaveStatus() + Storage.SAVE_SEPARATOR + this.name;
     }
 }

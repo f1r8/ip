@@ -32,7 +32,7 @@ class TaskTest {
         Task task = new TestTask("Read book");
 
         assertEquals(" ", task.getStatusIcon());
-        assertEquals("0", task.getStoreStatusIcon());
+        assertEquals("0", task.getSaveStatus());
         assertEquals("[ ] Read book", task.toString());
         assertEquals("0 | Read book", task.getSaveString());
     }
@@ -42,7 +42,7 @@ class TaskTest {
         Task task = new TestTask(true, "Read book");
 
         assertEquals("X", task.getStatusIcon());
-        assertEquals("1", task.getStoreStatusIcon());
+        assertEquals("1", task.getSaveStatus());
         assertEquals("[X] Read book", task.toString());
         assertEquals("1 | Read book", task.getSaveString());
     }
