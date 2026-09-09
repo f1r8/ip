@@ -3,8 +3,8 @@ package athena;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import athena.exception.AthenaException;
 import athena.gui.CommandResponder;
+import athena.gui.CommandResponse;
 import athena.parser.CommandHandler;
 import athena.parser.CommandResult;
 import athena.storage.Storage;
@@ -62,11 +62,9 @@ public class Athena implements CommandResponder {
     }
 
     @Override
-    public String getResponse(String input) {
+    public CommandResponse getResponse(String input) {
         outputBuffer.reset();
-        if (commandHandler.handleCommand(input) == CommandResult.EXIT) {
-            throw new AthenaException("Exiting...");
-        }
-        return outputBuffer.toString();
+        CommandResult result = commandHandler.handleCommand(input);
+        return new CommandResponse(outputBuffer.toString(), result == CommandResult.EXIT);
     }
 }
