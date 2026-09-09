@@ -10,6 +10,12 @@ import athena.exception.AthenaException;
  * Parses and formats dates for the Athena application.
  */
 public class DateParser {
+    /** Required date and time pattern for application input */
+    private static final String INPUT_PATTERN = "yyyy-MM-dd HHmm";
+
+    /** Date and time formatter for application input */
+    private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter.ofPattern(INPUT_PATTERN);
+
     /** Default date and time pattern for application output */
     private static final DateTimeFormatter OUTPUT_FORMATTER = DateTimeFormatter.ofPattern(
             "MMM dd, yyyy, HH:mm");
@@ -38,12 +44,11 @@ public class DateParser {
      * @throws AthenaException If the input does not match the required format.
      */
     public static LocalDateTime parse(String input) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
         try {
-            return LocalDateTime.parse(input, formatter);
+            return LocalDateTime.parse(input, INPUT_FORMATTER);
         } catch (DateTimeParseException e) {
             throw new AthenaException("Invalid date format, please use "
-                    + "'yyyy-MM-dd HHmm' (e.g. 2001-09-11 1911)");
+                    + "'" + INPUT_PATTERN + "' (e.g. 2001-09-11 1911)");
         }
     }
 }
