@@ -121,7 +121,7 @@ public class Storage {
      * @return {@code true} if items are loaded, {@code false} otherwise.
      */
     public boolean areItemsLoaded(List<Task> tasks) {
-        assert tasks != null: "tasks cannot be null";
+        assert tasks != null : "tasks cannot be null";
 
         String input = read();
         if (input.isEmpty()) {
