@@ -54,17 +54,6 @@ class TaskTest {
     }
 
     @Test
-    void setDone_bothValues_statusUpdated() {
-        Task task = new TestTask("Read book");
-
-        task.setDone(true);
-        assertEquals("X", task.getStatusIcon());
-
-        task.setDone(false);
-        assertEquals(" ", task.getStatusIcon());
-    }
-
-    @Test
     void markDone_incompleteTask_taskCompleted() {
         Task task = new TestTask("Read book");
 
