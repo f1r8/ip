@@ -25,6 +25,15 @@ public class Storage {
     /** Line separator used between saved tasks */
     public static final String SAVE_NEWLINE = System.lineSeparator();
 
+    private static final int SAVE_STATUS_INDEX = 1;
+    private static final int SAVE_DESCRIPTION_INDEX = 2;
+    private static final int SAVE_DEADLINE_INDEX = 3;
+    private static final int SAVE_EVENT_START_INDEX = 3;
+    private static final int SAVE_EVENT_END_INDEX = 4;
+    private static final int SAVE_TODO_FIELD_COUNT = 3;
+    private static final int SAVE_DEADLINE_FIELD_COUNT = 4;
+    private static final int SAVE_EVENT_FIELD_COUNT = 5;
+
     private final String filePath;
 
     private boolean loadSuccessful;
@@ -147,12 +156,18 @@ public class Storage {
 
     private static Task parseTask(String line) {
         String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
-        if (items.length == 3) {
-            return new Todo(Task.isDoneFromStatus(items[1]), items[2]);
-        } else if (items.length == 4) {
-            return new Deadline(Task.isDoneFromStatus(items[1]), items[2], items[3]);
-        } else if (items.length == 5) {
-            return new Event(Task.isDoneFromStatus(items[1]), items[2], items[3], items[4]);
+        if (items.length == SAVE_TODO_FIELD_COUNT) {
+            return new Todo(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
+                    items[SAVE_DESCRIPTION_INDEX]);
+        } else if (items.length == SAVE_DEADLINE_FIELD_COUNT) {
+            return new Deadline(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
+                    items[SAVE_DESCRIPTION_INDEX],
+                    items[SAVE_DEADLINE_INDEX]);
+        } else if (items.length == SAVE_EVENT_FIELD_COUNT) {
+            return new Event(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
+                    items[SAVE_DESCRIPTION_INDEX],
+                    items[SAVE_EVENT_START_INDEX],
+                    items[SAVE_EVENT_END_INDEX]);
         }
         throw new AthenaException("Storage File Corrupted by this line: " + line);
     }
