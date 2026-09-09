@@ -103,21 +103,27 @@ public class CommandHandler {
      * @param shouldMarkAsDone {@code true} if task should be marked, {@code false} if unmarked.
      */
     private void handleMarkCommand(String arguments, boolean shouldMarkAsDone) {
+        int index;
         try {
-            int index = Integer.parseInt(arguments.trim());
-            Task task = taskList.get(index - 1);
-            if (shouldMarkAsDone) {
-                task.markDone();
-            } else {
-                task.unmarkDone();
-            }
-            ui.showTaskStatusChanged(task, shouldMarkAsDone);
-            storage.saveTasks(taskList.getTasks());
+            index = Integer.parseInt(arguments.trim()) - 1;
         } catch (NumberFormatException e) {
             ui.showMissingMarkIndex();
-        } catch (IndexOutOfBoundsException e) {
-            ui.showInvalidTaskIndex();
+            return;
         }
+
+        if (index < 0 || index >= taskList.size()) {
+            ui.showInvalidTaskIndex();
+            return;
+        }
+
+        Task task = taskList.get(index);
+        if (shouldMarkAsDone) {
+            task.markDone();
+        } else {
+            task.unmarkDone();
+        }
+        ui.showTaskStatusChanged(task, shouldMarkAsDone);
+        storage.saveTasks(taskList.getTasks());
     }
 
     private void createAndAddTask(String arguments, Function<String, Task> taskFactory) {
@@ -132,16 +138,22 @@ public class CommandHandler {
     }
 
     private void handleDeleteCommand(String arguments) {
+        int index;
         try {
-            int index = Integer.parseInt(arguments.trim());
-            Task task = taskList.remove(index - 1);
-            storage.saveTasks(taskList.getTasks());
-            ui.showTaskDeleted(task, taskList.size());
+            index = Integer.parseInt(arguments.trim()) - 1;
         } catch (NumberFormatException e) {
             ui.showMissingDeleteIndex();
-        } catch (IndexOutOfBoundsException e) {
-            ui.showInvalidTaskIndex();
+            return;
         }
+
+        if (index < 0 || index >= taskList.size()) {
+            ui.showInvalidTaskIndex();
+            return;
+        }
+
+        Task task = taskList.remove(index);
+        storage.saveTasks(taskList.getTasks());
+        ui.showTaskDeleted(task, taskList.size());
     }
 
     private void handleFindCommand(String arguments) {
