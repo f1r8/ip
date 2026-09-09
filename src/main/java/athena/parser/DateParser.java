@@ -26,9 +26,9 @@ public class DateParser {
             "MMM dd, yyyy, HH:mm");
 
     /**
-     * Constructs a date parser.
+     * Prevents instantiation of this utility class.
      */
-    public DateParser() {
+    private DateParser() {
     }
 
     /**
