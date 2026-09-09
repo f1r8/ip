@@ -10,30 +10,30 @@ public abstract class Task {
     private static final String SAVE_STATUS_DONE = "1";
     private static final String SAVE_STATUS_NOT_DONE = "0";
 
-    private final String name;
+    private final String description;
     private boolean isDone;
 
     /**
      * Constructs an incomplete task with the specified description.
      *
-     * @param name Description of the task.
+     * @param description Description of the task.
      */
-    public Task(String name) {
-        this(false, name);
+    public Task(String description) {
+        this(false, description);
     }
 
     /**
      * Constructs a Task object.
      *
      * @param isDone {@code true} if the task is complete, {@code false} otherwise.
-     * @param name Description of the Task object.
+     * @param description Description of the Task object.
      */
-    public Task(boolean isDone, String name) {
-        if (name.isEmpty()) {
-            throw new AthenaException("Task name cannot be empty");
+    public Task(boolean isDone, String description) {
+        if (description.isEmpty()) {
+            throw new AthenaException("Task description cannot be empty");
         }
         this.isDone = isDone;
-        this.name = name;
+        this.description = description;
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class Task {
      */
     @Override
     public String toString() {
-        return "[" + this.getStatusIcon() + "] " + this.name;
+        return "[" + this.getStatusIcon() + "] " + this.description;
     }
 
     /**
@@ -99,6 +99,6 @@ public abstract class Task {
      * @return Storage String.
      */
     public String getSaveString() {
-        return getSaveStatus() + Storage.SAVE_SEPARATOR + this.name;
+        return getSaveStatus() + Storage.SAVE_SEPARATOR + this.description;
     }
 }
