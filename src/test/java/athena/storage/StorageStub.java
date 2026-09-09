@@ -37,9 +37,6 @@ public class StorageStub extends Storage {
         return true;
     }
 
-    public void wasloadFailed() {
-    }
-
     /**
      * Does nothing, so no tasks are written to any file.
      *
