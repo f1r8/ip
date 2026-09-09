@@ -107,6 +107,8 @@ public class CommandHandler {
                 handleFindCommand(arguments);
                 break;
             default:
+                assert command == Command.UNKNOWN : "Unhandled command: " + command +
+                        "add a case in handleCommand's switch";
                 ui.showUnknownCommand();
                 break;
         }

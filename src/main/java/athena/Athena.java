@@ -66,6 +66,7 @@ public class Athena implements CommandResponder {
         if (commandHandler.handleCommand(input) == CommandResult.EXIT) {
             throw new AthenaException("Exiting...");
         }
+        assert outputBuffer.size() > 0 : "A continuing command should produce a response";
         return outputBuffer.toString();
     }
 }
