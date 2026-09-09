@@ -128,17 +128,20 @@ public class Storage {
 
         String[] lines = input.split(SAVE_NEWLINE);
         for (String line : lines) {
-            String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
-            if (items.length == 3) {
-                tasks.add(new Todo(Task.isDoneFromStatus(items[1]), items[2]));
-            } else if (items.length == 4) {
-                tasks.add(new Deadline(Task.isDoneFromStatus(items[1]), items[2], items[3]));
-            } else if (items.length == 5) {
-                tasks.add(new Event(Task.isDoneFromStatus(items[1]), items[2], items[3], items[4]));
-            } else {
-                throw new AthenaException("Storage File Corrupted by this line: " + line);
-            }
+            tasks.add(parseTask(line));
         }
         return true;
+    }
+
+    private static Task parseTask(String line) {
+        String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
+        if (items.length == 3) {
+            return new Todo(Task.isDoneFromStatus(items[1]), items[2]);
+        } else if (items.length == 4) {
+            return new Deadline(Task.isDoneFromStatus(items[1]), items[2], items[3]);
+        } else if (items.length == 5) {
+            return new Event(Task.isDoneFromStatus(items[1]), items[2], items[3], items[4]);
+        }
+        throw new AthenaException("Storage File Corrupted by this line: " + line);
     }
 }
