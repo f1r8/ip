@@ -20,11 +20,11 @@ public class StorageStub extends Storage {
     /**
      * Always reports that items are loaded successfully, without reading any file.
      *
-     * @param tasks The list to check (ignored).
+     * @param tasks Tasks that would be loaded (ignored).
      * @return {@code true} always.
      */
     @Override
-    public boolean areItemsLoaded(List<Task> tasks) {
+    public boolean loadTasks(List<Task> tasks) {
         return true;
     }
 

@@ -144,16 +144,16 @@ class StorageTest {
     }
 
     @Test
-    void areItemsLoaded_missingFile_returnsFalseAndLeavesListEmpty(@TempDir Path tempDir) {
+    void loadTasks_missingFile_returnsFalseAndLeavesListEmpty(@TempDir Path tempDir) {
         Storage storage = new Storage(tempDir.resolve("missing.txt").toString());
         ArrayList<Task> tasks = new ArrayList<>();
 
-        assertFalse(storage.areItemsLoaded(tasks));
+        assertFalse(storage.loadTasks(tasks));
         assertTrue(tasks.isEmpty());
     }
 
     @Test
-    void areItemsLoaded_allTaskTypes_tasksRestored(@TempDir Path tempDir) throws IOException {
+    void loadTasks_allTaskTypes_tasksRestored(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("athena.txt");
         String savedTasks = "T | 0 | Read book" + Storage.SAVE_NEWLINE
                 + "D | 1 | Submit report | 2026-12-31T23:59" + Storage.SAVE_NEWLINE
@@ -163,7 +163,7 @@ class StorageTest {
         Storage storage = new Storage(path.toString());
         ArrayList<Task> tasks = new ArrayList<>();
 
-        assertTrue(storage.areItemsLoaded(tasks));
+        assertTrue(storage.loadTasks(tasks));
 
         assertEquals(3, tasks.size());
         assertInstanceOf(Todo.class, tasks.get(0));
@@ -176,26 +176,26 @@ class StorageTest {
     }
 
     @Test
-    void areItemsLoaded_corruptedLine_exceptionThrown(@TempDir Path tempDir) throws IOException {
+    void loadTasks_corruptedLine_exceptionThrown(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("athena.txt");
         Files.writeString(path, "not a valid saved task");
         Storage storage = new Storage(path.toString());
 
         AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.areItemsLoaded(new ArrayList<>()));
+                storage.loadTasks(new ArrayList<>()));
 
         assertEquals("Storage File Corrupted by this line: not a valid saved task",
                 exception.getMessage());
     }
 
     @Test
-    void areItemsLoaded_invalidStatus_exceptionThrown(@TempDir Path tempDir) throws IOException {
+    void loadTasks_invalidStatus_exceptionThrown(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("athena.txt");
         Files.writeString(path, "T | X | Read book");
         Storage storage = new Storage(path.toString());
 
         AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.areItemsLoaded(new ArrayList<>()));
+                storage.loadTasks(new ArrayList<>()));
 
         assertEquals("Error converting save string to num: X", exception.getMessage());
     }
