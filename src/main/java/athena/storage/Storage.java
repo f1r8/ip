@@ -115,12 +115,12 @@ public class Storage {
     /**
      * Serializes tasks and writes them to storage.
      *
-     * @param items Tasks to be written.
+     * @param tasks Tasks to be written.
      */
-    public void writeItems(List<Task> items) {
+    public void saveTasks(List<Task> tasks) {
         String content = "";
-        for (Task item : items) {
-            content += item.getSaveString() + SAVE_NEWLINE;
+        for (Task task : tasks) {
+            content += task.getSaveString() + SAVE_NEWLINE;
         }
         overwrite(content);
     }

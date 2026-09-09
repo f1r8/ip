@@ -41,12 +41,12 @@ public class StorageStub extends Storage {
     }
 
     /**
-     * Does nothing, so no items are actually written to any file.
+     * Does nothing, so no tasks are written to any file.
      *
-     * @param items The list of items to write (ignored).
+     * @param tasks Tasks that would be saved (ignored).
      */
     @Override
-    public void writeItems(List<Task> items) {
+    public void saveTasks(List<Task> tasks) {
         //Do nothing
     }
 }

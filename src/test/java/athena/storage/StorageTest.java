@@ -103,7 +103,7 @@ class StorageTest {
     }
 
     @Test
-    void writeItems_listOfTasks_addedToStorage(@TempDir Path tempDir) throws IOException {
+    void saveTasks_listOfTasks_writtenToStorage(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("duke.txt");
         Storage storage = new Storage(path.toString());
         ArrayList<Task> tasks = new ArrayList<>();
@@ -111,7 +111,7 @@ class StorageTest {
         tasks.add(new Deadline("Do not separate subject from body with a blank line", "2001-09-11 0846"));
         tasks.add(new Event("Ensure each line of the body exceeds 72 characters",
                 "2001-09-11 0846", "2026-08-26 2154"));
-        storage.writeItems(tasks);
+        storage.saveTasks(tasks);
 
         String expected = "";
         for (Task task : tasks) {
@@ -121,25 +121,25 @@ class StorageTest {
     }
 
     @Test
-    void writeItems_fileDoesNotExist_createsFile(@TempDir Path tempDir) throws IOException {
+    void saveTasks_fileDoesNotExist_createsFile(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("duke.txt");
         Storage storage = new Storage(path.toString());
         assertFalse(Files.exists(path));
 
-        storage.writeItems(new ArrayList<>());
+        storage.saveTasks(new ArrayList<>());
         assertTrue(Files.exists(path));
     }
 
     @Test
-    void writeItems_fileHasContent_overwritesFile(@TempDir Path tempDir) throws IOException {
+    void saveTasks_fileHasContent_overwritesFile(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("duke.txt");
         Storage storage = new Storage(path.toString());
         ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(new Todo("Do not use bullet points in git commit body"));
-        storage.writeItems(tasks);
+        storage.saveTasks(tasks);
         assertEquals(tasks.getFirst().getSaveString() + Storage.SAVE_NEWLINE, Files.readString(path));
 
-        storage.writeItems(new ArrayList<>());
+        storage.saveTasks(new ArrayList<>());
         assertEquals("", Files.readString(path));
     }
 

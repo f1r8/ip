@@ -112,7 +112,7 @@ public class CommandHandler {
                 task.unmarkDone();
             }
             ui.showTaskStatusChanged(task, shouldMarkAsDone);
-            storage.writeItems(taskList.getTasks());
+            storage.saveTasks(taskList.getTasks());
         } catch (NumberFormatException e) {
             ui.showMissingMarkIndex();
         } catch (IndexOutOfBoundsException e) {
@@ -125,7 +125,7 @@ public class CommandHandler {
             Task task = taskFactory.apply(arguments);
             taskList.add(task);
             handleTaskCommand(task);
-            storage.writeItems(taskList.getTasks());
+            storage.saveTasks(taskList.getTasks());
         } catch (AthenaException e) {
             ui.showError(e.getMessage());
         }
@@ -139,7 +139,7 @@ public class CommandHandler {
         try {
             int index = Integer.parseInt(arguments.trim());
             Task task = taskList.remove(index - 1);
-            storage.writeItems(taskList.getTasks());
+            storage.saveTasks(taskList.getTasks());
             ui.showTaskDeleted(task, taskList.size());
         } catch (NumberFormatException e) {
             ui.showMissingDeleteIndex();
