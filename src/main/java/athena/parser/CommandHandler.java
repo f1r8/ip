@@ -73,8 +73,8 @@ public class CommandHandler {
      * @return Result indicating whether Athena should continue or exit.
      */
     public CommandResult handleCommand(String inputLine) {
-        inputLine = inputLine.trim();
-        String[] commandParts = inputLine.split("\\s+", 2);
+        String trimmedInput = inputLine.trim();
+        String[] commandParts = trimmedInput.split("\\s+", 2);
         Command command = Command.search(commandParts[0]);
         String arguments = commandParts.length > 1 ? commandParts[1] : "";
 
