@@ -25,27 +25,6 @@ import athena.task.Todo;
  */
 class StorageTest {
     @Test
-    void write_newAndExistingFile_contentAppended(@TempDir Path tempDir) throws IOException {
-        Path path = tempDir.resolve("nested").resolve("athena.txt");
-        Storage storage = new Storage(path.toString());
-
-        storage.write("first");
-        storage.write(" second");
-
-        assertEquals("first second", Files.readString(path));
-    }
-
-    @Test
-    void write_pathIsDirectory_exceptionThrown(@TempDir Path tempDir) {
-        Storage storage = new Storage(tempDir.toString());
-
-        AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.write("content"));
-
-        assertEquals("Unable to append to file", exception.getMessage());
-    }
-
-    @Test
     void ensureFileExists_nestedPath_directoriesAndFileCreated(@TempDir Path tempDir) {
         Path path = tempDir.resolve("nested").resolve("data").resolve("athena.txt");
         Storage storage = new Storage(path.toString());

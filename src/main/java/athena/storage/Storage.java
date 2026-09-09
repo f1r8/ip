@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -49,20 +48,6 @@ public class Storage {
 
     private Path getPath() {
         return Paths.get(filePath);
-    }
-
-    /**
-     * Appends to the file.
-     *
-     * @param content Content to be written.
-     */
-    public void write(String content) {
-        ensureFileExists();
-        try {
-            Files.writeString(getPath(), content, StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            throw new AthenaException("Unable to append to file");
-        }
     }
 
     /**
