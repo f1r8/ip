@@ -79,36 +79,19 @@ public class CommandHandler {
         String arguments = commandParts.length > 1 ? commandParts[1] : "";
 
         switch (command) {
-            case BYE:
+            case BYE -> {
                 ui.showGoodbye();
                 return CommandResult.EXIT;
-            case LIST:
-                ui.showTaskList(taskList.getTasks());
-                break;
-            case MARK:
-                handleMarkCommand(arguments, true);
-                break;
-            case UNMARK:
-                handleMarkCommand(arguments, false);
-                break;
-            case TODO:
-                createAndAddTask(arguments, Todo::new);
-                break;
-            case DEADLINE:
-                createAndAddTask(arguments, Deadline::new);
-                break;
-            case EVENT:
-                createAndAddTask(arguments, Event::new);
-                break;
-            case DELETE:
-                handleDeleteCommand(arguments);
-                break;
-            case FIND:
-                handleFindCommand(arguments);
-                break;
-            default:
-                ui.showUnknownCommand();
-                break;
+            }
+            case LIST -> ui.showTaskList(taskList.getTasks());
+            case MARK -> handleMarkCommand(arguments, true);
+            case UNMARK -> handleMarkCommand(arguments, false);
+            case TODO -> createAndAddTask(arguments, Todo::new);
+            case DEADLINE -> createAndAddTask(arguments, Deadline::new);
+            case EVENT -> createAndAddTask(arguments, Event::new);
+            case DELETE -> handleDeleteCommand(arguments);
+            case FIND -> handleFindCommand(arguments);
+            default -> ui.showUnknownCommand();
         }
         return CommandResult.CONTINUE;
     }
