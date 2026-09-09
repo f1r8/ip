@@ -124,15 +124,11 @@ public class CommandHandler {
         try {
             Task task = taskFactory.apply(arguments);
             taskList.add(task);
-            handleTaskCommand(task);
+            ui.showTaskAdded(task, taskList.size());
             storage.saveTasks(taskList.getTasks());
         } catch (AthenaException e) {
             ui.showError(e.getMessage());
         }
-    }
-
-    private void handleTaskCommand(Task task) {
-        ui.showTaskAdded(task, taskList.size());
     }
 
     private void handleDeleteCommand(String arguments) {
