@@ -20,9 +20,9 @@ public class Event extends Task {
      * @param input String from command line.
      */
     public Event(String input) {
-        input = input.replaceAll("/from ", "/");
-        input = input.replaceAll("/to ", "/");
-        String[] inputs = input.split("/");
+        String normalizedInput = input.replaceAll("/from ", "/")
+                .replaceAll("/to ", "/");
+        String[] inputs = normalizedInput.split("/");
         if (inputs.length < 3) {
             throw new AthenaException("Please provide an event with /from and /to times, Your Majesty.");
         }
