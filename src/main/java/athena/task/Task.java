@@ -7,6 +7,9 @@ import athena.storage.Storage;
  * Represents the common state and behavior of an Athena task.
  */
 public abstract class Task {
+    private static final String SAVE_STATUS_DONE = "1";
+    private static final String SAVE_STATUS_NOT_DONE = "0";
+
     private final String name;
     private boolean isDone;
 
@@ -81,7 +84,7 @@ public abstract class Task {
      * @return String of the storage status icon.
      */
     public String getStoreStatusIcon() {
-        return this.isDone ? "1" : "0";
+        return this.isDone ? SAVE_STATUS_DONE : SAVE_STATUS_NOT_DONE;
     }
 
     /**
@@ -91,9 +94,9 @@ public abstract class Task {
      * @return {@code true} if the task is complete, {@code false} otherwise.
      */
     public static boolean isDoneFromStatus(String status) {
-        if (status.equals("1")) {
+        if (status.equals(SAVE_STATUS_DONE)) {
             return true;
-        } else if (status.equals("0")) {
+        } else if (status.equals(SAVE_STATUS_NOT_DONE)) {
             return false;
         }
         throw new AthenaException("Error converting save string to num: " + status);
