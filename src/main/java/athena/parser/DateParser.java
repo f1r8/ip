@@ -1,6 +1,7 @@
 package athena.parser;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -12,6 +13,10 @@ import athena.exception.AthenaException;
 public class DateParser {
     /** Required date and time pattern for application input */
     private static final String INPUT_PATTERN = "yyyy-MM-dd HHmm";
+
+    /** Sample date and time pattern for showing an example */
+    private static final String SAMPLE_INPUT_FORMAT = DateTimeFormatter.ofPattern(INPUT_PATTERN).format(
+            LocalDateTime.of(2001, Month.SEPTEMBER, 11, 19, 11));
 
     /** Date and time formatter for application input */
     private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter.ofPattern(INPUT_PATTERN);
@@ -48,7 +53,7 @@ public class DateParser {
             return LocalDateTime.parse(input, INPUT_FORMATTER);
         } catch (DateTimeParseException e) {
             throw new AthenaException("Invalid date format, please use "
-                    + "'" + INPUT_PATTERN + "' (e.g. 2001-09-11 1911)");
+                    + "'" + INPUT_PATTERN + "' (e.g. " + SAMPLE_INPUT_FORMAT + ")");
         }
     }
 }
