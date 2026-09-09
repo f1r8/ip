@@ -91,13 +91,18 @@ public class Storage {
      * Reads the storage file if it exists.
      *
      * @return the content in the file or an empty string if the file does not exist.
+     * @throws AthenaException If the storage file exists but cannot be read.
      */
     public String read() {
-        try {
-            String content = Files.readString(getPath());
-            return content;
-        } catch (IOException e) {
+        Path path = getPath();
+        if (Files.notExists(path)) {
             return "";
+        }
+
+        try {
+            return Files.readString(path);
+        } catch (IOException e) {
+            throw new AthenaException("Something went wrong reading the file");
         }
     }
 

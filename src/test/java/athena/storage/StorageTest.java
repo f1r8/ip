@@ -82,6 +82,15 @@ class StorageTest {
     }
 
     @Test
+    void read_pathIsDirectory_exceptionThrown(@TempDir Path tempDir) {
+        Storage storage = new Storage(tempDir.toString());
+
+        AthenaException exception = assertThrows(AthenaException.class, storage::read);
+
+        assertEquals("Something went wrong reading the file", exception.getMessage());
+    }
+
+    @Test
     void saveTasks_listOfTasks_writtenToStorage(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("duke.txt");
         Storage storage = new Storage(path.toString());
