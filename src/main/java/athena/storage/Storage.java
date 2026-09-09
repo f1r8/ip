@@ -24,6 +24,7 @@ public class Storage {
     /** Line separator used between saved tasks */
     public static final String SAVE_NEWLINE = System.lineSeparator();
 
+    private static final int SAVE_TYPE_INDEX = 0;
     private static final int SAVE_STATUS_INDEX = 1;
     private static final int SAVE_DESCRIPTION_INDEX = 2;
     private static final int SAVE_DEADLINE_INDEX = 3;
@@ -32,6 +33,9 @@ public class Storage {
     private static final int SAVE_TODO_FIELD_COUNT = 3;
     private static final int SAVE_DEADLINE_FIELD_COUNT = 4;
     private static final int SAVE_EVENT_FIELD_COUNT = 5;
+    private static final String SAVE_TODO_TYPE = "T";
+    private static final String SAVE_DEADLINE_TYPE = "D";
+    private static final String SAVE_EVENT_TYPE = "E";
 
     private final String filePath;
 
@@ -141,14 +145,17 @@ public class Storage {
 
     private static Task parseTask(String line) {
         String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
-        if (items.length == SAVE_TODO_FIELD_COUNT) {
+        if (items.length == SAVE_TODO_FIELD_COUNT
+                && SAVE_TODO_TYPE.equals(items[SAVE_TYPE_INDEX])) {
             return new Todo(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
                     items[SAVE_DESCRIPTION_INDEX]);
-        } else if (items.length == SAVE_DEADLINE_FIELD_COUNT) {
+        } else if (items.length == SAVE_DEADLINE_FIELD_COUNT
+                && SAVE_DEADLINE_TYPE.equals(items[SAVE_TYPE_INDEX])) {
             return new Deadline(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
                     items[SAVE_DESCRIPTION_INDEX],
                     items[SAVE_DEADLINE_INDEX]);
-        } else if (items.length == SAVE_EVENT_FIELD_COUNT) {
+        } else if (items.length == SAVE_EVENT_FIELD_COUNT
+                && SAVE_EVENT_TYPE.equals(items[SAVE_TYPE_INDEX])) {
             return new Event(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
                     items[SAVE_DESCRIPTION_INDEX],
                     items[SAVE_EVENT_START_INDEX],

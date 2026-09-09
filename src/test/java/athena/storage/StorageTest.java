@@ -170,6 +170,19 @@ class StorageTest {
     }
 
     @Test
+    void loadTasks_unknownTaskType_exceptionThrown(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        Files.writeString(path, "X | 0 | Read book");
+        Storage storage = new Storage(path.toString());
+
+        AthenaException exception = assertThrows(AthenaException.class, () ->
+                storage.loadTasks(new ArrayList<>()));
+
+        assertEquals("Storage File Corrupted by this line: X | 0 | Read book",
+                exception.getMessage());
+    }
+
+    @Test
     void loadTasks_invalidStatus_exceptionThrown(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("athena.txt");
         Files.writeString(path, "T | X | Read book");
