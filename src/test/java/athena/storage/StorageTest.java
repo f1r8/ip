@@ -147,8 +147,9 @@ class StorageTest {
     void loadTasks_missingFile_returnsFalseAndLeavesListEmpty(@TempDir Path tempDir) {
         Storage storage = new Storage(tempDir.resolve("missing.txt").toString());
         ArrayList<Task> tasks = new ArrayList<>();
+        storage.loadTasks(tasks);
 
-        assertFalse(storage.loadTasks(tasks));
+        assertFalse(storage.wasLoadSuccessful());
         assertTrue(tasks.isEmpty());
     }
 
@@ -162,8 +163,9 @@ class StorageTest {
         Files.writeString(path, savedTasks);
         Storage storage = new Storage(path.toString());
         ArrayList<Task> tasks = new ArrayList<>();
+        storage.loadTasks(tasks);
 
-        assertTrue(storage.loadTasks(tasks));
+        assertTrue(storage.wasLoadSuccessful());
 
         assertEquals(3, tasks.size());
         assertInstanceOf(Todo.class, tasks.get(0));

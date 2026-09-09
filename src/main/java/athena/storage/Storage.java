@@ -27,6 +27,8 @@ public class Storage {
 
     private final String filePath;
 
+    private boolean loadSuccessful;
+
     /**
      * Constructs storage backed by the file at the specified path.
      *
@@ -118,19 +120,29 @@ public class Storage {
      * Loads tasks from storage into the supplied list.
      *
      * @param tasks Tasks read from storage.
-     * @return {@code true} if tasks are loaded, {@code false} otherwise.
      */
-    public boolean loadTasks(List<Task> tasks) {
+    public void loadTasks(List<Task> tasks) {
         String input = read();
         if (input.isEmpty()) {
-            return false;
+            loadSuccessful = false;
+            return;
         }
 
         String[] lines = input.split(SAVE_NEWLINE);
         for (String line : lines) {
             tasks.add(parseTask(line));
         }
-        return true;
+        loadSuccessful = true;
+        return;
+    }
+
+    /**
+     * Checks if {@link loadTasks} was successful.
+     *
+     * @return {@code true} if tasks are loaded, {@code false} otherwise.
+     */
+    public boolean wasLoadSuccessful() {
+        return loadSuccessful;
     }
 
     private static Task parseTask(String line) {

@@ -49,7 +49,8 @@ public class Athena implements CommandResponder {
         TaskList taskList = new TaskList();
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
 
-        ui.showLoadingStatus(storage.loadTasks(taskList.getTasks()), DATA_FILE_PATH);
+        storage.loadTasks(taskList.getTasks());
+        ui.showLoadingStatus(storage.wasLoadSuccessful(), DATA_FILE_PATH);
         ui.showWelcome();
         while (ui.hasNextLine()) {
             ui.showDivider();
