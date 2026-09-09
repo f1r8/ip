@@ -32,10 +32,8 @@ public class Athena implements CommandResponder {
         PrintStream guiOut = new PrintStream(outputBuffer);
         Ui ui = new Ui(System.in, guiOut);
 
-        TaskList taskList = new TaskList();
+        TaskList taskList = new TaskList(storage.loadTasks());
         commandHandler = new CommandHandler(storage, ui, taskList);
-
-        storage.loadTasks(taskList.getTasks());
     }
 
     /**
@@ -46,10 +44,9 @@ public class Athena implements CommandResponder {
     public static void main(String[] args) {
         Storage storage = new Storage(DATA_FILE_PATH);
         Ui ui = new Ui(System.in, System.out);
-        TaskList taskList = new TaskList();
+        TaskList taskList = new TaskList(storage.loadTasks());
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
 
-        storage.loadTasks(taskList.getTasks());
         ui.showLoadingStatus(storage.wasLoadSuccessful(), DATA_FILE_PATH);
         ui.showWelcome();
         while (ui.hasNextLine()) {

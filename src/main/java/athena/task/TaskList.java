@@ -7,21 +7,31 @@ import java.util.List;
  * Stores the in-memory collection of Athena tasks.
  */
 public class TaskList {
-    private final List<Task> tasks = new ArrayList<>();
+    private final List<Task> tasks;
 
     /**
      * Constructs an empty task list.
      */
     public TaskList() {
+        this(List.of());
     }
 
     /**
-     * Retrieves the items from the TaskList wrapper.
+     * Constructs a task list containing the supplied tasks.
      *
-     * @return The ArrayList of Tasks.
+     * @param tasks Initial tasks to copy into the task list.
+     */
+    public TaskList(List<Task> tasks) {
+        this.tasks = new ArrayList<>(tasks);
+    }
+
+    /**
+     * Retrieves an immutable snapshot of the tasks.
+     *
+     * @return Tasks in their current order.
      */
     public List<Task> getTasks() {
-        return tasks;
+        return List.copyOf(tasks);
     }
 
     /**

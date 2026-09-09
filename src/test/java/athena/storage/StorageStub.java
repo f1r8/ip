@@ -18,13 +18,13 @@ public class StorageStub extends Storage {
     }
 
     /**
-     * Does nothing, so no tasks are loaded.
+     * Returns no tasks without accessing the file system.
      *
-     * @param tasks Tasks that would be loaded (ignored).
+     * @return An empty task list.
      */
     @Override
-    public void loadTasks(List<Task> tasks) {
-        return;
+    public List<Task> loadTasks() {
+        return List.of();
     }
 
     /**

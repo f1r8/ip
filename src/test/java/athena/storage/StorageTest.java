@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -134,8 +135,7 @@ class StorageTest {
     @Test
     void loadTasks_missingFile_returnsFalseAndLeavesListEmpty(@TempDir Path tempDir) {
         Storage storage = new Storage(tempDir.resolve("missing.txt").toString());
-        ArrayList<Task> tasks = new ArrayList<>();
-        storage.loadTasks(tasks);
+        List<Task> tasks = storage.loadTasks();
 
         assertFalse(storage.wasLoadSuccessful());
         assertTrue(tasks.isEmpty());
@@ -150,8 +150,7 @@ class StorageTest {
                 + Storage.SAVE_NEWLINE;
         Files.writeString(path, savedTasks);
         Storage storage = new Storage(path.toString());
-        ArrayList<Task> tasks = new ArrayList<>();
-        storage.loadTasks(tasks);
+        List<Task> tasks = storage.loadTasks();
 
         assertTrue(storage.wasLoadSuccessful());
 
@@ -171,8 +170,7 @@ class StorageTest {
         Files.writeString(path, "not a valid saved task");
         Storage storage = new Storage(path.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.loadTasks(new ArrayList<>()));
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
 
         assertEquals("Storage File Corrupted by this line: not a valid saved task",
                 exception.getMessage());
@@ -184,8 +182,7 @@ class StorageTest {
         Files.writeString(path, "X | 0 | Read book");
         Storage storage = new Storage(path.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.loadTasks(new ArrayList<>()));
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
 
         assertEquals("Storage File Corrupted by this line: X | 0 | Read book",
                 exception.getMessage());
@@ -197,8 +194,7 @@ class StorageTest {
         Files.writeString(path, "T | X | Read book");
         Storage storage = new Storage(path.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.loadTasks(new ArrayList<>()));
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
 
         assertEquals("Error converting save string to num: X", exception.getMessage());
     }

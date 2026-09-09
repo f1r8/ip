@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -120,15 +121,16 @@ public class Storage {
     }
 
     /**
-     * Loads tasks from storage into the supplied list.
+     * Loads tasks from storage.
      *
-     * @param tasks Tasks read from storage.
+     * @return Tasks read from storage.
      */
-    public void loadTasks(List<Task> tasks) {
+    public List<Task> loadTasks() {
+        List<Task> tasks = new ArrayList<>();
         String input = read();
         if (input.isEmpty()) {
             loadSuccessful = false;
-            return;
+            return tasks;
         }
 
         String[] lines = input.split(SAVE_NEWLINE);
@@ -136,7 +138,7 @@ public class Storage {
             tasks.add(parseTask(line));
         }
         loadSuccessful = true;
-        return;
+        return tasks;
     }
 
     /**
