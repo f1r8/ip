@@ -19,8 +19,8 @@ public class Deadline extends Task {
      * @param input String from command line.
      */
     public Deadline(String input) {
-        input = input.replaceAll("/by ", "/");
-        String[] inputs = input.split("/");
+        String normalizedInput = input.replaceAll("/by ", "/");
+        String[] inputs = normalizedInput.split("/");
         if (inputs.length < 2) {
             throw new AthenaException("Please provide a deadline and /by date, Your Majesty.");
         }
