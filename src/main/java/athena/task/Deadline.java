@@ -10,6 +10,7 @@ import athena.storage.Storage;
  * Represents an Athena task that must be completed by a specific date and time.
  */
 public class Deadline extends Task {
+    private static final String DATE_DELIMITER = "/by ";
 
     private final LocalDateTime deadline;
 
@@ -19,12 +20,14 @@ public class Deadline extends Task {
      * @param input String from command line.
      */
     public Deadline(String input) {
-        input = input.replaceAll("/by ", "/");
-        String[] inputs = input.split("/");
-        if (inputs.length < 2) {
+        int dateDelimiterIndex = input.indexOf(DATE_DELIMITER);
+        if (dateDelimiterIndex < 0) {
             throw new AthenaException("Please provide a deadline and /by date, Your Majesty.");
         }
-        this(inputs[0].trim(), inputs[1].trim());
+
+        String description = input.substring(0, dateDelimiterIndex).trim();
+        String by = input.substring(dateDelimiterIndex + DATE_DELIMITER.length()).trim();
+        this(description, by);
     }
 
     /**

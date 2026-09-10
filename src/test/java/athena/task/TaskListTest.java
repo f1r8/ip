@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,29 @@ class TaskListTest {
         assertSame(first, taskList.get(0));
         assertSame(second, taskList.get(1));
         assertEquals(List.of(first, second), taskList.getTasks());
+    }
+
+    @Test
+    void constructor_initialTasks_copiesTasks() {
+        Todo todo = new Todo("Read book");
+        List<Task> initialTasks = new ArrayList<>(List.of(todo));
+
+        TaskList taskList = new TaskList(initialTasks);
+        initialTasks.clear();
+
+        assertEquals(1, taskList.size());
+        assertSame(todo, taskList.get(0));
+    }
+
+    @Test
+    void getTasks_returnedListCannotModifyTaskList() {
+        TaskList taskList = new TaskList();
+        taskList.add(new Todo("Read book"));
+
+        List<Task> returnedTasks = taskList.getTasks();
+
+        assertThrows(UnsupportedOperationException.class, returnedTasks::clear);
+        assertEquals(1, taskList.size());
     }
 
     @Test

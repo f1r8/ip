@@ -16,7 +16,6 @@ import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
-import athena.exception.AthenaException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -103,15 +102,15 @@ class MainWindowTest {
         assertEquals(List.of("dance", "bye"), receivedInputs);
     }
 
-    private String getResponse(String input) {
+    private CommandResponse getResponse(String input) {
         receivedInputs.add(input);
         if (input.equals("bye")) {
-            throw new AthenaException("Exiting...");
+            return new CommandResponse("", true);
         }
         if (input.equals("dance")) {
-            return "Unknown command";
+            return new CommandResponse("Unknown command", false);
         }
-        return "Response: " + input;
+        return new CommandResponse("Response: " + input, false);
     }
 
     private void assertDialog(FxRobot robot, VBox dialogContainer, int index, String expectedText,

@@ -30,6 +30,13 @@ class DeadlineTest {
     }
 
     @Test
+    void constructor_descriptionContainsSlash_descriptionPreserved() {
+        Deadline deadline = new Deadline("Read chapter 1/2 /by 2026-12-31 2359");
+
+        assertEquals("[D][ ] Read chapter 1/2 (by: Dec 31, 2026, 23:59)", deadline.toString());
+    }
+
+    @Test
     void constructor_savedCompletedDeadline_completedDeadlineRestored() {
         Deadline deadline = new Deadline(true, "Submit report", "2026-12-31T23:59");
 

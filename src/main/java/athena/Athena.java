@@ -3,8 +3,8 @@ package athena;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import athena.exception.AthenaException;
 import athena.gui.CommandResponder;
+import athena.gui.CommandResponse;
 import athena.parser.CommandHandler;
 import athena.parser.CommandResult;
 import athena.storage.Storage;
@@ -32,10 +32,8 @@ public class Athena implements CommandResponder {
         PrintStream guiOut = new PrintStream(outputBuffer);
         Ui ui = new Ui(System.in, guiOut);
 
-        TaskList taskList = new TaskList();
+        TaskList taskList = new TaskList(storage.loadTasks());
         commandHandler = new CommandHandler(storage, ui, taskList);
-
-        storage.areItemsLoaded(taskList.getTasks());
     }
 
     /**
@@ -46,10 +44,10 @@ public class Athena implements CommandResponder {
     public static void main(String[] args) {
         Storage storage = new Storage(DATA_FILE_PATH);
         Ui ui = new Ui(System.in, System.out);
-        TaskList taskList = new TaskList();
+        TaskList taskList = new TaskList(storage.loadTasks());
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
 
-        ui.showLoadingStatus(storage.areItemsLoaded(taskList.getTasks()), DATA_FILE_PATH);
+        ui.showLoadingStatus(storage.wasLoadSuccessful(), DATA_FILE_PATH);
         ui.showWelcome();
         while (ui.hasNextLine()) {
             ui.showDivider();
@@ -61,12 +59,10 @@ public class Athena implements CommandResponder {
     }
 
     @Override
-    public String getResponse(String input) {
+    public CommandResponse getResponse(String input) {
         outputBuffer.reset();
-        if (commandHandler.handleCommand(input) == CommandResult.EXIT) {
-            throw new AthenaException("Exiting...");
-        }
+        CommandResult result = commandHandler.handleCommand(input);
         assert outputBuffer.size() > 0 : "A continuing command should produce a response";
-        return outputBuffer.toString();
+        return new CommandResponse(outputBuffer.toString(), result == CommandResult.EXIT);
     }
 }

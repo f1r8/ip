@@ -28,8 +28,7 @@ public class Main extends Application {
             anchorPane = fxmlLoader.load();
             fxmlLoader.<MainWindow>getController().setCommandResponder(athena);
         } catch (IOException e) {
-            e.printStackTrace();
-            return;
+            throw new IllegalStateException("Failed to load main window layout", e);
         }
 
         Scene scene = new Scene(anchorPane);

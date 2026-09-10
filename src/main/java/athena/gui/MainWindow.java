@@ -1,6 +1,5 @@
 package athena.gui;
 
-import athena.exception.AthenaException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -49,16 +48,17 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
-        try {
-            String input = userInput.getText();
-            String response = commandResponder.getResponse(input);
-            dialogContainer.getChildren().addAll(
-                    DialogBox.getUserDialog(input),
-                    DialogBox.getAthenaDialog(response, athenaImage)
-            );
-            userInput.clear();
-        } catch (AthenaException e) {
+        String input = userInput.getText();
+        CommandResponse response = commandResponder.getResponse(input);
+        if (response.shouldExit()) {
             exitHandler.run();
+            return;
         }
+
+        dialogContainer.getChildren().addAll(
+                DialogBox.getUserDialog(input),
+                DialogBox.getAthenaDialog(response.message(), athenaImage)
+        );
+        userInput.clear();
     }
 }
