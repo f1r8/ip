@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import athena.exception.AthenaException;
 import athena.task.Deadline;
@@ -107,10 +108,9 @@ public class Storage {
      * @param items Tasks to be written.
      */
     public void writeItems(List<Task> items) {
-        String content = "";
-        for (Task item : items) {
-            content += item.getSaveString() + SAVE_NEWLINE;
-        }
+        String content = items.stream()
+                .map(item -> item.getSaveString() + SAVE_NEWLINE)
+                .collect(Collectors.joining());
         overwrite(content);
     }
 
@@ -126,19 +126,21 @@ public class Storage {
             return false;
         }
 
-        String[] lines = input.split(SAVE_NEWLINE);
-        for (String line : lines) {
-            String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
-            if (items.length == 3) {
-                tasks.add(new Todo(Task.isDoneFromStatus(items[1]), items[2]));
-            } else if (items.length == 4) {
-                tasks.add(new Deadline(Task.isDoneFromStatus(items[1]), items[2], items[3]));
-            } else if (items.length == 5) {
-                tasks.add(new Event(Task.isDoneFromStatus(items[1]), items[2], items[3], items[4]));
-            } else {
-                throw new AthenaException("Storage File Corrupted by this line: " + line);
-            }
-        }
+        List<Task> loadedTasks = input.lines()
+                .map(this::parseTask)
+                .toList();
+
+        tasks.addAll(loadedTasks);
         return true;
+    }
+
+    private Task parseTask(String line) {
+        String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
+        return switch(items.length) {
+            case 3 -> new Todo(Task.isDoneFromStatus(items[1]), items[2]);
+            case 4 -> new Deadline(Task.isDoneFromStatus(items[1]), items[2], items[3]);
+            case 5 -> new Event(Task.isDoneFromStatus(items[1]), items[2], items[3], items[4]);
+            default -> throw new AthenaException("Storage File Corrupted by this line: " + line);
+        };
     }
 }
