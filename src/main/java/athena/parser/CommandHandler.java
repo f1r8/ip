@@ -73,44 +73,27 @@ public class CommandHandler {
      * @return Result indicating whether Athena should continue or exit.
      */
     public CommandResult handleCommand(String inputLine) {
-        inputLine = inputLine.trim();
-        String[] commandParts = inputLine.split("\\s+", 2);
+        String trimmedInput = inputLine.trim();
+        String[] commandParts = trimmedInput.split("\\s+", 2);
         Command command = Command.search(commandParts[0]);
         String arguments = commandParts.length > 1 ? commandParts[1] : "";
 
         switch (command) {
-            case BYE:
+            case BYE -> {
                 ui.showGoodbye();
                 return CommandResult.EXIT;
-            case LIST:
-                ui.showTaskList(taskList.getTasks());
-                break;
-            case MARK:
-                handleMarkCommand(arguments, true);
-                break;
-            case UNMARK:
-                handleMarkCommand(arguments, false);
-                break;
-            case TODO:
-                createAndAddTask(arguments, Todo::new);
-                break;
-            case DEADLINE:
-                createAndAddTask(arguments, Deadline::new);
-                break;
-            case EVENT:
-                createAndAddTask(arguments, Event::new);
-                break;
-            case DELETE:
-                handleDeleteCommand(arguments);
-                break;
-            case FIND:
-                handleFindCommand(arguments);
-                break;
-            default:
-                assert command == Command.UNKNOWN : "Unhandled command: " + command
-                        + "add a case in handleCommand's switch";
-                ui.showUnknownCommand();
-                break;
+            }
+            case LIST -> ui.showTaskList(taskList.getTasks());
+            case MARK -> handleMarkCommand(arguments, true);
+            case UNMARK -> handleMarkCommand(arguments, false);
+            case TODO -> createAndAddTask(arguments, Todo::new);
+            case DEADLINE -> createAndAddTask(arguments, Deadline::new);
+            case EVENT -> createAndAddTask(arguments, Event::new);
+            case DELETE -> handleDeleteCommand(arguments);
+            case FIND -> handleFindCommand(arguments);
+            case UNKNOWN -> ui.showUnknownCommand();
+            default -> {
+                assert false : "Unhandled command: " + command + "add a case in handleCommand's switch"; }
         }
         return CommandResult.CONTINUE;
     }
@@ -122,49 +105,57 @@ public class CommandHandler {
      * @param shouldMarkAsDone {@code true} if task should be marked, {@code false} if unmarked.
      */
     private void handleMarkCommand(String arguments, boolean shouldMarkAsDone) {
+        int index;
         try {
-            int index = Integer.parseInt(arguments.trim());
-            Task task = taskList.get(index - 1);
-            if (shouldMarkAsDone) {
-                task.markDone();
-            } else {
-                task.unmarkDone();
-            }
-            ui.showTaskStatusChanged(task, shouldMarkAsDone);
-            storage.writeItems(taskList.getTasks());
+            index = Integer.parseInt(arguments.trim()) - 1;
         } catch (NumberFormatException e) {
             ui.showMissingMarkIndex();
-        } catch (IndexOutOfBoundsException e) {
-            ui.showInvalidTaskIndex();
+            return;
         }
+
+        if (index < 0 || index >= taskList.size()) {
+            ui.showInvalidTaskIndex();
+            return;
+        }
+
+        Task task = taskList.get(index);
+        if (shouldMarkAsDone) {
+            task.markDone();
+        } else {
+            task.unmarkDone();
+        }
+        ui.showTaskStatusChanged(task, shouldMarkAsDone);
+        storage.saveTasks(taskList.getTasks());
     }
 
     private void createAndAddTask(String arguments, Function<String, Task> taskFactory) {
         try {
             Task task = taskFactory.apply(arguments);
             taskList.add(task);
-            handleTaskCommand(task);
-            storage.writeItems(taskList.getTasks());
+            ui.showTaskAdded(task, taskList.size());
+            storage.saveTasks(taskList.getTasks());
         } catch (AthenaException e) {
             ui.showError(e.getMessage());
         }
     }
 
-    private void handleTaskCommand(Task task) {
-        ui.showTaskAdded(task, taskList.size());
-    }
-
     private void handleDeleteCommand(String arguments) {
+        int index;
         try {
-            int index = Integer.parseInt(arguments.trim());
-            Task task = taskList.remove(index - 1);
-            storage.writeItems(taskList.getTasks());
-            ui.showTaskDeleted(task, taskList.size());
+            index = Integer.parseInt(arguments.trim()) - 1;
         } catch (NumberFormatException e) {
             ui.showMissingDeleteIndex();
-        } catch (IndexOutOfBoundsException e) {
-            ui.showInvalidTaskIndex();
+            return;
         }
+
+        if (index < 0 || index >= taskList.size()) {
+            ui.showInvalidTaskIndex();
+            return;
+        }
+
+        Task task = taskList.remove(index);
+        storage.saveTasks(taskList.getTasks());
+        ui.showTaskDeleted(task, taskList.size());
     }
 
     private void handleFindCommand(String arguments) {

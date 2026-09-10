@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -24,27 +25,6 @@ import athena.task.Todo;
  * Tests file creation, reading, writing, and task restoration.
  */
 class StorageTest {
-    @Test
-    void write_newAndExistingFile_contentAppended(@TempDir Path tempDir) throws IOException {
-        Path path = tempDir.resolve("nested").resolve("athena.txt");
-        Storage storage = new Storage(path.toString());
-
-        storage.write("first");
-        storage.write(" second");
-
-        assertEquals("first second", Files.readString(path));
-    }
-
-    @Test
-    void write_pathIsDirectory_exceptionThrown(@TempDir Path tempDir) {
-        Storage storage = new Storage(tempDir.toString());
-
-        AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.write("content"));
-
-        assertEquals("Unable to append to file", exception.getMessage());
-    }
-
     @Test
     void ensureFileExists_nestedPath_directoriesAndFileCreated(@TempDir Path tempDir) {
         Path path = tempDir.resolve("nested").resolve("data").resolve("athena.txt");
@@ -103,7 +83,16 @@ class StorageTest {
     }
 
     @Test
-    void writeItems_listOfTasks_addedToStorage(@TempDir Path tempDir) throws IOException {
+    void read_pathIsDirectory_exceptionThrown(@TempDir Path tempDir) {
+        Storage storage = new Storage(tempDir.toString());
+
+        AthenaException exception = assertThrows(AthenaException.class, storage::read);
+
+        assertEquals("Something went wrong reading the file", exception.getMessage());
+    }
+
+    @Test
+    void saveTasks_listOfTasks_writtenToStorage(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("duke.txt");
         Storage storage = new Storage(path.toString());
         ArrayList<Task> tasks = new ArrayList<>();
@@ -111,7 +100,7 @@ class StorageTest {
         tasks.add(new Deadline("Do not separate subject from body with a blank line", "2001-09-11 0846"));
         tasks.add(new Event("Ensure each line of the body exceeds 72 characters",
                 "2001-09-11 0846", "2026-08-26 2154"));
-        storage.writeItems(tasks);
+        storage.saveTasks(tasks);
 
         String expected = "";
         for (Task task : tasks) {
@@ -121,39 +110,39 @@ class StorageTest {
     }
 
     @Test
-    void writeItems_fileDoesNotExist_createsFile(@TempDir Path tempDir) throws IOException {
+    void saveTasks_fileDoesNotExist_createsFile(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("duke.txt");
         Storage storage = new Storage(path.toString());
         assertFalse(Files.exists(path));
 
-        storage.writeItems(new ArrayList<>());
+        storage.saveTasks(new ArrayList<>());
         assertTrue(Files.exists(path));
     }
 
     @Test
-    void writeItems_fileHasContent_overwritesFile(@TempDir Path tempDir) throws IOException {
+    void saveTasks_fileHasContent_overwritesFile(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("duke.txt");
         Storage storage = new Storage(path.toString());
         ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(new Todo("Do not use bullet points in git commit body"));
-        storage.writeItems(tasks);
+        storage.saveTasks(tasks);
         assertEquals(tasks.getFirst().getSaveString() + Storage.SAVE_NEWLINE, Files.readString(path));
 
-        storage.writeItems(new ArrayList<>());
+        storage.saveTasks(new ArrayList<>());
         assertEquals("", Files.readString(path));
     }
 
     @Test
-    void areItemsLoaded_missingFile_returnsFalseAndLeavesListEmpty(@TempDir Path tempDir) {
+    void loadTasks_missingFile_returnsFalseAndLeavesListEmpty(@TempDir Path tempDir) {
         Storage storage = new Storage(tempDir.resolve("missing.txt").toString());
-        ArrayList<Task> tasks = new ArrayList<>();
+        List<Task> tasks = storage.loadTasks();
 
-        assertFalse(storage.areItemsLoaded(tasks));
+        assertFalse(storage.wasLoadSuccessful());
         assertTrue(tasks.isEmpty());
     }
 
     @Test
-    void areItemsLoaded_allTaskTypes_tasksRestored(@TempDir Path tempDir) throws IOException {
+    void loadTasks_allTaskTypes_tasksRestored(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("athena.txt");
         String savedTasks = "T | 0 | Read book" + Storage.SAVE_NEWLINE
                 + "D | 1 | Submit report | 2026-12-31T23:59" + Storage.SAVE_NEWLINE
@@ -161,9 +150,9 @@ class StorageTest {
                 + Storage.SAVE_NEWLINE;
         Files.writeString(path, savedTasks);
         Storage storage = new Storage(path.toString());
-        ArrayList<Task> tasks = new ArrayList<>();
+        List<Task> tasks = storage.loadTasks();
 
-        assertTrue(storage.areItemsLoaded(tasks));
+        assertTrue(storage.wasLoadSuccessful());
 
         assertEquals(3, tasks.size());
         assertInstanceOf(Todo.class, tasks.get(0));
@@ -176,26 +165,36 @@ class StorageTest {
     }
 
     @Test
-    void areItemsLoaded_corruptedLine_exceptionThrown(@TempDir Path tempDir) throws IOException {
+    void loadTasks_corruptedLine_exceptionThrown(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("athena.txt");
         Files.writeString(path, "not a valid saved task");
         Storage storage = new Storage(path.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.areItemsLoaded(new ArrayList<>()));
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
 
         assertEquals("Storage File Corrupted by this line: not a valid saved task",
                 exception.getMessage());
     }
 
     @Test
-    void areItemsLoaded_invalidStatus_exceptionThrown(@TempDir Path tempDir) throws IOException {
+    void loadTasks_unknownTaskType_exceptionThrown(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        Files.writeString(path, "X | 0 | Read book");
+        Storage storage = new Storage(path.toString());
+
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
+
+        assertEquals("Storage File Corrupted by this line: X | 0 | Read book",
+                exception.getMessage());
+    }
+
+    @Test
+    void loadTasks_invalidStatus_exceptionThrown(@TempDir Path tempDir) throws IOException {
         Path path = tempDir.resolve("athena.txt");
         Files.writeString(path, "T | X | Read book");
         Storage storage = new Storage(path.toString());
 
-        AthenaException exception = assertThrows(AthenaException.class, () ->
-                storage.areItemsLoaded(new ArrayList<>()));
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
 
         assertEquals("Error converting save string to num: X", exception.getMessage());
     }

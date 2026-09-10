@@ -18,12 +18,12 @@ class TaskTest {
      * Concrete task used to exercise the base class without subtype formatting.
      */
     private static class TestTask extends Task {
-        TestTask(String name) {
-            super(name);
+        TestTask(String description) {
+            super(description);
         }
 
-        TestTask(boolean isDone, String name) {
-            super(isDone, name);
+        TestTask(boolean isDone, String description) {
+            super(isDone, description);
         }
     }
 
@@ -32,7 +32,7 @@ class TaskTest {
         Task task = new TestTask("Read book");
 
         assertEquals(" ", task.getStatusIcon());
-        assertEquals("0", task.getStoreStatusIcon());
+        assertEquals("0", task.getSaveStatus());
         assertEquals("[ ] Read book", task.toString());
         assertEquals("0 | Read book", task.getSaveString());
     }
@@ -42,26 +42,20 @@ class TaskTest {
         Task task = new TestTask(true, "Read book");
 
         assertEquals("X", task.getStatusIcon());
-        assertEquals("1", task.getStoreStatusIcon());
+        assertEquals("1", task.getSaveStatus());
         assertEquals("[X] Read book", task.toString());
         assertEquals("1 | Read book", task.getSaveString());
     }
 
     @Test
     void constructors_emptyDescription_exceptionThrown() {
-        assertThrows(AthenaException.class, () -> new TestTask(""));
-        assertThrows(AthenaException.class, () -> new TestTask(true, ""));
-    }
+        AthenaException incompleteTaskException = assertThrows(AthenaException.class, () ->
+                new TestTask(""));
+        AthenaException completedTaskException = assertThrows(AthenaException.class, () ->
+                new TestTask(true, ""));
 
-    @Test
-    void setDone_bothValues_statusUpdated() {
-        Task task = new TestTask("Read book");
-
-        task.setDone(true);
-        assertEquals("X", task.getStatusIcon());
-
-        task.setDone(false);
-        assertEquals(" ", task.getStatusIcon());
+        assertEquals("Task description cannot be empty", incompleteTaskException.getMessage());
+        assertEquals("Task description cannot be empty", completedTaskException.getMessage());
     }
 
     @Test

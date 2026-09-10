@@ -33,6 +33,14 @@ class EventTest {
     }
 
     @Test
+    void constructor_descriptionContainsSlash_descriptionPreserved() {
+        Event event = new Event("Review plan A/B /from 2026-12-30 1400 /to 2026-12-30 1500");
+
+        assertEquals("[E][ ] Review plan A/B (from: Dec 30, 2026, 14:00, "
+                + "to: Dec 30, 2026, 15:00)", event.toString());
+    }
+
+    @Test
     void constructor_savedCompletedEvent_completedEventRestored() {
         Event event = new Event(true, "Team meeting", "2026-12-30T14:00", "2026-12-30T15:00");
 

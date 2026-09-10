@@ -9,7 +9,7 @@ public interface CommandResponder {
      * Returns the response produced for a user command.
      *
      * @param input User command to process.
-     * @return Response to display.
+     * @return Response containing the message and resulting application state.
      */
-    String getResponse(String input);
+    CommandResponse getResponse(String input);
 }

@@ -10,6 +10,10 @@ import athena.storage.Storage;
  * Represents an Athena task scheduled between two dates and times.
  */
 public class Event extends Task {
+    private static final String START_DELIMITER = "/from ";
+    private static final String END_DELIMITER = "/to ";
+    private static final String MISSING_DETAILS_MESSAGE =
+            "Please provide an event with /from and /to times, Your Majesty.";
 
     private final LocalDateTime startDateTime;
     private final LocalDateTime endDateTime;
@@ -20,13 +24,22 @@ public class Event extends Task {
      * @param input String from command line.
      */
     public Event(String input) {
-        input = input.replaceAll("/from ", "/");
-        input = input.replaceAll("/to ", "/");
-        String[] inputs = input.split("/");
-        if (inputs.length < 3) {
-            throw new AthenaException("Please provide an event with /from and /to times, Your Majesty.");
+        int startDelimiterIndex = input.indexOf(START_DELIMITER);
+        if (startDelimiterIndex < 0) {
+            throw new AthenaException(MISSING_DETAILS_MESSAGE);
         }
-        this(inputs[0].trim(), inputs[1].trim(), inputs[2].trim());
+
+        int endDelimiterIndex = input.indexOf(END_DELIMITER,
+                startDelimiterIndex + START_DELIMITER.length());
+        if (endDelimiterIndex < 0) {
+            throw new AthenaException(MISSING_DETAILS_MESSAGE);
+        }
+
+        String description = input.substring(0, startDelimiterIndex).trim();
+        String from = input.substring(startDelimiterIndex + START_DELIMITER.length(),
+                endDelimiterIndex).trim();
+        String to = input.substring(endDelimiterIndex + END_DELIMITER.length()).trim();
+        this(description, from, to);
     }
 
     /**

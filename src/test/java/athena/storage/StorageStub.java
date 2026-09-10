@@ -18,23 +18,32 @@ public class StorageStub extends Storage {
     }
 
     /**
-     * Always reports that items are loaded successfully, without reading any file.
+     * Returns no tasks without accessing the file system.
      *
-     * @param tasks The list to check (ignored).
+     * @return An empty task list.
+     */
+    @Override
+    public List<Task> loadTasks() {
+        return List.of();
+    }
+
+    /**
+     * Always reports that items are loaded successfully.
+     *
      * @return {@code true} always.
      */
     @Override
-    public boolean areItemsLoaded(List<Task> tasks) {
+    public boolean wasLoadSuccessful() {
         return true;
     }
 
     /**
-     * Does nothing, so no items are actually written to any file.
+     * Does nothing, so no tasks are written to any file.
      *
-     * @param items The list of items to write (ignored).
+     * @param tasks Tasks that would be saved (ignored).
      */
     @Override
-    public void writeItems(List<Task> items) {
+    public void saveTasks(List<Task> tasks) {
         //Do nothing
     }
 }

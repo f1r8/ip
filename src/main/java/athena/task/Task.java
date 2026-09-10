@@ -7,53 +7,47 @@ import athena.storage.Storage;
  * Represents the common state and behavior of an Athena task.
  */
 public abstract class Task {
-    private final String name;
+    private static final String SAVE_STATUS_DONE = "1";
+    private static final String SAVE_STATUS_NOT_DONE = "0";
+
+    private final String description;
     private boolean isDone;
 
     /**
      * Constructs an incomplete task with the specified description.
      *
-     * @param name Description of the task.
+     * @param description Description of the task.
      */
-    public Task(String name) {
-        this(false, name);
+    public Task(String description) {
+        this(false, description);
     }
 
     /**
      * Constructs a Task object.
      *
      * @param isDone {@code true} if the task is complete, {@code false} otherwise.
-     * @param name Description of the Task object.
+     * @param description Description of the Task object.
      */
-    public Task(boolean isDone, String name) {
-        if (name.isEmpty()) {
-            throw new AthenaException("Task name cannot be empty");
+    public Task(boolean isDone, String description) {
+        if (description.isEmpty()) {
+            throw new AthenaException("Task description cannot be empty");
         }
         this.isDone = isDone;
-        this.name = name;
-    }
-
-    /**
-     * Sets a Task object as done or not done.
-     *
-     * @param isDone {@code true} if the task is complete, {@code false} otherwise.
-     */
-    public void setDone(boolean isDone) {
-        this.isDone = isDone;
+        this.description = description;
     }
 
     /**
      * Marks a Task object as done.
      */
     public void markDone() {
-        this.setDone(true);
+        this.isDone = true;
     }
 
     /**
      * Unmarks a Task object as not done.
      */
     public void unmarkDone() {
-        this.setDone(false);
+        this.isDone = false;
     }
 
     /**
@@ -72,28 +66,28 @@ public abstract class Task {
      */
     @Override
     public String toString() {
-        return "[" + this.getStatusIcon() + "] " + this.name;
+        return "[" + this.getStatusIcon() + "] " + this.description;
     }
 
     /**
-     * Gets the Storage variant of the status icon.
+     * Returns the persisted completion status.
      *
-     * @return String of the storage status icon.
+     * @return Save-file representation of the completion status.
      */
-    public String getStoreStatusIcon() {
-        return this.isDone ? "1" : "0";
+    public String getSaveStatus() {
+        return this.isDone ? SAVE_STATUS_DONE : SAVE_STATUS_NOT_DONE;
     }
 
     /**
      * Returns whether a saved status represents a completed task.
      *
-     * @param status String of the storage status icon.
+     * @param status Saved completion status.
      * @return {@code true} if the task is complete, {@code false} otherwise.
      */
     public static boolean isDoneFromStatus(String status) {
-        if (status.equals("1")) {
+        if (status.equals(SAVE_STATUS_DONE)) {
             return true;
-        } else if (status.equals("0")) {
+        } else if (status.equals(SAVE_STATUS_NOT_DONE)) {
             return false;
         }
         throw new AthenaException("Error converting save string to num: " + status);
@@ -105,6 +99,6 @@ public abstract class Task {
      * @return Storage String.
      */
     public String getSaveString() {
-        return getStoreStatusIcon() + Storage.SAVE_SEPARATOR + this.name;
+        return getSaveStatus() + Storage.SAVE_SEPARATOR + this.description;
     }
 }

@@ -14,10 +14,7 @@ public class Todo extends Task {
      * @param description Command-line input used to construct the todo.
      */
     public Todo(String description) {
-        if (description.isEmpty()) {
-            throw new AthenaException("Please provide a todo description, Your Majesty.");
-        }
-        super(description);
+        this(false, description);
     }
 
     /**
