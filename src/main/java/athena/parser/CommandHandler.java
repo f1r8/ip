@@ -91,7 +91,9 @@ public class CommandHandler {
             case EVENT -> createAndAddTask(arguments, Event::new);
             case DELETE -> handleDeleteCommand(arguments);
             case FIND -> handleFindCommand(arguments);
-            default -> ui.showUnknownCommand();
+            case UNKNOWN -> ui.showUnknownCommand();
+            default -> {
+                assert false : "Unhandled command: " + command + "add a case in handleCommand's switch"; }
         }
         return CommandResult.CONTINUE;
     }

@@ -82,7 +82,7 @@ public class Storage {
     public void overwrite(String content) {
         ensureFileExists();
         try {
-            Files.writeString(getPath(), content);
+            Files.writeString(getPath(), content); // Ensures null, no assert needed
         } catch (IOException e) {
             throw new AthenaException("Something went wrong overwriting the file");
         }
@@ -113,6 +113,7 @@ public class Storage {
      * @param tasks Tasks to be written.
      */
     public void saveTasks(List<Task> tasks) {
+        assert tasks != null : "tasks cannot be null";
         String content = "";
         for (Task task : tasks) {
             content += task.getSaveString() + SAVE_NEWLINE;
