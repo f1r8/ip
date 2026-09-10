@@ -6,8 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import athena.exception.AthenaException;
 import athena.task.Deadline;
@@ -19,10 +21,14 @@ import athena.task.Todo;
  * Persists Athena tasks in a local text file.
  */
 public class Storage {
-    /** Separator between fields in a saved task */
+    /**
+     * Separator between fields in a saved task
+     */
     public static final String SAVE_SEPARATOR = " | ";
 
-    /** Line separator used between saved tasks */
+    /**
+     * Line separator used between saved tasks
+     */
     public static final String SAVE_NEWLINE = System.lineSeparator();
 
     private static final int SAVE_TYPE_INDEX = 0;
@@ -114,10 +120,9 @@ public class Storage {
      */
     public void saveTasks(List<Task> tasks) {
         assert tasks != null : "tasks cannot be null";
-        String content = "";
-        for (Task task : tasks) {
-            content += task.getSaveString() + SAVE_NEWLINE;
-        }
+        String content = tasks.stream()
+                .map(task -> task.getSaveString() + SAVE_NEWLINE)
+                .collect(Collectors.joining());
         overwrite(content);
     }
 
@@ -127,17 +132,15 @@ public class Storage {
      * @return Tasks read from storage.
      */
     public List<Task> loadTasks() {
-        List<Task> tasks = new ArrayList<>();
         String input = read();
         if (input.isEmpty()) {
             loadSuccessful = false;
-            return tasks;
+            return new ArrayList<>();
         }
 
-        String[] lines = input.split(SAVE_NEWLINE);
-        for (String line : lines) {
-            tasks.add(parseTask(line));
-        }
+        List<Task> tasks = Arrays.stream(input.split(SAVE_NEWLINE))
+                .map(Storage::parseTask)
+                .toList();
         loadSuccessful = true;
         return tasks;
     }
@@ -153,21 +156,32 @@ public class Storage {
 
     private static Task parseTask(String line) {
         String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
-        if (items.length == SAVE_TODO_FIELD_COUNT
-                && SAVE_TODO_TYPE.equals(items[SAVE_TYPE_INDEX])) {
-            return new Todo(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
-                    items[SAVE_DESCRIPTION_INDEX]);
-        } else if (items.length == SAVE_DEADLINE_FIELD_COUNT
-                && SAVE_DEADLINE_TYPE.equals(items[SAVE_TYPE_INDEX])) {
-            return new Deadline(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
-                    items[SAVE_DESCRIPTION_INDEX],
-                    items[SAVE_DEADLINE_INDEX]);
-        } else if (items.length == SAVE_EVENT_FIELD_COUNT
-                && SAVE_EVENT_TYPE.equals(items[SAVE_TYPE_INDEX])) {
-            return new Event(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
-                    items[SAVE_DESCRIPTION_INDEX],
-                    items[SAVE_EVENT_START_INDEX],
-                    items[SAVE_EVENT_END_INDEX]);
+        String type = items[SAVE_TYPE_INDEX];
+
+        switch (type) {
+            case SAVE_TODO_TYPE:
+                if (items.length == SAVE_TODO_FIELD_COUNT) {
+                    return new Todo(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
+                            items[SAVE_DESCRIPTION_INDEX]);
+                }
+                break;
+            case SAVE_DEADLINE_TYPE:
+                if (items.length == SAVE_DEADLINE_FIELD_COUNT) {
+                    return new Deadline(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
+                            items[SAVE_DESCRIPTION_INDEX],
+                            items[SAVE_DEADLINE_INDEX]);
+                }
+                break;
+            case SAVE_EVENT_TYPE:
+                if (items.length == SAVE_EVENT_FIELD_COUNT) {
+                    return new Event(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
+                            items[SAVE_DESCRIPTION_INDEX],
+                            items[SAVE_EVENT_START_INDEX],
+                            items[SAVE_EVENT_END_INDEX]);
+                }
+                break;
+            default:
+                break;
         }
         throw new AthenaException("Storage File Corrupted by this line: " + line);
     }

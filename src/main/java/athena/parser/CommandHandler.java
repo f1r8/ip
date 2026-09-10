@@ -1,6 +1,6 @@
 package athena.parser;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -57,12 +57,10 @@ public class CommandHandler {
         }
 
         private static Command search(String keyword) {
-            for (Command command : values()) {
-                if (command.keyword.equalsIgnoreCase(keyword)) {
-                    return command;
-                }
-            }
-            return UNKNOWN;
+            return Arrays.stream(values())
+                    .filter(command -> command.keyword.equalsIgnoreCase(keyword))
+                    .findFirst()
+                    .orElse(UNKNOWN);
         }
     }
 
@@ -165,14 +163,11 @@ public class CommandHandler {
         }
 
         String normalizedKeyword = arguments.toLowerCase(Locale.ROOT);
-        List<Task> matchingTasks = new ArrayList<>();
-        for (int i = 0; i < taskList.size(); i++) {
-            Task task = taskList.get(i);
-            String normalizedTask = task.toString().toLowerCase(Locale.ROOT);
-            if (normalizedTask.contains(normalizedKeyword)) {
-                matchingTasks.add(task);
-            }
-        }
+        List<Task> matchingTasks = taskList.getTasks().stream()
+                .filter(task -> task.toString()
+                        .toLowerCase(Locale.ROOT)
+                        .contains(normalizedKeyword))
+                .toList();
         ui.showMatchingTasks(matchingTasks);
     }
 }
