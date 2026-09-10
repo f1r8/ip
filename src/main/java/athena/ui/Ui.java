@@ -129,6 +129,13 @@ public class Ui {
     }
 
     /**
+     * Prompts the user to provide tags for a findtag command.
+     */
+    public void showMissingFindTags() {
+        println("Which tags shall I search for, Your Majesty?");
+    }
+
+    /**
      * Shows the response for an unrecognized command.
      */
     public void showUnknownCommand() {
@@ -151,10 +158,55 @@ public class Ui {
     }
 
     /**
+     * Shows the result of adding or removing task tags.
+     *
+     * @param task Task whose tags changed.
+     * @param isAdded {@code true} if tags were added, {@code false} if tags were removed.
+     */
+    public void showTaskTagsChanged(Task task, boolean isAdded) {
+        println(isAdded
+                ? "As you command, Your Majesty. I've added the tags to this task:"
+                : "As you wish, Your Majesty. I've removed the tags from this task:");
+        showTask(task);
+    }
+
+    /**
+     * Shows the shared response for a tag command that did not change its task.
+     *
+     * @param task Task that remained unchanged.
+     */
+    public void showNoTagChanges(Task task) {
+        println("Your Majesty, no tags changed for this task:");
+        showTask(task);
+    }
+
+    /**
      * Prompts the user to provide a task number for a mark command.
      */
     public void showMissingMarkIndex() {
         println("Which task shall I mark, Your Majesty?");
+    }
+
+    /**
+     * Prompts the user to provide a task number for a tag or untag command.
+     *
+     * @param isAddCommand {@code true} for tag, {@code false} for untag.
+     */
+    public void showMissingTagIndex(boolean isAddCommand) {
+        println(isAddCommand
+                ? "Which task shall I tag, Your Majesty?"
+                : "Which task shall I untag, Your Majesty?");
+    }
+
+    /**
+     * Prompts the user to provide tags for a tag or untag command.
+     *
+     * @param isAddCommand {@code true} for tag, {@code false} for untag.
+     */
+    public void showMissingTagArguments(boolean isAddCommand) {
+        println(isAddCommand
+                ? "Which tags shall I add, Your Majesty?"
+                : "Which tags shall I remove, Your Majesty?");
     }
 
     /**

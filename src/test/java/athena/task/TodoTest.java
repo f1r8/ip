@@ -29,6 +29,15 @@ class TodoTest {
     }
 
     @Test
+    void taggedTodo_displayAndStorage_tagsFollowTaskInformation() {
+        Todo todo = new Todo("Read book");
+        todo.addTag(new Tag("#Work"));
+
+        assertEquals("[T][ ] Read book #Work", todo.toString());
+        assertEquals("T | 0 | Read book | #Work", todo.getSaveString());
+    }
+
+    @Test
     void constructors_emptyDescription_exceptionThrown() {
         AthenaException newTodoException = assertThrows(AthenaException.class, () ->
                 new Todo(""));

@@ -1,5 +1,7 @@
 package athena.task;
 
+import java.util.List;
+
 import athena.exception.AthenaException;
 import athena.storage.Storage;
 
@@ -24,10 +26,21 @@ public class Todo extends Task {
      * @param description Describes the Todo object.
      */
     public Todo(boolean isDone, String description) {
+        this(isDone, description, List.of());
+    }
+
+    /**
+     * Constructs a Todo object with saved tags.
+     *
+     * @param isDone {@code true} if the todo is done, {@code false} otherwise.
+     * @param description Describes the Todo object.
+     * @param tags Saved tags to restore.
+     */
+    public Todo(boolean isDone, String description, List<Tag> tags) {
         if (description.isEmpty()) {
             throw new AthenaException("Please provide a todo description, Your Majesty.");
         }
-        super(isDone, description);
+        super(isDone, description, tags);
     }
 
     /**
@@ -36,8 +49,8 @@ public class Todo extends Task {
      * @return The task in the format "[T] {Task}".
      */
     @Override
-    public String toString() {
-        return "[T]" + super.toString();
+    protected String getDisplayStringWithoutTags() {
+        return "[T]" + super.getDisplayStringWithoutTags();
     }
 
     /**
@@ -46,7 +59,7 @@ public class Todo extends Task {
      * @return The task in the format "T{Separator}{Task}".
      */
     @Override
-    public String getSaveString() {
-        return "T" + Storage.SAVE_SEPARATOR + super.getSaveString();
+    protected String getSaveStringWithoutTags() {
+        return "T" + Storage.SAVE_SEPARATOR + super.getSaveStringWithoutTags();
     }
 }

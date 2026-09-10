@@ -45,6 +45,17 @@ class DeadlineTest {
     }
 
     @Test
+    void taggedDeadline_displayAndStorage_tagsFollowDeadline() {
+        Deadline deadline = new Deadline("Submit report", "2026-12-31 2359");
+        deadline.addTag(new Tag("#Work"));
+
+        assertEquals("[D][ ] Submit report (by: Dec 31, 2026, 23:59) #Work",
+                deadline.toString());
+        assertEquals("D | 0 | Submit report | 2026-12-31T23:59 | #Work",
+                deadline.getSaveString());
+    }
+
+    @Test
     void constructor_missingByDate_exceptionThrown() {
         AthenaException exception = assertThrows(AthenaException.class, () ->
                 new Deadline("Submit report"));

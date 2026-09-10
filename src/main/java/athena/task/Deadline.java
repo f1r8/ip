@@ -1,6 +1,7 @@
 package athena.task;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import athena.exception.AthenaException;
 import athena.parser.DateParser;
@@ -49,7 +50,19 @@ public class Deadline extends Task {
      * @param by Saved deadline date and time.
      */
     public Deadline(boolean isDone, String description, String by) {
-        super(isDone, description);
+        this(isDone, description, by, List.of());
+    }
+
+    /**
+     * Constructs a Deadline object with saved tags.
+     *
+     * @param isDone {@code true} if the deadline is complete, {@code false} otherwise.
+     * @param description Description of the deadline.
+     * @param by Saved deadline date and time.
+     * @param tags Saved tags to restore.
+     */
+    public Deadline(boolean isDone, String description, String by, List<Tag> tags) {
+        super(isDone, description, tags);
         this.deadline = LocalDateTime.parse(by);
     }
 
@@ -59,8 +72,9 @@ public class Deadline extends Task {
      * @return The task in the format "[D] {Task} (by: {Date})".
      */
     @Override
-    public String toString() {
-        return "[D]" + super.toString() + " (by: " + DateParser.formatOutput(this.deadline) + ")";
+    protected String getDisplayStringWithoutTags() {
+        return "[D]" + super.getDisplayStringWithoutTags()
+                + " (by: " + DateParser.formatOutput(this.deadline) + ")";
     }
 
     /**
@@ -69,8 +83,8 @@ public class Deadline extends Task {
      * @return The task in the format "D{Separator}{Task}{Separator}{Date}".
      */
     @Override
-    public String getSaveString() {
-        return "D" + Storage.SAVE_SEPARATOR + super.getSaveString()
+    protected String getSaveStringWithoutTags() {
+        return "D" + Storage.SAVE_SEPARATOR + super.getSaveStringWithoutTags()
                 + Storage.SAVE_SEPARATOR + this.deadline;
     }
 }

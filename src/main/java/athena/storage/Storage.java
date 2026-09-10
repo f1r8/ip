@@ -7,13 +7,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import athena.exception.AthenaException;
 import athena.task.Deadline;
 import athena.task.Event;
+import athena.task.Tag;
 import athena.task.Task;
 import athena.task.Todo;
 
@@ -40,6 +43,7 @@ public class Storage {
     private static final int SAVE_TODO_FIELD_COUNT = 3;
     private static final int SAVE_DEADLINE_FIELD_COUNT = 4;
     private static final int SAVE_EVENT_FIELD_COUNT = 5;
+    private static final int SAVE_TAG_FIELD_OFFSET = 1;
     private static final String SAVE_TODO_TYPE = "T";
     private static final String SAVE_DEADLINE_TYPE = "D";
     private static final String SAVE_EVENT_TYPE = "E";
@@ -155,34 +159,62 @@ public class Storage {
     }
 
     private static Task parseTask(String line) {
-        String[] items = line.split(Pattern.quote(SAVE_SEPARATOR));
+        String[] items = line.split(Pattern.quote(SAVE_SEPARATOR), -1);
         String type = items[SAVE_TYPE_INDEX];
 
         switch (type) {
             case SAVE_TODO_TYPE:
-                if (items.length == SAVE_TODO_FIELD_COUNT) {
+                if (hasSupportedFieldCount(items, SAVE_TODO_FIELD_COUNT)) {
                     return new Todo(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
-                            items[SAVE_DESCRIPTION_INDEX]);
+                            items[SAVE_DESCRIPTION_INDEX],
+                            parseTags(items, SAVE_TODO_FIELD_COUNT));
                 }
                 break;
             case SAVE_DEADLINE_TYPE:
-                if (items.length == SAVE_DEADLINE_FIELD_COUNT) {
+                if (hasSupportedFieldCount(items, SAVE_DEADLINE_FIELD_COUNT)) {
                     return new Deadline(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
                             items[SAVE_DESCRIPTION_INDEX],
-                            items[SAVE_DEADLINE_INDEX]);
+                            items[SAVE_DEADLINE_INDEX],
+                            parseTags(items, SAVE_DEADLINE_FIELD_COUNT));
                 }
                 break;
             case SAVE_EVENT_TYPE:
-                if (items.length == SAVE_EVENT_FIELD_COUNT) {
+                if (hasSupportedFieldCount(items, SAVE_EVENT_FIELD_COUNT)) {
                     return new Event(Task.isDoneFromStatus(items[SAVE_STATUS_INDEX]),
                             items[SAVE_DESCRIPTION_INDEX],
                             items[SAVE_EVENT_START_INDEX],
-                            items[SAVE_EVENT_END_INDEX]);
+                            items[SAVE_EVENT_END_INDEX],
+                            parseTags(items, SAVE_EVENT_FIELD_COUNT));
                 }
                 break;
             default:
                 break;
         }
         throw new AthenaException("Storage File Corrupted by this line: " + line);
+    }
+
+    private static boolean hasSupportedFieldCount(String[] items, int legacyFieldCount) {
+        return items.length == legacyFieldCount
+                || items.length == legacyFieldCount + SAVE_TAG_FIELD_OFFSET;
+    }
+
+    private static List<Tag> parseTags(String[] items, int legacyFieldCount) {
+        if (items.length == legacyFieldCount) {
+            return List.of();
+        }
+
+        try {
+            List<Tag> tags = Arrays.stream(items[legacyFieldCount].split(",", -1))
+                    .map(Tag::new)
+                    .toList();
+            Set<Tag> uniqueTags = new HashSet<>(tags);
+            if (uniqueTags.size() != tags.size()) {
+                throw new AthenaException("Duplicate saved tag");
+            }
+            return tags;
+        } catch (AthenaException e) {
+            throw new AthenaException("Storage File Corrupted by this line: "
+                    + String.join(SAVE_SEPARATOR, items));
+        }
     }
 }

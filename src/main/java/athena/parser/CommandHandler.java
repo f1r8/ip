@@ -1,14 +1,18 @@
 package athena.parser;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import athena.exception.AthenaException;
 import athena.storage.Storage;
 import athena.task.Deadline;
 import athena.task.Event;
+import athena.task.Tag;
 import athena.task.Task;
 import athena.task.TaskList;
 import athena.task.Todo;
@@ -48,6 +52,9 @@ public class CommandHandler {
         EVENT("event"),
         DELETE("delete"),
         FIND("find"),
+        TAG("tag"),
+        UNTAG("untag"),
+        FINDTAG("findtag"),
         UNKNOWN("");
 
         private final String keyword;
@@ -89,6 +96,9 @@ public class CommandHandler {
             case EVENT -> createAndAddTask(arguments, Event::new);
             case DELETE -> handleDeleteCommand(arguments);
             case FIND -> handleFindCommand(arguments);
+            case TAG -> handleTagCommand(arguments, true);
+            case UNTAG -> handleTagCommand(arguments, false);
+            case FINDTAG -> handleFindTagCommand(arguments);
             case UNKNOWN -> ui.showUnknownCommand();
             default -> {
                 assert false : "Unhandled command: " + command + "add a case in handleCommand's switch"; }
@@ -167,6 +177,79 @@ public class CommandHandler {
                 .filter(task -> task.toString()
                         .toLowerCase(Locale.ROOT)
                         .contains(normalizedKeyword))
+                .toList();
+        ui.showMatchingTasks(matchingTasks);
+    }
+
+    private void handleTagCommand(String arguments, boolean shouldAdd) {
+        String[] parts = arguments.isBlank() ? new String[0] : arguments.trim().split("\\s+");
+        if (parts.length == 0) {
+            ui.showMissingTagIndex(shouldAdd);
+            return;
+        }
+
+        int index;
+        try {
+            index = Integer.parseInt(parts[0]) - 1;
+        } catch (NumberFormatException e) {
+            ui.showMissingTagIndex(shouldAdd);
+            return;
+        }
+
+        if (parts.length == 1) {
+            ui.showMissingTagArguments(shouldAdd);
+            return;
+        }
+
+        Set<Tag> tags;
+        try {
+            tags = Arrays.stream(parts)
+                    .skip(1)
+                    .map(Tag::new)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+        } catch (AthenaException e) {
+            ui.showError(e.getMessage());
+            return;
+        }
+
+        if (index < 0 || index >= taskList.size()) {
+            ui.showInvalidTaskIndex();
+            return;
+        }
+
+        Task task = taskList.get(index);
+        boolean hasChanged = false;
+        for (Tag tag : tags) {
+            hasChanged |= shouldAdd ? task.addTag(tag) : task.removeTag(tag);
+        }
+
+        if (!hasChanged) {
+            ui.showNoTagChanges(task);
+            return;
+        }
+
+        ui.showTaskTagsChanged(task, shouldAdd);
+        storage.saveTasks(taskList.getTasks());
+    }
+
+    private void handleFindTagCommand(String arguments) {
+        if (arguments.isBlank()) {
+            ui.showMissingFindTags();
+            return;
+        }
+
+        Set<Tag> requiredTags;
+        try {
+            requiredTags = Arrays.stream(arguments.trim().split("\\s+"))
+                    .map(Tag::new)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+        } catch (AthenaException e) {
+            ui.showError(e.getMessage());
+            return;
+        }
+
+        List<Task> matchingTasks = taskList.getTasks().stream()
+                .filter(task -> requiredTags.stream().allMatch(task::hasTag))
                 .toList();
         ui.showMatchingTasks(matchingTasks);
     }

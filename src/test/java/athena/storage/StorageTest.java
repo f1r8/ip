@@ -18,6 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 import athena.exception.AthenaException;
 import athena.task.Deadline;
 import athena.task.Event;
+import athena.task.Tag;
 import athena.task.Task;
 import athena.task.Todo;
 
@@ -133,6 +134,22 @@ class StorageTest {
     }
 
     @Test
+    void saveTasks_taggedAndUntaggedTasks_onlyTaggedRecordHasTagField(@TempDir Path tempDir)
+            throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        Storage storage = new Storage(path.toString());
+        Todo untaggedTodo = new Todo("Read book");
+        Todo taggedTodo = new Todo("Write report");
+        taggedTodo.addTag(new Tag("#Work"));
+
+        storage.saveTasks(List.of(untaggedTodo, taggedTodo));
+
+        assertEquals("T | 0 | Read book" + Storage.SAVE_NEWLINE
+                + "T | 0 | Write report | #Work" + Storage.SAVE_NEWLINE,
+                Files.readString(path));
+    }
+
+    @Test
     void loadTasks_missingFile_returnsFalseAndLeavesListEmpty(@TempDir Path tempDir) {
         Storage storage = new Storage(tempDir.resolve("missing.txt").toString());
         List<Task> tasks = storage.loadTasks();
@@ -162,6 +179,83 @@ class StorageTest {
         assertInstanceOf(Event.class, tasks.get(2));
         assertEquals("[E][ ] Team meeting (from: Dec 30, 2026, 14:00, "
                 + "to: Dec 30, 2026, 15:00)", tasks.get(2).toString());
+    }
+
+    @Test
+    void loadTasks_legacyAndTaggedRecords_bothShapesRestored(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        String savedTasks = "T | 0 | Legacy todo" + Storage.SAVE_NEWLINE
+                + "D | 1 | Tagged deadline | 2026-12-31T23:59 | #zeta,#Alpha"
+                + Storage.SAVE_NEWLINE;
+        Files.writeString(path, savedTasks);
+        Storage storage = new Storage(path.toString());
+
+        List<Task> tasks = storage.loadTasks();
+
+        assertEquals(savedTasks, Files.readString(path));
+        assertEquals("[T][ ] Legacy todo", tasks.get(0).toString());
+        assertEquals("T | 0 | Legacy todo", tasks.get(0).getSaveString());
+        assertEquals("[D][X] Tagged deadline (by: Dec 31, 2026, 23:59) #Alpha #zeta",
+                tasks.get(1).toString());
+        assertEquals("D | 1 | Tagged deadline | 2026-12-31T23:59 | #Alpha,#zeta",
+                tasks.get(1).getSaveString());
+
+        storage.saveTasks(tasks);
+
+        assertEquals("T | 0 | Legacy todo" + Storage.SAVE_NEWLINE
+                + "D | 1 | Tagged deadline | 2026-12-31T23:59 | #Alpha,#zeta"
+                + Storage.SAVE_NEWLINE, Files.readString(path));
+    }
+
+    @Test
+    void loadTasks_malformedTagField_exceptionThrown(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        String malformedLine = "T | 0 | Read book | #Work,,#Urgent";
+        Files.writeString(path, malformedLine);
+        Storage storage = new Storage(path.toString());
+
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
+
+        assertEquals("Storage File Corrupted by this line: " + malformedLine, exception.getMessage());
+    }
+
+    @Test
+    void loadTasks_invalidSavedTag_exceptionIdentifiesCorruptedLine(@TempDir Path tempDir)
+            throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        String malformedLine = "T | 0 | Read book | #valid,#bad!";
+        Files.writeString(path, malformedLine);
+        Storage storage = new Storage(path.toString());
+
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
+
+        assertEquals("Storage File Corrupted by this line: " + malformedLine, exception.getMessage());
+    }
+
+    @Test
+    void loadTasks_duplicateSavedTags_exceptionIdentifiesCorruptedLine(@TempDir Path tempDir)
+            throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        String malformedLine = "T | 0 | Read book | #fun,#FUN";
+        Files.writeString(path, malformedLine);
+        Storage storage = new Storage(path.toString());
+
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
+
+        assertEquals("Storage File Corrupted by this line: " + malformedLine, exception.getMessage());
+    }
+
+    @Test
+    void loadTasks_emptyTagField_exceptionIdentifiesCorruptedLine(@TempDir Path tempDir)
+            throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        String malformedLine = "T | 0 | Read book | ";
+        Files.writeString(path, malformedLine);
+        Storage storage = new Storage(path.toString());
+
+        AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
+
+        assertEquals("Storage File Corrupted by this line: " + malformedLine, exception.getMessage());
     }
 
     @Test

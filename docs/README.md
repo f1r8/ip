@@ -1,30 +1,28 @@
-# athena.Athena User Guide
+# Athena User Guide
 
-// Update the title above to match the actual product name
+## Organizing tasks with tags
 
-// Product screenshot goes here
+Tags are single words. Athena matches them without regard to letter case while keeping the spelling from the
+first time each tag is added. Each tag starts with `#` and then contains one or more letters, numbers,
+underscores, or hyphens. Tags appear alphabetically after the task's description, deadline, or event times.
 
-// Product intro goes here
+Add one or more tags to an existing task with its displayed task number:
 
-## Adding deadlines
-
-// Describe the action and its outcome.
-
-// Give examples of usage
-
-Example: `keyword (optional arguments)`
-
-// A description of the expected outcome goes here
-
-```
-expected output
+```text
+tag 1 #work #urgent
 ```
 
-## Feature ABC
+Remove one or more tags in the same way:
 
-// Feature details
+```text
+untag 1 #work #urgent
+```
 
+Find tasks carrying all specified exact tags with `findtag`. The search is case-insensitive:
 
-## Feature XYZ
+```text
+findtag #work #urgent
+```
 
-// Feature details
+Repeating a tag that is already present, or removing a tag that is absent, leaves the task unchanged and
+does not rewrite the data file.

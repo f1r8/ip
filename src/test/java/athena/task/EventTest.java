@@ -51,6 +51,17 @@ class EventTest {
     }
 
     @Test
+    void taggedEvent_displayAndStorage_tagsFollowEventTimes() {
+        Event event = new Event("Team meeting", "2026-12-30 1400", "2026-12-30 1500");
+        event.addTag(new Tag("#Work"));
+
+        assertEquals("[E][ ] Team meeting (from: Dec 30, 2026, 14:00, "
+                + "to: Dec 30, 2026, 15:00) #Work", event.toString());
+        assertEquals("E | 0 | Team meeting | 2026-12-30T14:00 | 2026-12-30T15:00 | #Work",
+                event.getSaveString());
+    }
+
+    @Test
     void constructor_missingFromDate_exceptionThrown() {
         AthenaException exception = assertThrows(AthenaException.class, () ->
                 new Event("Team meeting /to 2026-12-30 1500"));

@@ -1,6 +1,7 @@
 package athena.task;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import athena.exception.AthenaException;
 import athena.parser.DateParser;
@@ -64,7 +65,20 @@ public class Event extends Task {
      * @param to Date when the Event ends.
      */
     public Event(boolean isDone, String description, String from, String to) {
-        super(isDone, description);
+        this(isDone, description, from, to, List.of());
+    }
+
+    /**
+     * Constructs an Event object with saved tags.
+     *
+     * @param isDone {@code true} if the event is completed, {@code false} otherwise.
+     * @param description Describes the Event object.
+     * @param from Date when the Event starts.
+     * @param to Date when the Event ends.
+     * @param tags Saved tags to restore.
+     */
+    public Event(boolean isDone, String description, String from, String to, List<Tag> tags) {
+        super(isDone, description, tags);
         this.startDateTime = LocalDateTime.parse(from);
         this.endDateTime = LocalDateTime.parse(to);
     }
@@ -75,8 +89,9 @@ public class Event extends Task {
      * @return The task in the format "[E] {Task} (from: {startDate}, to {endDate})".
      */
     @Override
-    public String toString() {
-        return "[E]" + super.toString() + " (from: " + DateParser.formatOutput(this.startDateTime)
+    protected String getDisplayStringWithoutTags() {
+        return "[E]" + super.getDisplayStringWithoutTags()
+                + " (from: " + DateParser.formatOutput(this.startDateTime)
                 + ", to: " + DateParser.formatOutput(this.endDateTime) + ")";
     }
 
@@ -86,8 +101,8 @@ public class Event extends Task {
      * @return The task in the format "E{Separator}{Task}{Separator}{startDate}{Separator}{endDate}".
      */
     @Override
-    public String getSaveString() {
-        return "E" + Storage.SAVE_SEPARATOR + super.getSaveString() + Storage.SAVE_SEPARATOR
+    protected String getSaveStringWithoutTags() {
+        return "E" + Storage.SAVE_SEPARATOR + super.getSaveStringWithoutTags() + Storage.SAVE_SEPARATOR
                 + this.startDateTime + Storage.SAVE_SEPARATOR + this.endDateTime;
     }
 }

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import athena.exception.AthenaException;
@@ -74,6 +76,28 @@ class TaskTest {
         task.unmarkDone();
 
         assertEquals(" ", task.getStatusIcon());
+    }
+
+    @Test
+    void tags_caseInsensitive_sortedAndFirstCurrentSpellingPreserved() {
+        Task task = new TestTask("Read book");
+
+        assertTrue(task.addTag(new Tag("#Work")));
+        assertFalse(task.addTag(new Tag("#work")));
+        assertTrue(task.addTag(new Tag("#Urgent")));
+
+        assertEquals(List.of("#Urgent", "#Work"), task.getTags().stream().map(Tag::toString).toList());
+        assertEquals("[ ] Read book #Urgent #Work", task.toString());
+        assertEquals("0 | Read book | #Urgent,#Work", task.getSaveString());
+        assertTrue(task.hasTag(new Tag("#wOrK")));
+        assertTrue(task.removeTag(new Tag("#WORK")));
+        assertFalse(task.removeTag(new Tag("#work")));
+        assertTrue(task.addTag(new Tag("#wOrK")));
+        assertEquals("[ ] Read book #Urgent #wOrK", task.toString());
+
+        task.removeTag(new Tag("#urgent"));
+        task.removeTag(new Tag("#work"));
+        assertEquals("0 | Read book", task.getSaveString());
     }
 
     @Test

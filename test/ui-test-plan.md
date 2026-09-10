@@ -240,7 +240,144 @@ ____________________________________________________________
 
 Expected exit code: 0
 
-## Test case 6: Find matching tasks
+## Test case 6: Manage tags through their lifecycle
+
+Aim: Verify adding, removing, and finding valid tags while preserving spelling and normalized display order.
+
+Inputs:
+
+```text
+todo Prepare briefing
+tag 1 #school #Fun
+findtag #fun #SCHOOL
+untag 1 #FUN
+tag 1 #school
+list
+```
+
+Expected output:
+
+```text
+File not found at: ./data/athena.txt
+____________________________________________________________
+    _  _____ _   _ _____ _   _    _
+   / \|_   _| | | | ____| \ | |  / \
+  / _ \ | | | |_| |  _| |  \| | / _ \
+ / ___ \| | |  _  | |___| |\  |/ ___ \
+/_/   \_\_| |_| |_|_____|_| \_/_/   \_\
+Hello, Your Majesty! I'm Athena.
+How may I assist you, Your Majesty?
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added this task:
+  [T][ ] Prepare briefing
+You now have 1 tasks in the list, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added the tags to this task:
+  [T][ ] Prepare briefing #Fun #school
+____________________________________________________________
+____________________________________________________________
+Your Majesty, here are the matching tasks in your list:
+1. [T][ ] Prepare briefing #Fun #school
+____________________________________________________________
+____________________________________________________________
+As you wish, Your Majesty. I've removed the tags from this task:
+  [T][ ] Prepare briefing #school
+____________________________________________________________
+____________________________________________________________
+Your Majesty, no tags changed for this task:
+  [T][ ] Prepare briefing #school
+____________________________________________________________
+____________________________________________________________
+Your Majesty, here are the tasks in your list:
+1. [T][ ] Prepare briefing #school
+____________________________________________________________
+```
+
+Expected exit code: 0
+
+## Test case 7: Validate tag commands and no-op behavior
+
+Aim: Verify validation order and messages, no-op responses, and that invalid commands leave tags unchanged.
+
+Inputs:
+
+```text
+todo Read book
+tag first #fun
+tag 1
+tag 9 invalid
+tag 9 #fun
+tag 1 #fun
+tag 1 #FUN
+untag 1 invalid
+untag 1 #missing
+findtag
+findtag invalid
+list
+```
+
+Expected output:
+
+```text
+File not found at: ./data/athena.txt
+____________________________________________________________
+    _  _____ _   _ _____ _   _    _
+   / \|_   _| | | | ____| \ | |  / \
+  / _ \ | | | |_| |  _| |  \| | / _ \
+ / ___ \| | |  _  | |___| |\  |/ ___ \
+/_/   \_\_| |_| |_|_____|_| \_/_/   \_\
+Hello, Your Majesty! I'm Athena.
+How may I assist you, Your Majesty?
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added this task:
+  [T][ ] Read book
+You now have 1 tasks in the list, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Which task shall I tag, Your Majesty?
+____________________________________________________________
+____________________________________________________________
+Which tags shall I add, Your Majesty?
+____________________________________________________________
+____________________________________________________________
+Each tag must start with # and contain at least one letter, number, underscore, or hyphen, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Your Majesty, there aren't that many tasks in the list.
+____________________________________________________________
+____________________________________________________________
+As you command, Your Majesty. I've added the tags to this task:
+  [T][ ] Read book #fun
+____________________________________________________________
+____________________________________________________________
+Your Majesty, no tags changed for this task:
+  [T][ ] Read book #fun
+____________________________________________________________
+____________________________________________________________
+Each tag must start with # and contain at least one letter, number, underscore, or hyphen, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Your Majesty, no tags changed for this task:
+  [T][ ] Read book #fun
+____________________________________________________________
+____________________________________________________________
+Which tags shall I search for, Your Majesty?
+____________________________________________________________
+____________________________________________________________
+Each tag must start with # and contain at least one letter, number, underscore, or hyphen, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Your Majesty, here are the tasks in your list:
+1. [T][ ] Read book #fun
+____________________________________________________________
+```
+
+Expected exit code: 0
+
+## Test case 8: Find matching tasks
 
 Aim: Verify that the find command matches case-insensitively, prints only matching tasks, and numbers the
 matches from one.

@@ -10,6 +10,8 @@ import athena.task.Task;
  * do not touch the file system.
  */
 public class StorageStub extends Storage {
+    private int saveCount;
+
     /**
      * Constructs a {@code StorageStub} with no backing file.
      */
@@ -38,12 +40,21 @@ public class StorageStub extends Storage {
     }
 
     /**
+     * Returns the number of requested saves.
+     *
+     * @return Number of calls to {@link #saveTasks(List)}.
+     */
+    public int getSaveCount() {
+        return saveCount;
+    }
+
+    /**
      * Does nothing, so no tasks are written to any file.
      *
      * @param tasks Tasks that would be saved (ignored).
      */
     @Override
     public void saveTasks(List<Task> tasks) {
-        //Do nothing
+        saveCount++;
     }
 }

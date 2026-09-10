@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import athena.task.Deadline;
+import athena.task.Tag;
 import athena.task.Task;
 import athena.task.Todo;
 
@@ -124,6 +125,13 @@ class UiTest {
     }
 
     @Test
+    void showMissingFindTags_promptPrinted() {
+        ui.showMissingFindTags();
+
+        assertOutput("Which tags shall I search for, Your Majesty?\n");
+    }
+
+    @Test
     void showUnknownCommand_unknownCommandMessagePrinted() {
         ui.showUnknownCommand();
 
@@ -153,10 +161,71 @@ class UiTest {
     }
 
     @Test
+    void showTaskTagsChanged_tagAdded_taggedTaskPrinted() {
+        Todo todo = new Todo("Read book");
+        todo.addTag(new Tag("#Work"));
+
+        ui.showTaskTagsChanged(todo, true);
+
+        assertOutput("As you command, Your Majesty. I've added the tags to this task:\n"
+                + "  [T][ ] Read book #Work\n");
+    }
+
+    @Test
+    void showTaskTagsChanged_tagRemoved_taggedTaskPrinted() {
+        Todo todo = new Todo("Read book");
+        todo.addTag(new Tag("#Work"));
+
+        ui.showTaskTagsChanged(todo, false);
+
+        assertOutput("As you wish, Your Majesty. I've removed the tags from this task:\n"
+                + "  [T][ ] Read book #Work\n");
+    }
+
+    @Test
+    void showNoTagChanges_unchangedTask_messageAndTaskPrinted() {
+        Todo todo = new Todo("Read book");
+        todo.addTag(new Tag("#Work"));
+
+        ui.showNoTagChanges(todo);
+
+        assertOutput("Your Majesty, no tags changed for this task:\n"
+                + "  [T][ ] Read book #Work\n");
+    }
+
+    @Test
     void showMissingMarkIndex_promptPrinted() {
         ui.showMissingMarkIndex();
 
         assertOutput("Which task shall I mark, Your Majesty?\n");
+    }
+
+    @Test
+    void showMissingTagIndex_tagCommand_promptPrinted() {
+        ui.showMissingTagIndex(true);
+
+        assertOutput("Which task shall I tag, Your Majesty?\n");
+    }
+
+    @Test
+    void showMissingTagIndex_untagCommand_promptPrinted() {
+        ui.showMissingTagIndex(false);
+
+        assertOutput("Which task shall I untag, Your Majesty?\n");
+    }
+
+    @Test
+    void showMissingTagArguments_tagCommand_promptPrinted() {
+        ui.showMissingTagArguments(true);
+
+        assertOutput("Which tags shall I add, Your Majesty?\n");
+    }
+
+    @Test
+    void showMissingTagArguments_untagCommand_promptPrinted() {
+        ui.showMissingTagArguments(false);
+
+        assertOutput("Which tags shall I remove, Your Majesty?\n");
     }
 
     @Test
