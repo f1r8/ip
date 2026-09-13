@@ -50,7 +50,7 @@ public class Storage {
 
     private final String filePath;
 
-    private boolean loadSuccessful;
+    private boolean wasLoadSuccessful;
 
     /**
      * Constructs storage backed by the file at the specified path.
@@ -138,14 +138,14 @@ public class Storage {
     public List<Task> loadTasks() {
         String input = read();
         if (input.isEmpty()) {
-            loadSuccessful = false;
+            wasLoadSuccessful = false;
             return new ArrayList<>();
         }
 
         List<Task> tasks = Arrays.stream(input.split(SAVE_NEWLINE))
                 .map(Storage::parseTask)
                 .toList();
-        loadSuccessful = true;
+        wasLoadSuccessful = true;
         return tasks;
     }
 
@@ -155,7 +155,7 @@ public class Storage {
      * @return {@code true} if tasks are loaded, {@code false} otherwise.
      */
     public boolean wasLoadSuccessful() {
-        return loadSuccessful;
+        return wasLoadSuccessful;
     }
 
     private static Task parseTask(String line) {
