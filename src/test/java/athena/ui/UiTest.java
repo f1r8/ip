@@ -69,7 +69,7 @@ class UiTest {
                 + " / ___ \\| | |  _  | |___| |\\  |/ ___ \\\n"
                 + "/_/   \\_\\_| |_| |_|_____|_| \\_/_/   \\_\\\n"
                 + "Hello, Your Majesty! I'm Athena.\n"
-                + "How may I assist you, Your Majesty?\n"
+                + "Let us put your tasks in order.\n"
                 + DIVIDER + "\n");
     }
 
@@ -103,17 +103,17 @@ class UiTest {
     }
 
     @Test
-    void showTaskList_emptyList_headingOnlyPrinted() {
+    void showTaskList_emptyList_suggestsFirstTask() {
         ui.showTaskList(List.of());
 
-        assertOutput("Your Majesty, here are the tasks in your list:\n");
+        assertOutput("Your list awaits its first task. Try todo Read a book.\n");
     }
 
     @Test
     void showMatchingTasks_tasks_numberedMatchesPrinted() {
         ui.showMatchingTasks(List.of(new Todo("Read report")));
 
-        assertOutput("Your Majesty, here are the matching tasks in your list:\n"
+        assertOutput("Here are your matching tasks:\n"
                 + "1. [T][ ] Read report\n");
     }
 
@@ -135,9 +135,7 @@ class UiTest {
     void showUnknownCommand_unknownCommandMessagePrinted() {
         ui.showUnknownCommand();
 
-        assertOutput("*Athena blinks her eyes, unsure of what you want, tilting "
-                + "her head slightly as the meaning of your words slips just "
-                + "out of reach.*\n");
+        assertOutput("I didn't recognize that command, Your Majesty. Try list or todo Read a book.\n");
     }
 
     @Test
@@ -146,7 +144,7 @@ class UiTest {
 
         ui.showTaskStatusChanged(todo, true);
 
-        assertOutput("Excellent, Your Majesty! I've marked this task as done:\n"
+        assertOutput("Well done, Your Majesty. This task is complete:\n"
                 + "  [T][X] Read book\n");
     }
 
@@ -156,7 +154,7 @@ class UiTest {
 
         ui.showTaskStatusChanged(todo, false);
 
-        assertOutput("Certainly, Your Majesty. I've marked this task as not done yet:\n"
+        assertOutput("Certainly. This task is back on your to-do list:\n"
                 + "  [T][ ] Read book\n");
     }
 
@@ -167,7 +165,7 @@ class UiTest {
 
         ui.showTaskTagsChanged(todo, true);
 
-        assertOutput("As you command, Your Majesty. I've added the tags to this task:\n"
+        assertOutput("I've added the tags to this task:\n"
                 + "  [T][ ] Read book #Work\n");
     }
 
@@ -178,7 +176,7 @@ class UiTest {
 
         ui.showTaskTagsChanged(todo, false);
 
-        assertOutput("As you wish, Your Majesty. I've removed the tags from this task:\n"
+        assertOutput("I've removed the tags from this task:\n"
                 + "  [T][ ] Read book #Work\n");
     }
 
@@ -189,7 +187,7 @@ class UiTest {
 
         ui.showNoTagChanges(todo);
 
-        assertOutput("Your Majesty, no tags changed for this task:\n"
+        assertOutput("These tags need no changes:\n"
                 + "  [T][ ] Read book #Work\n");
     }
 
@@ -232,7 +230,7 @@ class UiTest {
     void showInvalidTaskIndex_errorPrinted() {
         ui.showInvalidTaskIndex();
 
-        assertOutput("Your Majesty, there aren't that many tasks in the list.\n");
+        assertOutput("That task number isn't in your list. Use list to see the available numbers.\n");
     }
 
     @Test
@@ -246,18 +244,18 @@ class UiTest {
     void showTaskAdded_taskAndCount_additionPrinted() {
         ui.showTaskAdded(new Todo("Read book"), 1);
 
-        assertOutput("As you command, Your Majesty. I've added this task:\n"
+        assertOutput("As you wish. I've added this task:\n"
                 + "  [T][ ] Read book\n"
-                + "You now have 1 tasks in the list, Your Majesty.\n");
+                + "You now have 1 task in your list.\n");
     }
 
     @Test
     void showTaskDeleted_taskAndCount_deletionPrinted() {
         ui.showTaskDeleted(new Todo("Read book"), 0);
 
-        assertOutput("As you wish, Your Majesty. I've removed this task:\n"
+        assertOutput("Certainly. I've removed this task:\n"
                 + "  [T][ ] Read book\n"
-                + "You now have 0 tasks in the list, Your Majesty.\n");
+                + "You now have 0 tasks in your list.\n");
     }
 
     @Test

@@ -81,7 +81,7 @@ public class Ui {
         println(DIVIDER);
         println(BANNER);
         println("Hello, Your Majesty! I'm Athena.");
-        println("How may I assist you, Your Majesty?");
+        println("Let us put your tasks in order.");
         println(DIVIDER);
     }
 
@@ -107,7 +107,8 @@ public class Ui {
      * @param tasks tasks to display.
      */
     public void showTaskList(List<Task> tasks) {
-        println("Your Majesty, here are the tasks in your list:");
+        println(tasks.isEmpty() ? "Your list awaits its first task. Try todo Read a book."
+                : "Your Majesty, here are the tasks in your list:");
         showNumberedTasks(tasks);
     }
 
@@ -117,7 +118,8 @@ public class Ui {
      * @param tasks matching tasks to display.
      */
     public void showMatchingTasks(List<Task> tasks) {
-        println("Your Majesty, here are the matching tasks in your list:");
+        println(tasks.isEmpty() ? "No matching tasks. Try another keyword or use list to see all tasks."
+                : "Here are your matching tasks:");
         showNumberedTasks(tasks);
     }
 
@@ -139,9 +141,7 @@ public class Ui {
      * Shows the response for an unrecognized command.
      */
     public void showUnknownCommand() {
-        println("*Athena blinks her eyes, unsure of what you want, tilting "
-                + "her head slightly as the meaning of your words slips just "
-                + "out of reach.*");
+        println("I didn't recognize that command, Your Majesty. Try list or todo Read a book.");
     }
 
     /**
@@ -152,8 +152,8 @@ public class Ui {
      */
     public void showTaskStatusChanged(Task task, boolean isMarked) {
         println(isMarked
-                ? "Excellent, Your Majesty! I've marked this task as done:"
-                : "Certainly, Your Majesty. I've marked this task as not done yet:");
+                ? "Well done, Your Majesty. This task is complete:"
+                : "Certainly. This task is back on your to-do list:");
         showTask(task);
     }
 
@@ -165,8 +165,8 @@ public class Ui {
      */
     public void showTaskTagsChanged(Task task, boolean isAdded) {
         println(isAdded
-                ? "As you command, Your Majesty. I've added the tags to this task:"
-                : "As you wish, Your Majesty. I've removed the tags from this task:");
+                ? "I've added the tags to this task:"
+                : "I've removed the tags from this task:");
         showTask(task);
     }
 
@@ -176,7 +176,7 @@ public class Ui {
      * @param task Task that remained unchanged.
      */
     public void showNoTagChanges(Task task) {
-        println("Your Majesty, no tags changed for this task:");
+        println("These tags need no changes:");
         showTask(task);
     }
 
@@ -213,7 +213,7 @@ public class Ui {
      * Shows that a requested task number is outside the task list.
      */
     public void showInvalidTaskIndex() {
-        println("Your Majesty, there aren't that many tasks in the list.");
+        println("That task number isn't in your list. Use list to see the available numbers.");
     }
 
     /**
@@ -232,7 +232,7 @@ public class Ui {
      * @param taskCount number of tasks after the addition.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        println("As you command, Your Majesty. I've added this task:");
+        println("As you wish. I've added this task:");
         showTask(task);
         showTaskCount(taskCount);
     }
@@ -244,7 +244,7 @@ public class Ui {
      * @param taskCount number of tasks after the deletion.
      */
     public void showTaskDeleted(Task task, int taskCount) {
-        println("As you wish, Your Majesty. I've removed this task:");
+        println("Certainly. I've removed this task:");
         showTask(task);
         showTaskCount(taskCount);
     }
@@ -267,6 +267,6 @@ public class Ui {
     }
 
     private void showTaskCount(int taskCount) {
-        println("You now have " + taskCount + " tasks in the list, Your Majesty.");
+        println("You now have " + taskCount + (taskCount == 1 ? " task" : " tasks") + " in your list.");
     }
 }

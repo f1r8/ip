@@ -95,9 +95,10 @@ class CommandHandlerTest {
     }
 
     @Test
-    void handleCommand_unknown_printBlinkEyes() {
+    void handleCommand_unknown_suggestsValidCommands() {
         assertEquals(CommandResult.ERROR, commandHandler.handleCommand("67 67 67 67"));
-        assertTrue(outContent.toString().contains("blinks her eyes"));
+        assertEquals("I didn't recognize that command, Your Majesty. Try list or todo Read a book."
+                + System.lineSeparator(), outContent.toString());
     }
 
     @Test
@@ -169,21 +170,24 @@ class CommandHandlerTest {
     @Test
     void handleCommand_markOutOfRangeIndex_printErrorMessage() {
         assertEquals(CommandResult.ERROR, commandHandler.handleCommand("mark 1"));
-        assertTrue(outContent.toString().contains("many tasks in the list"));
+        assertEquals("That task number isn't in your list. Use list to see the available numbers."
+                + System.lineSeparator(), outContent.toString());
         assertEquals(0, taskList.size());
     }
 
     @Test
     void handleCommand_unmarkOutOfRangeIndex_printErrorMessage() {
         assertEquals(CommandResult.ERROR, commandHandler.handleCommand("unmark 2"));
-        assertTrue(outContent.toString().contains("many tasks in the list"));
+        assertEquals("That task number isn't in your list. Use list to see the available numbers."
+                + System.lineSeparator(), outContent.toString());
         assertEquals(0, taskList.size());
     }
 
     @Test
     void handleCommand_deleteOutOfRangeIndex_printErrorMessage() {
         assertEquals(CommandResult.ERROR, commandHandler.handleCommand("delete 67"));
-        assertTrue(outContent.toString().contains("many tasks in the list"));
+        assertEquals("That task number isn't in your list. Use list to see the available numbers."
+                + System.lineSeparator(), outContent.toString());
         assertEquals(0, taskList.size());
     }
 
@@ -233,12 +237,12 @@ class CommandHandlerTest {
     }
 
     @Test
-    void handleCommand_findNoMatchingTasks_headingOnlyPrinted() {
+    void handleCommand_findNoMatchingTasks_suggestsRecovery() {
         taskList.add(new Todo("Read project brief"));
 
         assertEquals(CommandResult.CONTINUE, commandHandler.handleCommand("find report"));
 
-        assertEquals("Your Majesty, here are the matching tasks in your list:"
+        assertEquals("No matching tasks. Try another keyword or use list to see all tasks."
                 + System.lineSeparator(), outContent.toString());
     }
 
@@ -262,14 +266,14 @@ class CommandHandlerTest {
 
         assertEquals("[T][ ] Read book #Urgent #Work", taskList.get(0).toString());
         assertEquals(1, storage.getSaveCount());
-        assertEquals("As you command, Your Majesty. I've added the tags to this task:"
+        assertEquals("I've added the tags to this task:"
                 + System.lineSeparator()
                 + "  [T][ ] Read book #Urgent #Work" + System.lineSeparator(), outContent.toString());
 
         outContent.reset();
         assertEquals(CommandResult.CONTINUE, commandHandler.handleCommand("tag 1 #WORK #urgent"));
 
-        assertEquals("Your Majesty, no tags changed for this task:" + System.lineSeparator()
+        assertEquals("These tags need no changes:" + System.lineSeparator()
                 + "  [T][ ] Read book #Urgent #Work" + System.lineSeparator(), outContent.toString());
         assertEquals(1, storage.getSaveCount());
     }
@@ -289,7 +293,7 @@ class CommandHandlerTest {
         outContent.reset();
         assertEquals(CommandResult.CONTINUE, commandHandler.handleCommand("untag 1 #WORK"));
 
-        assertEquals("Your Majesty, no tags changed for this task:" + System.lineSeparator()
+        assertEquals("These tags need no changes:" + System.lineSeparator()
                 + "  [T][ ] Read book #Urgent" + System.lineSeparator(), outContent.toString());
         assertEquals(1, storage.getSaveCount());
     }
@@ -333,7 +337,8 @@ class CommandHandlerTest {
                 + "Which tags shall I add, Your Majesty?" + System.lineSeparator()
                 + "Each tag must start with # and contain at least one letter, number, underscore, "
                 + "or hyphen, Your Majesty." + System.lineSeparator()
-                + "Your Majesty, there aren't that many tasks in the list." + System.lineSeparator(),
+                + "That task number isn't in your list. Use list to see the available numbers."
+                + System.lineSeparator(),
                 outContent.toString());
         assertEquals(0, storage.getSaveCount());
     }
@@ -353,7 +358,8 @@ class CommandHandlerTest {
                 + "Which tags shall I remove, Your Majesty?" + System.lineSeparator()
                 + "Each tag must start with # and contain at least one letter, number, underscore, "
                 + "or hyphen, Your Majesty." + System.lineSeparator()
-                + "Your Majesty, there aren't that many tasks in the list." + System.lineSeparator(),
+                + "That task number isn't in your list. Use list to see the available numbers."
+                + System.lineSeparator(),
                 outContent.toString());
         assertEquals(0, storage.getSaveCount());
     }
@@ -417,7 +423,9 @@ class CommandHandlerTest {
         assertEquals(CommandResult.ERROR, commandHandler.handleCommand(""));
         assertEquals(CommandResult.ERROR, commandHandler.handleCommand("  \t  "));
 
-        assertTrue(outContent.toString().contains("blinks her eyes"));
+        String expectedResponse = "I didn't recognize that command, Your Majesty. Try list or todo Read a book."
+                + System.lineSeparator();
+        assertEquals(expectedResponse.repeat(2), outContent.toString());
         assertEquals(0, taskList.size());
         assertEquals(0, storage.getSaveCount());
     }

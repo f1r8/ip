@@ -33,43 +33,46 @@ public class GuiUi extends Ui {
 
     @Override
     public void showTaskList(List<Task> tasks) {
-        println(tasks.isEmpty() ? "Your list is empty, Your Majesty." : "Your tasks, Your Majesty.");
+        println(tasks.isEmpty() ? "Your list awaits its first task. Try todo Read a book."
+                : "Your tasks, Your Majesty.");
         showTasks(tasks);
     }
 
     @Override
     public void showMatchingTasks(List<Task> tasks) {
-        println(tasks.isEmpty() ? "No matching tasks, Your Majesty." : "Matching tasks, Your Majesty.");
+        println(tasks.isEmpty() ? "No matching tasks. Try another keyword or use list to see all tasks."
+                : "Here are your matching tasks.");
         showTasks(tasks);
     }
 
     @Override
     public void showTaskAdded(Task task, int taskCount) {
-        println("Added, Your Majesty. " + getTaskCount(taskCount));
+        println("As you wish. I've added this task. " + getTaskCount(taskCount));
         showTask(task);
     }
 
     @Override
     public void showTaskDeleted(Task task, int taskCount) {
-        println("Removed, Your Majesty. " + getTaskCount(taskCount));
+        println("Certainly. I've removed this task. " + getTaskCount(taskCount));
         showTask(task);
     }
 
     @Override
     public void showTaskStatusChanged(Task task, boolean isMarked) {
-        println(isMarked ? "Marked done, Your Majesty." : "Marked to do, Your Majesty.");
+        println(isMarked ? "Well done, Your Majesty. This task is complete."
+                : "Certainly. This task is back on your to-do list.");
         showTask(task);
     }
 
     @Override
     public void showTaskTagsChanged(Task task, boolean isAdded) {
-        println(isAdded ? "Tags added, Your Majesty." : "Tags removed, Your Majesty.");
+        println(isAdded ? "I've added the tags to this task." : "I've removed the tags from this task.");
         showTask(task);
     }
 
     @Override
     public void showNoTagChanges(Task task) {
-        println("Tags unchanged, Your Majesty.");
+        println("These tags need no changes.");
         showTask(task);
     }
 

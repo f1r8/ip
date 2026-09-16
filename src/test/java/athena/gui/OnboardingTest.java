@@ -80,6 +80,9 @@ class OnboardingTest {
 
         assertTrue(welcomePanel.isVisible());
         assertTrue(welcomePanel.isManaged());
+        assertTrue(robot.lookup("#identityHeader").query().isVisible());
+        assertEquals("Athena", robot.lookup(".identity-title").queryAs(Label.class).getText());
+        assertEquals("Your task adviser", robot.lookup(".identity-subtitle").queryAs(Label.class).getText());
         assertEquals("todo Read a book\nlist", examples.getText());
         assertTrue(commandsButton.isFocusTraversable());
         assertTrue(commandsButton.isMnemonicParsing());
@@ -102,6 +105,8 @@ class OnboardingTest {
 
         assertFalse(welcomePanel.isVisible());
         assertFalse(welcomePanel.isManaged());
+        assertTrue(robot.lookup("#identityHeader").query().isVisible());
+        assertTrue(robot.lookup("#identityHeader").query().isManaged());
         assertEquals(List.of("list"), receivedInputs);
         assertEquals(2, robot.lookup("#dialogContainer").queryAs(VBox.class).getChildren().size());
     }

@@ -10,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -30,6 +29,8 @@ public class MainWindow extends AnchorPane {
     private ScrollPane errorScroll;
     @FXML
     private VBox windowLayout;
+    @FXML
+    private HBox identityHeader;
     @FXML
     private VBox dialogContainer;
     @FXML
@@ -62,8 +63,6 @@ public class MainWindow extends AnchorPane {
     private ErrorGuidance errorGuidance;
     private CommandsDialog commandsDialog;
 
-    private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaAthena.jpg"));
-
     /**
      * Keeps correction guidance available while editing.
      */
@@ -75,7 +74,8 @@ public class MainWindow extends AnchorPane {
         errorScroll.visibleProperty().bind(errorPanel.visibleProperty());
         errorScroll.managedProperty().bind(errorPanel.visibleProperty());
         errorScroll.maxHeightProperty().bind(Bindings.createDoubleBinding(this::getErrorViewportMaxHeight,
-                windowLayout.heightProperty(), composer.widthProperty(), composer.insetsProperty(),
+                windowLayout.heightProperty(), identityHeader.heightProperty(), composer.widthProperty(),
+                composer.insetsProperty(),
                 composer.spacingProperty(), composerHeader.layoutBoundsProperty(),
                 commandInputRow.layoutBoundsProperty(), inputStatus.layoutBoundsProperty(),
                 inputStatus.managedProperty(), inputStatus.textProperty(), inputStatus.fontProperty(),
@@ -83,7 +83,7 @@ public class MainWindow extends AnchorPane {
         inputStatus.setLabelFor(userInput);
         userInput.textProperty().addListener((observable, oldInput, newInput) -> {
             if (errorPanel.isVisible()) {
-                inputStatus.setText("I await your revised command, Your Majesty.");
+                inputStatus.setText("Ready when you are. Edit your command below.");
                 userInput.pseudoClassStateChanged(INVALID_INPUT, false);
             }
         });
@@ -123,7 +123,7 @@ public class MainWindow extends AnchorPane {
             return;
         }
 
-        dialogContainer.getChildren().add(DialogBox.getAthenaDialog(response, athenaImage));
+        dialogContainer.getChildren().add(DialogBox.getAthenaDialog(response));
         errorPanel.setVisible(false);
         inputStatus.setVisible(false);
         userInput.pseudoClassStateChanged(INVALID_INPUT, false);
@@ -157,7 +157,8 @@ public class MainWindow extends AnchorPane {
         }
         controlsHeight += composer.getSpacing() * Math.max(0, managedChildren - 1);
         return Math.min(ERROR_VIEWPORT_MAX_HEIGHT,
-                Math.max(0.0, windowLayout.getHeight() - controlsHeight - CONVERSATION_MIN_HEIGHT));
+                Math.max(0.0, windowLayout.getHeight() - identityHeader.getHeight() - controlsHeight
+                        - CONVERSATION_MIN_HEIGHT));
     }
 
     /**
@@ -218,7 +219,7 @@ public class MainWindow extends AnchorPane {
      * Presents a failed command with an explanation and an example beside the input.
      */
     private void showError(String input, String explanation) {
-        Label failureStatus = new Label("Not fulfilled, Your Majesty.");
+        Label failureStatus = new Label("Command not completed");
         failureStatus.getStyleClass().add("failed-command-status");
         failureStatus.setWrapText(true);
         failureStatus.setMaxWidth(Double.MAX_VALUE);
@@ -228,9 +229,8 @@ public class MainWindow extends AnchorPane {
         errorExplanation.setText(explanation.strip());
         errorHint.setText(errorGuidance.hint());
         errorExample.setText(errorGuidance.example());
-        useExampleButton.setText(errorGuidance.isDeadline()
-                ? "Use this date and time" : "Place this example below");
-        inputStatus.setText("I have kept your command for correction, Your Majesty.");
+        useExampleButton.setText("Use example");
+        inputStatus.setText("Your command is kept below for editing.");
         errorPanel.setVisible(true);
         errorScroll.setVvalue(0);
         inputStatus.setVisible(true);
@@ -250,7 +250,7 @@ public class MainWindow extends AnchorPane {
         }
         String correction = errorGuidance.getExampleFor(userInput.getText());
         userInput.setText(correction);
-        inputStatus.setText("Please review these details before sending, Your Majesty.");
+        inputStatus.setText("Please review the example before sending.");
         userInput.pseudoClassStateChanged(INVALID_INPUT, false);
         focusInput();
     }

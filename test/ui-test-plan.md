@@ -75,7 +75,7 @@ on Unix. Stop on the first failure. Only after the CLI cases and these tests pas
 `./gradlew --console=plain checkstyleMain checkstyleTest` on Unix.
 
 For background styling changes, also inspect the GUI at 400 by 600 px and 720 by 600 px before
-running Checkstyle. The conversation should have a uniform pale green-gray background without
+running Checkstyle. The conversation should have a uniform warm ivory background without
 wallpaper or repeated graphics. Confirm that message bubbles, the composer, and the tinted error
 panel remain visually distinct. Record the visual result and screenshot paths in the session record.
 
@@ -98,21 +98,26 @@ The GUI acceptance checks cover the following behavior:
   reopening the guide reuses the same window. At 360 by 360 px, the guide scrolls to the final `bye`
   example, wraps within its viewport, and keeps Close visible. Successful checks save
   `build/reports/gui/welcome.png` and `build/reports/gui/commands-small-window.png`.
+- A persistent header shows the owl emblem, a serif Athena title, and "Your task adviser".
+  It remains visible after commands; Inter remains the body font. Deep green actions, warm ivory
+  surfaces, and restrained gold header accents establish the royal adviser identity.
+- Checklist, calendar, and tag vector icons accompany task text without replacing labels.
 - The error viewport budgets space using the composer's actual controls, wrapped status, padding,
-  and spacing, so the Commands row leaves the editor available at short window heights.
+  and spacing, including the persistent header, so the Commands row leaves the editor available at short window heights.
 
 - Body text, command input, and Send use a consistent 15 px baseline. The short input prompt fits at
   400 px. Send keeps the same font size in its normal, hover, pressed, and keyboard-focused states.
   Its dark green background has at least 4.5:1 contrast with the white label; the darker placeholder
   remains readable. Keyboard focus is visible without changing control size or shifting text.
-- Success replies use concise captions that retain "Your Majesty". Added and removed tasks include the
+- Success replies use concise, courteous captions, with "Your Majesty" reserved for occasional responses. Added and removed tasks include the
   updated count. Empty lists and searches explain that no tasks are available or match the request.
 - Task lists, search matches, and confirmations show structured task names, textual completion states,
   task types, full dates and times, and tags. Numbers, details, and statuses align across rows. Long names,
   dates, and tags wrap within a 400 px window without truncating or overlapping the status column.
   Saved replies retain their original completion state and tags when subsequent commands change a task.
-- Adjacent message containers leave 8 px of vertical padding between them. Existing avatars, speech
-  bubbles, and tails remain present. Review `build/reports/gui/task-rows.png` for the compact layout.
+- Adjacent message containers leave 8 px of vertical padding between them. Shared vector owl avatars, speech
+  bubbles, and tails remain present. Review `build/reports/gui/task-rows.png` at 400 by 600 px and
+  `build/reports/gui/task-rows-wide.png` at 720 by 600 px for the compact and wide layouts.
 - The conversation scrollbar remains reader-controlled. New successful replies and failed-command entries
   preserve the position of earlier messages when the reader is more than 32 px from the bottom, including
   when error guidance reduces the conversation viewport. Replies follow the bottom when the reader is
@@ -124,14 +129,14 @@ The GUI acceptance checks cover the following behavior:
   Review `build/reports/gui/responsive-enlarged-text.png` for the narrow layout with enlarged text.
 - A failed command displays a tinted panel beside the editor with a clear error heading, the explanation,
   command-specific advice, and a valid example. A text status identifies the failure without relying on color.
-  Athena's advice, explanation, and correction status remain courteous and address "Your Majesty".
+  Athena's explanation stays courteous; advice, labels, and correction status avoid repeated royal address.
 - Submitting `  deadline Submit report /by tomorrow  ` retains that exact input, including its whitespace,
   keeps the editor focused, and places the caret at the end so the command can be corrected immediately.
 - After editing the retained command to `deadline Revised report /by next week`, choosing
-  "Use this date and time" places `deadline Revised report /by 2026-12-31 2359` in the editor and restores
+  "Use example" places `deadline Revised report /by 2026-12-31 2359` in the editor and restores
   focus. It does not submit a command, add a task, or append a reply. If the editor has been changed to
   another command, the deadline repair leaves that edited command untouched.
-- Other command examples are placed in the editor only when "Place this example below" is chosen.
+- Other command examples are placed in the editor only when "Use example" is chosen.
   They are not executed until the user sends them. The corrected successful command clears the editor,
   hides the panel and correction status, and removes their layout space. The success reply remains visible.
 - Invalid `todo`, `deadline`, `event`, `mark`, `unmark`, `delete`, `find`, `tag`, `untag`, `findtag`, blank,
@@ -167,7 +172,7 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
@@ -203,32 +208,32 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added this task:
+As you wish. I've added this task:
   [T][ ] Read the project brief
-You now have 1 tasks in the list, Your Majesty.
+You now have 1 task in your list.
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, here are the tasks in your list:
 1. [T][ ] Read the project brief
 ____________________________________________________________
 ____________________________________________________________
-Excellent, Your Majesty! I've marked this task as done:
+Well done, Your Majesty. This task is complete:
   [T][X] Read the project brief
 ____________________________________________________________
 ____________________________________________________________
-Certainly, Your Majesty. I've marked this task as not done yet:
+Certainly. This task is back on your to-do list:
   [T][ ] Read the project brief
 ____________________________________________________________
 ____________________________________________________________
-As you wish, Your Majesty. I've removed this task:
+Certainly. I've removed this task:
   [T][ ] Read the project brief
-You now have 0 tasks in the list, Your Majesty.
+You now have 0 tasks in your list.
 ____________________________________________________________
 ____________________________________________________________
-Your Majesty, here are the tasks in your list:
+Your list awaits its first task. Try todo Read a book.
 ____________________________________________________________
 ```
 
@@ -257,17 +262,17 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added this task:
+As you wish. I've added this task:
   [D][ ] Submit report (by: Dec 31, 2026, 23:59)
-You now have 1 tasks in the list, Your Majesty.
+You now have 1 task in your list.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added this task:
+As you wish. I've added this task:
   [E][ ] Team meeting (from: Dec 30, 2026, 14:00, to: Dec 30, 2026, 15:00)
-You now have 2 tasks in the list, Your Majesty.
+You now have 2 tasks in your list.
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, here are the tasks in your list:
@@ -307,7 +312,7 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
 Please provide a todo description, Your Majesty.
@@ -328,7 +333,7 @@ ____________________________________________________________
 Which task shall I mark, Your Majesty?
 ____________________________________________________________
 ____________________________________________________________
-Your Majesty, there aren't that many tasks in the list.
+That task number isn't in your list. Use list to see the available numbers.
 ____________________________________________________________
 ____________________________________________________________
 What shall I search for, Your Majesty?
@@ -358,10 +363,10 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
-*Athena blinks her eyes, unsure of what you want, tilting her head slightly as the meaning of your words slips just out of reach.*
+I didn't recognize that command, Your Majesty. Try list or todo Read a book.
 ____________________________________________________________
 ```
 
@@ -393,27 +398,27 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added this task:
+As you wish. I've added this task:
   [T][ ] Prepare briefing
-You now have 1 tasks in the list, Your Majesty.
+You now have 1 task in your list.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added the tags to this task:
+I've added the tags to this task:
   [T][ ] Prepare briefing #Fun #school
 ____________________________________________________________
 ____________________________________________________________
-Your Majesty, here are the matching tasks in your list:
+Here are your matching tasks:
 1. [T][ ] Prepare briefing #Fun #school
 ____________________________________________________________
 ____________________________________________________________
-As you wish, Your Majesty. I've removed the tags from this task:
+I've removed the tags from this task:
   [T][ ] Prepare briefing #school
 ____________________________________________________________
 ____________________________________________________________
-Your Majesty, no tags changed for this task:
+These tags need no changes:
   [T][ ] Prepare briefing #school
 ____________________________________________________________
 ____________________________________________________________
@@ -456,12 +461,12 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added this task:
+As you wish. I've added this task:
   [T][ ] Read book
-You now have 1 tasks in the list, Your Majesty.
+You now have 1 task in your list.
 ____________________________________________________________
 ____________________________________________________________
 Which task shall I tag, Your Majesty?
@@ -473,21 +478,21 @@ ____________________________________________________________
 Each tag must start with # and contain at least one letter, number, underscore, or hyphen, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
-Your Majesty, there aren't that many tasks in the list.
+That task number isn't in your list. Use list to see the available numbers.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added the tags to this task:
+I've added the tags to this task:
   [T][ ] Read book #fun
 ____________________________________________________________
 ____________________________________________________________
-Your Majesty, no tags changed for this task:
+These tags need no changes:
   [T][ ] Read book #fun
 ____________________________________________________________
 ____________________________________________________________
 Each tag must start with # and contain at least one letter, number, underscore, or hyphen, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
-Your Majesty, no tags changed for this task:
+These tags need no changes:
   [T][ ] Read book #fun
 ____________________________________________________________
 ____________________________________________________________
@@ -528,20 +533,20 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added this task:
+As you wish. I've added this task:
   [T][ ] Read the project brief
-You now have 1 tasks in the list, Your Majesty.
+You now have 1 task in your list.
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added this task:
+As you wish. I've added this task:
   [T][ ] Submit the Final REPORT
-You now have 2 tasks in the list, Your Majesty.
+You now have 2 tasks in your list.
 ____________________________________________________________
 ____________________________________________________________
-Your Majesty, here are the matching tasks in your list:
+Here are your matching tasks:
 1. [T][ ] Submit the Final REPORT
 ____________________________________________________________
 ```
@@ -572,15 +577,15 @@ ____________________________________________________________
  / ___ \| | |  _  | |___| |\  |/ ___ \
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
-How may I assist you, Your Majesty?
+Let us put your tasks in order.
 ____________________________________________________________
 ____________________________________________________________
 Please use 'yyyy-MM-dd HHmm' for the date and time, Your Majesty (e.g. 2026-12-31 2359).
 ____________________________________________________________
 ____________________________________________________________
-As you command, Your Majesty. I've added this task:
+As you wish. I've added this task:
   [D][ ] Submit report (by: Dec 31, 2026, 23:59)
-You now have 1 tasks in the list, Your Majesty.
+You now have 1 task in your list.
 ____________________________________________________________
 ____________________________________________________________
 Your Majesty, here are the tasks in your list:

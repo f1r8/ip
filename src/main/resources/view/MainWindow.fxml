@@ -16,6 +16,18 @@
         <VBox fx:id="windowLayout" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
+                <HBox fx:id="identityHeader" alignment="CENTER_LEFT" spacing="12.0"
+                      minHeight="-Infinity" styleClass="identity-header">
+                    <children>
+                        <fx:include source="OwlAvatar.fxml" />
+                        <VBox spacing="2.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Athena" styleClass="identity-title" />
+                                <Label text="Your task adviser" styleClass="identity-subtitle" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
                 <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" minHeight="0.0"
                             vvalue="1.0" VBox.vgrow="ALWAYS">
                     <content>
@@ -23,15 +35,15 @@
                             <children>
                                 <VBox fx:id="welcomePanel" spacing="9.0" styleClass="welcome-panel">
                                     <children>
-                                        <Label text="Welcome, Your Majesty. I'm Athena." wrapText="true"
+                                        <Label text="Welcome, Your Majesty." wrapText="true"
                                                minHeight="-Infinity" maxWidth="Infinity"
                                                styleClass="welcome-heading" />
-                                        <Label text="Start a task or see your list:" wrapText="true"
+                                        <Label text="Let us put your tasks in order. Start here:" wrapText="true"
                                                minHeight="-Infinity" maxWidth="Infinity" />
                                         <Label fx:id="welcomeExamples" text="todo Read a book&#10;list"
                                                wrapText="true" minHeight="-Infinity" maxWidth="Infinity"
                                                styleClass="guide-example" />
-                                        <Label text="Press Enter to send. Commands has more examples, Your Majesty."
+                                        <Label text="Press Enter to send. Open Commands for more examples."
                                                wrapText="true" minHeight="-Infinity" maxWidth="Infinity"
                                                styleClass="welcome-hint" />
                                     </children>
@@ -59,21 +71,21 @@
                                     styleClass="error-scroll">
                             <content>
                                 <VBox fx:id="errorPanel" visible="false" managed="false" spacing="7.0"
-                                      styleClass="error-panel" accessibleText="Command error, Your Majesty.">
+                                      styleClass="error-panel" accessibleText="Command needs attention">
                                     <children>
-                                        <Label fx:id="errorHeading" text="Command error, Your Majesty."
+                                        <Label fx:id="errorHeading" text="Command needs attention"
                                                wrapText="true" minHeight="-Infinity" maxWidth="Infinity"
                                                styleClass="error-heading" />
                                         <Label fx:id="errorExplanation" wrapText="true" minHeight="-Infinity"
                                                maxWidth="Infinity" styleClass="error-explanation" />
                                         <Label fx:id="errorHint" wrapText="true" minHeight="-Infinity"
                                                maxWidth="Infinity" styleClass="error-hint" />
-                                        <Label text="A valid example, Your Majesty:" wrapText="true"
+                                        <Label text="Example" wrapText="true"
                                                minHeight="-Infinity" styleClass="example-heading" />
                                         <Label fx:id="errorExample" wrapText="true" minHeight="-Infinity"
                                                maxWidth="Infinity" styleClass="error-example" />
                                         <Button fx:id="useExampleButton" onAction="#useExample"
-                                                mnemonicParsing="false" text="Place this example below"
+                                                mnemonicParsing="false" text="Use example"
                                                 wrapText="true" minHeight="-Infinity" maxWidth="Infinity"
                                                 styleClass="example-button" />
                                     </children>
@@ -86,7 +98,7 @@
                             <children>
                                 <TextField fx:id="userInput" onAction="#handleUserInput" minWidth="0.0"
                                            prefHeight="41.0" promptText="Enter a command..."
-                                           accessibleText="Your command, Your Majesty" HBox.hgrow="ALWAYS" />
+                                           accessibleText="Your command" HBox.hgrow="ALWAYS" />
                                 <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleUserInput"
                                         prefHeight="41.0" minWidth="-Infinity" text="Send" />
                             </children>

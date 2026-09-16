@@ -11,7 +11,7 @@ import java.util.Locale;
  */
 record ErrorGuidance(String hint, String example, boolean isDeadline) {
     private static final String EXAMPLE_DATE = "2026-12-31 2359";
-    private static final String INDEX_HINT = "Your Majesty, use list to inspect your task numbers. "
+    private static final String INDEX_HINT = "Use list to inspect your task numbers. "
             + "This example assumes task 1 exists. ";
 
     /**
@@ -24,14 +24,14 @@ record ErrorGuidance(String hint, String example, boolean isDeadline) {
         String command = input.trim().split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
         return switch (command) {
             case "todo" -> new ErrorGuidance(
-                    "Your Majesty, please tell me what you wish to do after todo.",
+                    "Please tell me what you wish to do after todo.",
                     "todo Read book", false);
             case "deadline" -> new ErrorGuidance(
-                    "Your Majesty, give me a task followed by /by, a date in YYYY-MM-DD format, "
+                    "Give me a task followed by /by, a date in YYYY-MM-DD format, "
                             + "and a four-digit time in HHmm format. You may change the sample date before sending.",
                     createDeadlineExample(input), true);
             case "event" -> new ErrorGuidance(
-                    "Your Majesty, give me an event followed by /from and /to. "
+                    "Give me an event followed by /from and /to. "
                             + "Each needs a date in YYYY-MM-DD format and a four-digit time in HHmm format.",
                     "event Team meeting /from 2026-12-31 1400 /to 2026-12-31 1500", false);
             case "mark" -> new ErrorGuidance(INDEX_HINT + "Choose the task you wish to mark complete.",
@@ -41,19 +41,18 @@ record ErrorGuidance(String hint, String example, boolean isDeadline) {
             case "delete" -> new ErrorGuidance(INDEX_HINT + "Choose the task you wish me to remove.",
                     "delete 1", false);
             case "find" -> new ErrorGuidance(
-                    "Your Majesty, place a word or phrase after find, and I shall search your tasks.",
+                    "Place a word or phrase after find, and I shall search your tasks.",
                     "find report", false);
             case "tag" -> new ErrorGuidance(INDEX_HINT + "Follow its number with #tags containing "
                     + "letters, numbers, underscores, or hyphens.", "tag 1 #work", false);
             case "untag" -> new ErrorGuidance(INDEX_HINT + "Follow its number with the #tags you wish me to remove.",
                     "untag 1 #work", false);
             case "findtag" -> new ErrorGuidance(
-                    "Your Majesty, follow findtag with #tags containing letters, numbers, underscores, "
+                    "Follow findtag with #tags containing letters, numbers, underscores, "
                             + "or hyphens. I shall look for tasks bearing all those tags.",
                     "findtag #work", false);
             default -> new ErrorGuidance(
-                    "Your Majesty, I understand todo, deadline, event, list, mark, unmark, delete, find, "
-                            + "tag, untag, findtag, and bye. You may begin with the example below.",
+                    "Open Commands for the full reference, or begin with the example below.",
                     "todo Read book", false);
         };
     }

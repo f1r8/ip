@@ -37,7 +37,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
@@ -86,7 +85,7 @@ class MainWindowTest {
         assertEquals("Send", robot.lookup("#sendButton").queryAs(Button.class).getText());
         assertNotNull(robot.lookup("#userInput").queryAs(TextField.class));
         assertNotNull(robot.lookup("#dialogContainer").queryAs(VBox.class));
-        assertNotNull(MainWindow.class.getResource("/images/DaAthena.jpg"));
+        assertNotNull(MainWindow.class.getResource("/view/OwlAvatar.fxml"));
         assertErrorPanelVisibility(robot, false);
     }
 
@@ -132,9 +131,9 @@ class MainWindowTest {
         assertEquals(2, dialogContainer.getChildren().size());
         assertDialog(robot, dialogContainer, 0, originalInput, Pos.TOP_RIGHT);
         Label failedStatus = assertInstanceOf(Label.class, dialogContainer.getChildren().get(1));
-        assertEquals("Not fulfilled, Your Majesty.", failedStatus.getText());
+        assertEquals("Command not completed", failedStatus.getText());
         assertTrue(failedStatus.getStyleClass().contains("failed-command-status"));
-        assertEquals("Command error, Your Majesty.",
+        assertEquals("Command needs attention",
                 robot.lookup("#errorHeading").queryAs(Label.class).getText());
         assertEquals(DEADLINE_ERROR, robot.lookup("#errorExplanation").queryAs(Label.class).getText());
         assertFalse(robot.lookup("#errorHint").queryAs(Label.class).getText().isBlank());
@@ -348,7 +347,7 @@ class MainWindowTest {
             throws IOException, InterruptedException {
         TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
         robot.interact(() -> {
-            stage.setWidth(400.0 + stage.getWidth() - stage.getScene().getWidth());
+            setSceneSize(400.0, 600.0);
             userInput.setText("structured-list");
             userInput.fireEvent(new ActionEvent());
         });
@@ -378,6 +377,12 @@ class MainWindowTest {
                 for (Label label : robot.lookup(selector).queryAllAs(Label.class)) {
                     assertTrue(label.getHeight() >= label.prefHeight(label.getWidth()) - 1.0,
                             "Task details must remain fully readable");
+                }
+            }
+            for (String selector : List.of(".task-type", ".task-tags")) {
+                for (Label label : robot.lookup(selector).queryAllAs(Label.class)) {
+                    assertInstanceOf(SVGPath.class, label.getGraphic());
+                    assertFalse(label.getText().isBlank());
                 }
             }
         });
@@ -482,6 +487,7 @@ class MainWindowTest {
                     "Expected fewer wrapped lines at 720 px: narrow=" + narrowHeight.get()
                             + ", wide=" + dialogContainer.getHeight());
         });
+        saveScreenshot(robot, Path.of("build", "reports", "gui", "task-rows-wide.png"));
 
         robot.interact(() -> {
             setSceneSize(400.0, 400.0);
@@ -677,10 +683,11 @@ class MainWindowTest {
         assertEquals("Message time: " + timestamp.getTooltip().getText(), timestamp.getAccessibleText());
 
         if (isAthenaDialog) {
-            ImageView imageView = assertInstanceOf(ImageView.class, dialogBox.getChildren().get(0));
-            assertNotNull(imageView.getImage());
+            Pane avatar = assertInstanceOf(Pane.class, dialogBox.getChildren().get(0));
+            assertEquals("Athena owl", avatar.getAccessibleText());
+            assertFalse(avatar.getChildren().isEmpty());
         } else {
-            assertFalse(dialogBox.getChildren().stream().anyMatch(ImageView.class::isInstance));
+            assertTrue(dialogBox.lookupAll(".owl-avatar").isEmpty());
         }
 
         StackPane bubbleContainer = messageContent.getChildren().stream()

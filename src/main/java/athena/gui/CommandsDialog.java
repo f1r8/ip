@@ -27,7 +27,7 @@ class CommandsDialog extends Dialog<Void> {
         VBox guide = new VBox(14);
         guide.setId("commandsGuide");
         guide.getStyleClass().add("commands-guide");
-        guide.getChildren().add(createLabel("Your commands, Your Majesty.", "guide-heading"));
+        guide.getChildren().add(createLabel("Your command reference", "guide-heading"));
         guide.getChildren().add(createLabel("Enter a command in Athena, then press Enter or Send.",
                 "guide-description"));
         addCommand(guide, "Add a task", "todo Read a book");
@@ -37,7 +37,7 @@ class CommandsDialog extends Dialog<Void> {
                 + "a date and four-digit, 24-hour time. Replace the sample dates as needed.", "guide-description"));
         addCommand(guide, "View and search", "list\nfind report\nfindtag #work");
         addCommand(guide, "Update tasks", "mark 1\nunmark 1\ndelete 1\ntag 1 #work\nuntag 1 #work");
-        guide.getChildren().add(createLabel("Your Majesty, use list to check task numbers first. "
+        guide.getChildren().add(createLabel("Use list to check task numbers first. "
                 + "The update examples assume task 1 exists. Tags begin with # followed by one or more "
                 + "ASCII letters (A-Z, a-z), digits (0-9), underscores, or hyphens. "
                 + "findtag matches all supplied tags.", "guide-description"));

@@ -12,13 +12,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -27,9 +24,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 
 /**
- * Represents a dialog box containing a message and an optional display picture.
+ * Represents a dialog box containing a message and an optional owl emblem.
  */
 public class DialogBox extends HBox {
     private static final DateTimeFormatter MESSAGE_TIME = DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH);
@@ -47,7 +45,7 @@ public class DialogBox extends HBox {
     @FXML
     private Label dialog;
     @FXML
-    private ImageView displayPicture;
+    private Pane displayPicture;
     @FXML
     private Pane tail;
     @FXML
@@ -72,19 +70,7 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Displays the supplied image using a centered square crop.
-     */
-    private void setDisplayPicture(Image image) {
-        displayPicture.setImage(image);
-
-        double size = Math.min(image.getWidth(), image.getHeight());
-        double x = (image.getWidth() - size) / 2;
-        double y = (image.getHeight() - size) / 2;
-        displayPicture.setViewport(new Rectangle2D(x, y, size, size));
-    }
-
-    /**
-     * Flips the dialog box such that the ImageView is on the left and text on the right.
+     * Flips the dialog box such that the owl emblem is on the left and text on the right.
      */
     private void flip() {
         ObservableList<Node> observableNodes = FXCollections.observableArrayList(this.getChildren());
@@ -111,9 +97,8 @@ public class DialogBox extends HBox {
     /**
      * Returns a left-aligned dialog box for an Athena message.
      */
-    public static DialogBox getAthenaDialog(String text, Image img) {
+    public static DialogBox getAthenaDialog(String text) {
         var dialogBox = new DialogBox(text);
-        dialogBox.setDisplayPicture(img);
         dialogBox.flip();
         return dialogBox;
     }
@@ -121,8 +106,8 @@ public class DialogBox extends HBox {
     /**
      * Returns an Athena reply with aligned task details when the command supplies them.
      */
-    public static DialogBox getAthenaDialog(CommandResponse response, Image img) {
-        DialogBox dialogBox = getAthenaDialog(response.message().strip(), img);
+    public static DialogBox getAthenaDialog(CommandResponse response) {
+        DialogBox dialogBox = getAthenaDialog(response.message().strip());
         if (!response.tasks().isEmpty()) {
             dialogBox.bubbleContent.setMaxWidth(Double.MAX_VALUE);
             dialogBox.bubbleContent.getChildren().add(dialogBox.createTaskRows(response));
@@ -182,6 +167,9 @@ public class DialogBox extends HBox {
         return details;
     }
 
+    /**
+     * Creates a wrapping label with a vector icon for task types and tags.
+     */
     private Label createTaskLabel(String text, String styleClass) {
         Label label = new Label(text);
         label.getStyleClass().add(styleClass);
@@ -189,6 +177,21 @@ public class DialogBox extends HBox {
         label.setMinWidth(0);
         label.setMinHeight(Region.USE_PREF_SIZE);
         label.setMaxWidth(Double.MAX_VALUE);
+        String iconPath = switch (styleClass) {
+            case "task-type" -> "Todo".equals(text)
+                    ? "M 1 4 L 3 6 L 6 2 M 8 4 H 14 M 1 11 L 3 13 L 6 9 M 8 11 H 14"
+                    : "M 2 3 H 14 V 14 H 2 Z M 2 6 H 14 M 5 1 V 4 M 11 1 V 4";
+            case "task-tags" -> "M 1 2 H 8 L 15 9 L 9 15 L 1 7 Z M 4 5 H 5";
+            default -> "";
+        };
+        if (!iconPath.isEmpty()) {
+            SVGPath icon = new SVGPath();
+            icon.setContent(iconPath);
+            icon.getStyleClass().add("task-icon");
+            icon.setMouseTransparent(true);
+            label.setGraphic(icon);
+            label.setGraphicTextGap(5);
+        }
         return label;
     }
 }

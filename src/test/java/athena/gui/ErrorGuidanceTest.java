@@ -25,7 +25,7 @@ class ErrorGuidanceTest {
 
         assertEquals("deadline Submit final report /by 2026-12-31 2359", guidance.example());
         assertTrue(guidance.isDeadline());
-        assertTrue(guidance.hint().contains("Your Majesty"));
+        assertFalse(guidance.hint().contains("Your Majesty"));
     }
 
     @Test
@@ -70,7 +70,7 @@ class ErrorGuidanceTest {
     void forInput_indexedCommand_explainsTaskPrerequisite() {
         for (String command : List.of("mark", "unmark", "delete", "tag", "untag")) {
             String hint = ErrorGuidance.forInput(command).hint();
-            assertTrue(hint.contains("Your Majesty"));
+            assertFalse(hint.contains("Your Majesty"));
             assertTrue(hint.contains("list"));
             assertTrue(hint.contains("assumes task 1 exists"));
         }
@@ -81,8 +81,8 @@ class ErrorGuidanceTest {
         for (String input : List.of("", "   ", "unknown something")) {
             ErrorGuidance guidance = ErrorGuidance.forInput(input);
             assertEquals("todo Read book", guidance.example());
-            assertTrue(guidance.hint().contains("Your Majesty"));
-            assertTrue(guidance.hint().contains("todo, deadline, event, list"));
+            assertFalse(guidance.hint().contains("Your Majesty"));
+            assertTrue(guidance.hint().contains("Open Commands"));
             assertFalse(guidance.isDeadline());
         }
     }

@@ -1,12 +1,12 @@
 .root {
-    main-color: #F6F8F5;
+    main-color: #F8F5EC;
     -fx-background-color: main-color;
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 15px;
 }
 
 .text-field {
-    -fx-background-color: #F0FFF0;
+    -fx-background-color: #F8F5EC;
     -fx-font: 15px "Inter 18pt";
     -fx-prompt-text-fill: #58695A;
 }
@@ -73,9 +73,9 @@
 
 /* Keep correction guidance beside the editor without covering the conversation. */
 .composer {
-    -fx-background-color: #F5FAF3;
+    -fx-background-color: #F2F0E6;
     -fx-padding: 12px;
-    -fx-border-color: #C9D9CA;
+    -fx-border-color: #D8D9C9;
     -fx-border-width: 1px 0 0 0;
 }
 
@@ -94,7 +94,7 @@
 }
 
 .error-scroll > .viewport {
-    -fx-background-color: #F5FAF3;
+    -fx-background-color: #F2F0E6;
 }
 
 .error-panel .label {
@@ -225,8 +225,28 @@
 }
 
 .guide-example {
-    -fx-background-color: #EDF3EB;
+    -fx-background-color: #EBEEDF;
     -fx-background-radius: 5px;
     -fx-padding: 8px;
     -fx-font-family: "Consolas";
+}
+
+
+/* Quiet royal branding, with a serif reserved for the name. */
+.identity-header {
+    -fx-background-color: #183F32;
+    -fx-border-color: #B59958;
+    -fx-border-width: 0 0 2px 0;
+    -fx-padding: 12px 16px;
+}
+
+.identity-title {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 25px;
+    -fx-text-fill: #FFFDF6;
+}
+
+.identity-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #E5D7AE;
 }

@@ -80,22 +80,23 @@ class GuiUiTest {
     @Test
     void commands_taskLifecycle_returnsConciseCaptionsAndUpdatedDetails() {
         CommandResponse added = respond("todo Read book");
-        assertEquals("Added, Your Majesty. 1 task in your list.", added.message());
+        assertEquals("As you wish. I've added this task. 1 task in your list.", added.message());
         assertEquals(0, added.tasks().getFirst().number());
         assertEquals("Read book", added.tasks().getFirst().description());
         assertFalse(added.tasks().getFirst().isDone());
 
         CommandResponse marked = respond("mark 1");
-        assertEquals("Marked done, Your Majesty.", marked.message());
+        assertEquals("Well done, Your Majesty. This task is complete.", marked.message());
         assertTrue(marked.tasks().getFirst().isDone());
         assertFalse(added.tasks().getFirst().isDone());
 
-        assertEquals("Marked to do, Your Majesty.", respond("unmark 1").message());
+        assertEquals("Certainly. This task is back on your to-do list.", respond("unmark 1").message());
         assertEquals(List.of("#book"), respond("tag 1 #book").tasks().getFirst().tags());
-        assertEquals("Tags unchanged, Your Majesty.", respond("tag 1 #book").message());
+        assertEquals("These tags need no changes.", respond("tag 1 #book").message());
         assertEquals(List.of(), respond("untag 1 #book").tasks().getFirst().tags());
-        assertEquals("Removed, Your Majesty. 0 tasks in your list.", respond("delete 1").message());
-        assertEquals("Your list is empty, Your Majesty.", respond("list").message());
+        assertEquals("Certainly. I've removed this task. 0 tasks in your list.",
+                respond("delete 1").message());
+        assertEquals("Your list awaits its first task. Try todo Read a book.", respond("list").message());
     }
 
     @Test
@@ -109,7 +110,7 @@ class GuiUiTest {
         assertEquals(List.of("Read book", "Submit report"),
                 listed.tasks().stream().map(TaskView::description).toList());
         CommandResponse found = respond("find report");
-        assertEquals("Matching tasks, Your Majesty.", found.message());
+        assertEquals("Here are your matching tasks.", found.message());
         assertEquals(List.of(listed.tasks().get(1).description()),
                 found.tasks().stream().map(TaskView::description).toList());
         assertEquals(1, found.tasks().getFirst().number());
@@ -119,7 +120,8 @@ class GuiUiTest {
         assertTrue(failed.isError());
         assertTrue(failed.tasks().isEmpty());
         assertTrue(failed.message().contains("yyyy-MM-dd HHmm"));
-        assertEquals("No matching tasks, Your Majesty.", respond("find missing").message());
+        assertEquals("No matching tasks. Try another keyword or use list to see all tasks.",
+                respond("find missing").message());
     }
 
     private CommandResponse respond(String command) {

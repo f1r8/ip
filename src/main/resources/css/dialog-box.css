@@ -5,7 +5,7 @@
 }
 
 .bubble {
-    -fx-background-color: #DDEFD8;
+    -fx-background-color: #E3ECDD;
     -fx-border-color: #000000;
     -fx-border-width: 0.1px;
     -fx-background-radius: 1em 1em 0 1em;
@@ -70,14 +70,10 @@
     -fx-stroke-width: 0.1px;
 }
 
-#displayPicture {
-    /* Shadow effect on image. */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 5, 5);
-
-    /* Change size of image. */
-    -fx-scale-x: 1;
-    -fx-scale-y: 1;
-
-    /* Rotate image clockwise by degrees. */
-    -fx-rotate: 0;
+.task-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #46564A;
+    -fx-stroke-width: 1.5px;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.SVGPath?>
+
+<!-- A shared vector emblem stays crisp in both the header and conversation. -->
+<Pane xmlns:fx="http://javafx.com/fxml/1" minWidth="50" prefWidth="50" maxWidth="50"
+      minHeight="50" prefHeight="50" maxHeight="50" accessibleText="Athena owl"
+      mouseTransparent="true" styleClass="owl-avatar">
+    <children>
+        <Circle centerX="25" centerY="25" radius="24" fill="#183F32" stroke="#B59958" />
+        <SVGPath content="M 12 12 L 22 17 L 28 17 L 38 12 L 36 31 Q 34 40 25 41 Q 16 40 14 31 Z"
+                 fill="#F8F5EC" />
+        <Circle centerX="20" centerY="25" radius="6" fill="#D9E5D9" />
+        <Circle centerX="30" centerY="25" radius="6" fill="#D9E5D9" />
+        <Circle centerX="20" centerY="25" radius="2.5" fill="#183F32" />
+        <Circle centerX="30" centerY="25" radius="2.5" fill="#183F32" />
+        <SVGPath content="M 22 31 L 28 31 L 25 36 Z" fill="#95773A" />
+    </children>
+</Pane>
