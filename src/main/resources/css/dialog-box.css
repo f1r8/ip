@@ -1,3 +1,9 @@
+.message-timestamp {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 11px;
+    -fx-text-fill: #58695A;
+}
+
 .bubble {
     -fx-background-color: #DDEFD8;
     -fx-border-color: #000000;

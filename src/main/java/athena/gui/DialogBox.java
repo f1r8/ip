@@ -1,7 +1,10 @@
 package athena.gui;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Locale;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +16,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
@@ -28,6 +32,14 @@ import javafx.scene.layout.VBox;
  * Represents a dialog box containing a message and an optional display picture.
  */
 public class DialogBox extends HBox {
+    private static final DateTimeFormatter MESSAGE_TIME = DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH);
+    private static final DateTimeFormatter MESSAGE_DATE_TIME =
+            DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm:ss", Locale.ENGLISH);
+
+    @FXML
+    private VBox messageContent;
+    @FXML
+    private Label timestamp;
     @FXML
     private StackPane bubbleContainer;
     @FXML
@@ -52,6 +64,11 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
+        LocalDateTime createdAt = LocalDateTime.now();
+        timestamp.setText(createdAt.format(MESSAGE_TIME));
+        String fullTimestamp = createdAt.format(MESSAGE_DATE_TIME);
+        timestamp.setTooltip(new Tooltip(fullTimestamp));
+        timestamp.setAccessibleText("Message time: " + fullTimestamp);
     }
 
     /**
@@ -74,6 +91,7 @@ public class DialogBox extends HBox {
         Collections.reverse(observableNodes);
         getChildren().setAll(observableNodes);
         setAlignment(Pos.TOP_LEFT);
+        messageContent.setAlignment(Pos.TOP_LEFT);
         bubbleContainer.setAlignment(Pos.BOTTOM_LEFT);
         StackPane.setMargin(bubbleContent, new Insets(0, 47, 0, 11));
         tail.setScaleX(-1);

@@ -668,7 +668,13 @@ class MainWindowTest {
         assertEquals(expectedAlignment, dialogBox.getAlignment());
         boolean isAthenaDialog = expectedAlignment == Pos.TOP_LEFT;
         assertEquals(isAthenaDialog ? 2 : 1, dialogBox.getChildren().size());
-        assertInstanceOf(StackPane.class, dialogBox.getChildren().get(isAthenaDialog ? 1 : 0));
+        VBox messageContent = assertInstanceOf(VBox.class,
+                dialogBox.getChildren().get(isAthenaDialog ? 1 : 0));
+        assertEquals(expectedAlignment, messageContent.getAlignment());
+        Label timestamp = assertInstanceOf(Label.class, messageContent.getChildren().getLast());
+        assertTrue(timestamp.getText().matches("(?:[01][0-9]|2[0-3]):[0-5][0-9]"));
+        assertNotNull(timestamp.getTooltip());
+        assertEquals("Message time: " + timestamp.getTooltip().getText(), timestamp.getAccessibleText());
 
         if (isAthenaDialog) {
             ImageView imageView = assertInstanceOf(ImageView.class, dialogBox.getChildren().get(0));
@@ -677,7 +683,7 @@ class MainWindowTest {
             assertFalse(dialogBox.getChildren().stream().anyMatch(ImageView.class::isInstance));
         }
 
-        StackPane bubbleContainer = dialogBox.getChildren().stream()
+        StackPane bubbleContainer = messageContent.getChildren().stream()
                 .filter(StackPane.class::isInstance)
                 .map(StackPane.class::cast)
                 .findFirst()
@@ -695,7 +701,14 @@ class MainWindowTest {
         Region tailFill = assertInstanceOf(Region.class, tail.getChildren().get(0));
         SVGPath tailOutline = assertInstanceOf(SVGPath.class, tail.getChildren().get(1));
 
-        robot.interact(dialogBox::applyCss);
+        robot.interact(() -> {
+            dialogBox.applyCss();
+            dialogBox.layout();
+            Bounds timestampBounds = timestamp.localToScene(timestamp.getLayoutBounds());
+            Bounds bubbleBounds = bubbleContainer.localToScene(bubbleContainer.getLayoutBounds());
+            assertTrue(timestampBounds.getMinY() >= bubbleBounds.getMaxY(),
+                    "Expected the timestamp below the message bubble");
+        });
         Insets labelMargin = StackPane.getMargin(bubbleContent);
 
         assertEquals(expectedText, label.getText());

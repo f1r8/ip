@@ -81,6 +81,10 @@ panel remain visually distinct. Record the visual result and screenshot paths in
 
 The GUI acceptance checks cover the following behavior:
 
+- User and Athena messages show a compact local `HH:mm` timestamp below the bubble, aligned with
+  the corresponding side. Hovering reveals the full date and time. Existing timestamps stay fixed
+  when later messages arrive or the window is resized, and remain readable in narrow layouts.
+
 - Startup displays a courteous welcome, `todo Read a book` and `list` examples, and a Commands button.
   The welcome is accurate for both new and saved task lists: startup sends no synthetic command and
   changes no tasks. The first non-exit command removes the welcome and its layout space.
