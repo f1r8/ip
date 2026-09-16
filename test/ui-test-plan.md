@@ -81,6 +81,10 @@ panel remain visually distinct. Record the visual result and screenshot paths in
 
 The GUI acceptance checks cover the following behavior:
 
+- Body text, command input, and Send use a consistent 15 px baseline. The short input prompt fits at
+  400 px. Send keeps the same font size in its normal, hover, pressed, and keyboard-focused states.
+  Its dark green background has at least 4.5:1 contrast with the white label; the darker placeholder
+  remains readable. Keyboard focus is visible without changing control size or shifting text.
 - Success replies use concise captions that retain "Your Majesty". Added and removed tasks include the
   updated count. Empty lists and searches explain that no tasks are available or match the request.
 - Task lists, search matches, and confirmations show structured task names, textual completion states,

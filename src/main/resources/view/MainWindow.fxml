@@ -55,7 +55,7 @@
                         <HBox alignment="CENTER" spacing="8.0">
                             <children>
                                 <TextField fx:id="userInput" onAction="#handleUserInput" minWidth="0.0"
-                                           prefHeight="41.0" promptText="Your command, Your Majesty..."
+                                           prefHeight="41.0" promptText="Enter a command..."
                                            accessibleText="Your command, Your Majesty" HBox.hgrow="ALWAYS" />
                                 <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleUserInput"
                                         prefHeight="41.0" minWidth="70.0" text="Send" />

@@ -2,36 +2,38 @@
     main-color: #F6F8F5;
     -fx-background-color: main-color;
     -fx-font-family: "Inter 18pt";
+    -fx-font-size: 15px;
 }
 
 .text-field {
     -fx-background-color: #F0FFF0;
-    -fx-font: 20px "Inter 18pt";
-    -fx-prompt-text-fill: #6E836A;
+    -fx-font: 15px "Inter 18pt";
+    -fx-prompt-text-fill: #58695A;
 }
 
 .button {
-    -fx-background-color: #32CD32;
-    -fx-font: bold 16px "Inter 18pt";
+    -fx-background-color: #246542;
+    -fx-font: bold 15px "Inter 18pt";
 }
 
-/* A vibrant leaf-green primary action for sending messages. */
+/* A dark green primary action with readable white text in every state. */
 #sendButton {
-    -fx-background-color: #22A447;
+    -fx-background-color: #246542;
     -fx-border-color: transparent;
     -fx-border-width: 3px;
     -fx-text-fill: #FFFFFF;
 }
 
 #sendButton:hover {
-    -fx-background-color: #168A38;
-    -fx-font: bold 17px "Inter 18pt";
+    -fx-background-color: #1D5637;
 }
 
 #sendButton:pressed {
-    -fx-background-color: #0F6E2D;
+    -fx-background-color: #17452D;
+}
+
+#sendButton:focused {
     -fx-border-color: #A8F0B9;
-    -fx-font: bold 15px "Inter 18pt";
 }
 
 .label .text,
@@ -152,6 +154,7 @@
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 6px;
     -fx-border-color: #A9C1AC;
+    -fx-border-width: 2px;
     -fx-border-radius: 6px;
     -fx-font-size: 15px;
 }
@@ -162,7 +165,6 @@
 
 #userInput:focused {
     -fx-border-color: #187D37;
-    -fx-border-width: 2px;
 }
 
 #sendButton {
