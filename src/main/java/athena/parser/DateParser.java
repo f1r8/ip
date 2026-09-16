@@ -16,7 +16,7 @@ public class DateParser {
 
     /** Sample date and time pattern for showing an example */
     private static final String SAMPLE_INPUT_FORMAT = DateTimeFormatter.ofPattern(INPUT_PATTERN).format(
-            LocalDateTime.of(2001, Month.SEPTEMBER, 11, 19, 11));
+            LocalDateTime.of(2026, Month.DECEMBER, 31, 23, 59));
 
     /** Date and time formatter for application input */
     private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter.ofPattern(INPUT_PATTERN);
@@ -52,8 +52,8 @@ public class DateParser {
         try {
             return LocalDateTime.parse(input, INPUT_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new AthenaException("Invalid date format, please use "
-                    + "'" + INPUT_PATTERN + "' (e.g. " + SAMPLE_INPUT_FORMAT + ")");
+            throw new AthenaException("Please use '" + INPUT_PATTERN
+                    + "' for the date and time, Your Majesty (e.g. " + SAMPLE_INPUT_FORMAT + ").");
         }
     }
 }

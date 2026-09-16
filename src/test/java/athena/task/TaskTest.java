@@ -56,8 +56,8 @@ class TaskTest {
         AthenaException completedTaskException = assertThrows(AthenaException.class, () ->
                 new TestTask(true, ""));
 
-        assertEquals("Task description cannot be empty", incompleteTaskException.getMessage());
-        assertEquals("Task description cannot be empty", completedTaskException.getMessage());
+        assertEquals("Please provide a task description, Your Majesty.", incompleteTaskException.getMessage());
+        assertEquals("Please provide a task description, Your Majesty.", completedTaskException.getMessage());
     }
 
     @Test

@@ -63,6 +63,7 @@ public class Athena implements CommandResponder {
         outputBuffer.reset();
         CommandResult result = commandHandler.handleCommand(input);
         assert outputBuffer.size() > 0 : "A continuing command should produce a response";
-        return new CommandResponse(outputBuffer.toString(), result == CommandResult.EXIT);
+        return new CommandResponse(outputBuffer.toString(), result == CommandResult.EXIT,
+                result == CommandResult.ERROR);
     }
 }

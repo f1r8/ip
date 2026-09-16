@@ -3,12 +3,20 @@ package athena.gui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.imageio.ImageIO;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,15 +24,22 @@ import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
+import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -32,16 +47,28 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+/**
+ * Verifies command submission, error recovery, and conversation layout in the GUI.
+ */
 @ExtendWith(ApplicationExtension.class)
 class MainWindowTest {
+    private static final String INVALID_DEADLINE = "deadline Submit report /by";
+    private static final String DEADLINE_EXAMPLE = "deadline Submit report /by 2026-12-31 2359";
+    private static final String DEADLINE_ERROR = "Please provide a deadline and /by date, Your Majesty.";
+    private static final PseudoClass INVALID_INPUT = PseudoClass.getPseudoClass("invalid-input");
+
     private final List<String> receivedInputs = new ArrayList<>();
 
     private Stage stage;
 
     @Start
     void start(Stage stage) throws IOException {
+        Font.loadFont(Main.class.getResourceAsStream("/fonts/static/Inter_18pt-Regular.ttf"), 16);
+        Font.loadFont(Main.class.getResourceAsStream("/fonts/static/Inter_18pt-Bold.ttf"), 16);
+
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
         AnchorPane root = fxmlLoader.load();
         MainWindow mainWindow = fxmlLoader.getController();
@@ -60,6 +87,7 @@ class MainWindowTest {
         assertNotNull(robot.lookup("#userInput").queryAs(TextField.class));
         assertNotNull(robot.lookup("#dialogContainer").queryAs(VBox.class));
         assertNotNull(MainWindow.class.getResource("/images/DaAthena.jpg"));
+        assertErrorPanelVisibility(robot, false);
     }
 
     @Test
@@ -85,15 +113,228 @@ class MainWindowTest {
     }
 
     @Test
-    void errorAndExit_invalidThenBye_errorDisplayedBeforeWindowCloses(FxRobot robot) {
+    void submitCommand_invalidInput_preservesCommandAndShowsActionableError(FxRobot robot) {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        VBox dialogContainer = robot.lookup("#dialogContainer").queryAs(VBox.class);
+        VBox errorPanel = robot.lookup("#errorPanel").queryAs(VBox.class);
+        String originalInput = "  " + INVALID_DEADLINE + "  ";
+
+        robot.interact(() -> userInput.setText(originalInput));
+        fireButton(robot, "#sendButton");
+        robot.interact(errorPanel::applyCss);
+
+        assertErrorPanelVisibility(robot, true);
+        assertEquals(originalInput, userInput.getText());
+        assertEquals(List.of(originalInput), receivedInputs);
+        assertTrue(userInput.isFocused());
+        assertEquals(originalInput.length(), userInput.getCaretPosition());
+        assertTrue(userInput.getPseudoClassStates().contains(INVALID_INPUT));
+        assertEquals(2, dialogContainer.getChildren().size());
+        assertDialog(robot, dialogContainer, 0, originalInput, Pos.TOP_RIGHT);
+        Label failedStatus = assertInstanceOf(Label.class, dialogContainer.getChildren().get(1));
+        assertEquals("Not fulfilled, Your Majesty.", failedStatus.getText());
+        assertTrue(failedStatus.getStyleClass().contains("failed-command-status"));
+        assertEquals("Command error, Your Majesty.",
+                robot.lookup("#errorHeading").queryAs(Label.class).getText());
+        assertEquals(DEADLINE_ERROR, robot.lookup("#errorExplanation").queryAs(Label.class).getText());
+        assertFalse(robot.lookup("#errorHint").queryAs(Label.class).getText().isBlank());
+        assertEquals(DEADLINE_EXAMPLE, robot.lookup("#errorExample").queryAs(Label.class).getText());
+        assertFalse(robot.lookup("#inputStatus").queryAs(Label.class).getText().isBlank());
+        assertFalse(errorPanel.getBackground().getFills().isEmpty());
+        Color panelColor = assertInstanceOf(Color.class,
+                errorPanel.getBackground().getFills().get(0).getFill());
+        assertNotEquals(Color.WHITE, panelColor);
+        assertTrue(panelColor.getOpacity() > 0.0);
+    }
+
+    @Test
+    void submitCommand_repeatedFailuresThenCorrection_recoversWithoutLosingInput(FxRobot robot) {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        VBox dialogContainer = robot.lookup("#dialogContainer").queryAs(VBox.class);
+        Label inputStatus = robot.lookup("#inputStatus").queryAs(Label.class);
+
+        robot.interact(() -> userInput.setText(INVALID_DEADLINE));
+        fireButton(robot, "#sendButton");
+        String failedStatus = inputStatus.getText();
+        String retryInput = "deadline Submit report /by not-a-date";
+
+        robot.interact(() -> userInput.setText(retryInput));
+
+        assertErrorPanelVisibility(robot, true);
+        assertNotEquals(failedStatus, inputStatus.getText());
+        assertEquals(retryInput, userInput.getText());
+
+        robot.interact(() -> userInput.fireEvent(new ActionEvent()));
+
+        assertErrorPanelVisibility(robot, true);
+        assertEquals(retryInput, userInput.getText());
+        assertTrue(userInput.isFocused());
+        assertEquals(retryInput.length(), userInput.getCaretPosition());
+        assertEquals(4, dialogContainer.getChildren().size());
+        assertDialog(robot, dialogContainer, 2, retryInput, Pos.TOP_RIGHT);
+        assertInstanceOf(Label.class, dialogContainer.getChildren().get(3));
+
+        robot.interact(() -> userInput.setText(DEADLINE_EXAMPLE));
+        robot.interact(() -> userInput.fireEvent(new ActionEvent()));
+
+        assertErrorPanelVisibility(robot, false);
+        assertEquals("", userInput.getText());
+        assertFalse(userInput.getPseudoClassStates().contains(INVALID_INPUT));
+        assertTrue(userInput.isFocused());
+        assertEquals(6, dialogContainer.getChildren().size());
+        assertDialog(robot, dialogContainer, 4, DEADLINE_EXAMPLE, Pos.TOP_RIGHT);
+        assertDialog(robot, dialogContainer, 5, "Response: " + DEADLINE_EXAMPLE, Pos.TOP_LEFT);
+        assertEquals(List.of(INVALID_DEADLINE, retryInput, DEADLINE_EXAMPLE), receivedInputs);
+    }
+
+    @Test
+    void useExample_unknownCommand_fillsInputWithoutSubmitting(FxRobot robot) {
         TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
         VBox dialogContainer = robot.lookup("#dialogContainer").queryAs(VBox.class);
 
         robot.interact(() -> userInput.setText("dance"));
         robot.interact(() -> userInput.fireEvent(new ActionEvent()));
 
+        assertErrorPanelVisibility(robot, true);
+        assertEquals("dance", userInput.getText());
+        assertEquals("Unknown command", robot.lookup("#errorExplanation").queryAs(Label.class).getText());
+        assertFalse(robot.lookup("#errorHint").queryAs(Label.class).getText().isBlank());
+        String example = robot.lookup("#errorExample").queryAs(Label.class).getText();
+        assertFalse(example.isBlank());
+
+        scrollToExample(robot);
+        fireButton(robot, "#useExampleButton");
+
+        assertEquals(example, userInput.getText());
+        assertEquals(List.of("dance"), receivedInputs);
+        assertEquals(2, dialogContainer.getChildren().size());
+        assertErrorPanelVisibility(robot, true);
+        assertTrue(userInput.isFocused());
+        assertEquals(example.length(), userInput.getCaretPosition());
+    }
+
+    @Test
+    void useExample_deadlineWithEditedDescription_preservesDescriptionWithoutSubmitting(FxRobot robot) {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+
+        robot.interact(() -> userInput.setText(INVALID_DEADLINE));
+        robot.interact(() -> userInput.fireEvent(new ActionEvent()));
+        robot.interact(() -> userInput.setText("deadline Send the revised report /by tomorrow"));
+        scrollToExample(robot);
+        fireButton(robot, "#useExampleButton");
+
+        String correctedInput = "deadline Send the revised report /by 2026-12-31 2359";
+        assertEquals(correctedInput, userInput.getText());
+        assertEquals(List.of(INVALID_DEADLINE), receivedInputs);
+        assertErrorPanelVisibility(robot, true);
+        assertTrue(userInput.isFocused());
+        assertEquals(correctedInput.length(), userInput.getCaretPosition());
+    }
+
+    @Test
+    void errorPanel_narrowWindow_fitsAboveCommandInput(FxRobot robot) throws IOException {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        ScrollPane errorScroll = robot.lookup("#errorScroll").queryAs(ScrollPane.class);
+        Button sendButton = robot.lookup("#sendButton").queryAs(Button.class);
+
+        robot.interact(() -> {
+            stage.setWidth(400.0 + stage.getWidth() - stage.getScene().getWidth());
+            userInput.setText(INVALID_DEADLINE);
+            userInput.fireEvent(new ActionEvent());
+        });
+        robot.interact(() -> {
+            stage.getScene().getRoot().applyCss();
+            stage.getScene().getRoot().layout();
+        });
+
+        saveScreenshot(robot, Path.of("build", "reports", "gui", "error-panel.png"));
+
+        Bounds panelBounds = errorScroll.localToScene(errorScroll.getLayoutBounds());
+        Bounds inputBounds = userInput.localToScene(userInput.getLayoutBounds());
+        Bounds sendBounds = sendButton.localToScene(sendButton.getLayoutBounds());
+        assertEquals(400.0, stage.getScene().getWidth(), 1.0);
+        assertTrue(panelBounds.getWidth() > 0.0);
+        assertTrue(panelBounds.getHeight() > 0.0);
+        assertTrue(panelBounds.getMinX() >= 0.0);
+        assertTrue(panelBounds.getMaxX() <= stage.getScene().getWidth());
+        assertTrue(panelBounds.getMaxY() <= inputBounds.getMinY());
+        assertTrue(panelBounds.getMaxY() <= sendBounds.getMinY());
+        assertTrue(inputBounds.getMaxY() <= stage.getScene().getHeight());
+        assertTrue(sendBounds.getMaxX() <= stage.getScene().getWidth());
+    }
+
+    @Test
+    void errorPanel_shortWindowAndLongCommand_keepsInputVisibleAndAllowsScrolling(FxRobot robot)
+            throws IOException, InterruptedException {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        ScrollPane errorScroll = robot.lookup("#errorScroll").queryAs(ScrollPane.class);
+        VBox errorPanel = robot.lookup("#errorPanel").queryAs(VBox.class);
+        Button sendButton = robot.lookup("#sendButton").queryAs(Button.class);
+        Button useExampleButton = robot.lookup("#useExampleButton").queryAs(Button.class);
+        String longCommand = "deadline " + "Review the detailed project report ".repeat(30) + "/by";
+
+        robot.interact(() -> {
+            stage.setWidth(400.0 + stage.getWidth() - stage.getScene().getWidth());
+            stage.setHeight(400.0 + stage.getHeight() - stage.getScene().getHeight());
+            userInput.setText(longCommand);
+            userInput.fireEvent(new ActionEvent());
+        });
+        awaitLayoutPulse(robot);
+
+        AtomicReference<Bounds> initialContentBounds = new AtomicReference<>();
+        robot.interact(() -> {
+            Bounds panelBounds = errorScroll.localToScene(errorScroll.getLayoutBounds());
+            Bounds inputBounds = userInput.localToScene(userInput.getLayoutBounds());
+            Bounds sendBounds = sendButton.localToScene(sendButton.getLayoutBounds());
+            String layoutDetails = "panel=" + panelBounds + ", input=" + inputBounds + ", send=" + sendBounds;
+            assertEquals(400.0, stage.getScene().getWidth(), 1.0);
+            assertEquals(400.0, stage.getScene().getHeight(), 1.0);
+            assertEquals(longCommand, userInput.getText());
+            assertErrorPanelVisibility(robot, true);
+            assertTrue(errorScroll.isFitToWidth());
+            assertTrue(panelBounds.getMinY() >= 0.0, layoutDetails);
+            assertTrue(panelBounds.getMaxY() <= inputBounds.getMinY(), layoutDetails);
+            assertTrue(panelBounds.getMaxY() <= sendBounds.getMinY(), layoutDetails);
+            assertTrue(inputBounds.getMaxY() <= stage.getScene().getHeight(), layoutDetails);
+            assertTrue(sendBounds.getMaxY() <= stage.getScene().getHeight(), layoutDetails);
+            assertTrue(errorPanel.getLayoutBounds().getHeight() > errorScroll.getViewportBounds().getHeight(),
+                    "Expected overflowing content: content=" + errorPanel.getLayoutBounds()
+                            + ", viewport=" + errorScroll.getViewportBounds());
+            initialContentBounds.set(errorPanel.localToScene(errorPanel.getLayoutBounds()));
+            errorScroll.setVvalue(errorScroll.getVmax());
+        });
+        awaitLayoutPulse(robot);
+
+        robot.interact(() -> {
+            Node viewport = errorScroll.lookup(".viewport");
+            assertNotNull(viewport, "Expected the error ScrollPane's viewport after layout");
+            Bounds viewportBounds = viewport.localToScene(viewport.getLayoutBounds());
+            Bounds contentBounds = errorPanel.localToScene(errorPanel.getLayoutBounds());
+            Bounds buttonBounds = useExampleButton.localToScene(useExampleButton.getLayoutBounds());
+            String scrollDetails = "viewport=" + viewportBounds + ", button=" + buttonBounds
+                    + ", content=" + contentBounds + ", initialContent=" + initialContentBounds.get()
+                    + ", vvalue=" + errorScroll.getVvalue();
+            assertTrue(viewportBounds.getHeight() > 0.0,
+                    "Expected a nonempty error viewport: " + scrollDetails);
+            assertEquals(errorScroll.getVmax(), errorScroll.getVvalue(), 0.0001, scrollDetails);
+            assertTrue(contentBounds.getMinY() < initialContentBounds.get().getMinY(), scrollDetails);
+            assertTrue(buttonBounds.getMinY() >= viewportBounds.getMinY(),
+                    "Expected button top inside viewport: " + scrollDetails);
+            assertTrue(buttonBounds.getMaxY() <= viewportBounds.getMaxY(),
+                    "Expected button bottom inside viewport: " + scrollDetails);
+        });
+        saveScreenshot(robot, Path.of("build", "reports", "gui", "error-panel-short-window.png"));
+    }
+
+    @Test
+    void submitCommand_errorThenBye_closesWindow(FxRobot robot) {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+
+        robot.interact(() -> userInput.setText("dance"));
+        robot.interact(() -> userInput.fireEvent(new ActionEvent()));
+
         assertTrue(stage.isShowing());
-        assertDialog(robot, dialogContainer, 1, "Unknown command", Pos.TOP_LEFT);
+        assertErrorPanelVisibility(robot, true);
 
         robot.interact(() -> userInput.setText("bye"));
         robot.interact(() -> userInput.fireEvent(new ActionEvent()));
@@ -102,17 +343,99 @@ class MainWindowTest {
         assertEquals(List.of("dance", "bye"), receivedInputs);
     }
 
+    /**
+     * Returns predictable responses without parsing commands or accessing task storage.
+     */
     private CommandResponse getResponse(String input) {
         receivedInputs.add(input);
-        if (input.equals("bye")) {
-            return new CommandResponse("", true);
+        String command = input.strip();
+        if (command.equals("bye")) {
+            return new CommandResponse("", true, false);
         }
-        if (input.equals("dance")) {
-            return new CommandResponse("Unknown command", false);
+        if (command.equals("dance")) {
+            return new CommandResponse("\n  Unknown command  \n", false, true);
         }
-        return new CommandResponse("Response: " + input, false);
+        if (command.startsWith("deadline ") && !command.endsWith("/by 2026-12-31 2359")) {
+            return new CommandResponse("\n  " + DEADLINE_ERROR + "  \n", false, true);
+        }
+        return new CommandResponse("Response: " + input, false, false);
     }
 
+    /**
+     * Checks that the error panel and editing status take up space only when shown.
+     */
+    private void assertErrorPanelVisibility(FxRobot robot, boolean isVisible) {
+        VBox errorPanel = robot.lookup("#errorPanel").queryAs(VBox.class);
+        ScrollPane errorScroll = robot.lookup("#errorScroll").queryAs(ScrollPane.class);
+        Label inputStatus = robot.lookup("#inputStatus").queryAs(Label.class);
+        assertEquals(isVisible, errorPanel.isVisible());
+        assertEquals(isVisible, errorPanel.isManaged());
+        assertEquals(isVisible, errorScroll.isVisible());
+        assertEquals(isVisible, errorScroll.isManaged());
+        assertEquals(isVisible, inputStatus.isVisible());
+        assertEquals(isVisible, inputStatus.isManaged());
+    }
+
+    /**
+     * Saves the rendered JavaFX window for visual review without comparing it to a reference image.
+     */
+    private void saveScreenshot(FxRobot robot, Path target) throws IOException {
+        int width = (int) Math.ceil(stage.getScene().getWidth());
+        int height = (int) Math.ceil(stage.getScene().getHeight());
+        WritableImage snapshot = new WritableImage(width, height);
+        robot.interact(() -> stage.getScene().getRoot().snapshot(null, snapshot));
+
+        int[] pixels = new int[width * height];
+        snapshot.getPixelReader().getPixels(0, 0, width, height,
+                PixelFormat.getIntArgbInstance(), pixels, 0, width);
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        image.setRGB(0, 0, width, height, pixels, 0, width);
+        Files.createDirectories(target.getParent());
+        ImageIO.write(image, "png", target.toFile());
+    }
+
+    /**
+     * Waits for a post-layout pulse so bounds reflect queued resize and scrolling updates.
+     */
+    private void awaitLayoutPulse(FxRobot robot) throws InterruptedException {
+        CountDownLatch layoutComplete = new CountDownLatch(1);
+        Runnable listener = layoutComplete::countDown;
+        robot.interact(() -> {
+            stage.getScene().addPostLayoutPulseListener(listener);
+            Platform.requestNextPulse();
+        });
+        try {
+            assertTrue(layoutComplete.await(5, TimeUnit.SECONDS), "Timed out waiting for JavaFX layout");
+        } finally {
+            robot.interact(() -> stage.getScene().removePostLayoutPulseListener(listener));
+        }
+    }
+
+    /**
+     * Focuses and activates a button on the JavaFX thread without controlling the system mouse.
+     */
+    private void fireButton(FxRobot robot, String selector) {
+        Button button = robot.lookup(selector).queryAs(Button.class);
+        robot.interact(() -> {
+            button.requestFocus();
+            button.fire();
+        });
+    }
+
+    /**
+     * Makes the example action reachable when the correction panel needs vertical scrolling.
+     */
+    private void scrollToExample(FxRobot robot) {
+        ScrollPane errorScroll = robot.lookup("#errorScroll").queryAs(ScrollPane.class);
+        robot.interact(() -> {
+            errorScroll.setVvalue(errorScroll.getVmax());
+            stage.getScene().getRoot().layout();
+        });
+    }
+
+    /**
+     * Checks a conversation bubble's text, alignment, avatar, and matching tail appearance.
+     */
     private void assertDialog(FxRobot robot, VBox dialogContainer, int index, String expectedText,
             Pos expectedAlignment) {
         DialogBox dialogBox = assertInstanceOf(DialogBox.class, dialogContainer.getChildren().get(index));

@@ -33,8 +33,8 @@ class DateParserTest {
         AthenaException exception = assertThrows(AthenaException.class, () ->
                 DateParser.parse("31-12-2026 23:59"));
 
-        assertEquals("Invalid date format, please use "
-                + "'yyyy-MM-dd HHmm' (e.g. 2001-09-11 1911)", exception.getMessage());
+        assertEquals("Please use 'yyyy-MM-dd HHmm' for the date and time, Your Majesty "
+                + "(e.g. 2026-12-31 2359).", exception.getMessage());
     }
 
     @Test

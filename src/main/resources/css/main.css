@@ -1,10 +1,6 @@
 .root {
-    main-color: rgb(237, 255, 242);       /* Create a looked-up color called "main-color" within root. */
+    main-color: #F6F8F5;
     -fx-background-color: main-color;
-    -fx-background-image: url("../images/background.jpg");
-    -fx-background-size: cover;
-    -fx-background-size: 430px 240px;
-    -fx-background-repeat: repeat;
     -fx-font-family: "Inter 18pt";
 }
 
@@ -45,7 +41,7 @@
 }
 
 .scroll-pane {
-    -fx-background-color: rgba(255,255,255,.25);
+    -fx-background-color: main-color;
 }
 
 .scroll-pane .viewport {
@@ -67,4 +63,108 @@
 .scroll-bar .decrement-button {
     -fx-pref-height: 0;
     -fx-opacity: 0;
+}
+
+/* Keep correction guidance beside the editor without covering the conversation. */
+.composer {
+    -fx-background-color: #F5FAF3;
+    -fx-padding: 12px;
+    -fx-border-color: #C9D9CA;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.error-panel {
+    -fx-background-color: #FFF0ED;
+    -fx-background-radius: 10px;
+    -fx-border-color: #D58B81;
+    -fx-border-width: 1px 1px 1px 4px;
+    -fx-border-radius: 10px;
+    -fx-padding: 12px;
+}
+
+.error-scroll {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.error-scroll > .viewport {
+    -fx-background-color: #F5FAF3;
+}
+
+.error-panel .label {
+    -fx-text-fill: #81302A;
+    -fx-font-size: 13px;
+}
+
+.error-panel .error-heading {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.error-panel .example-heading {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.error-panel .error-example {
+    -fx-background-color: #FFFAF8;
+    -fx-background-radius: 5px;
+    -fx-border-color: #D58B81;
+    -fx-border-radius: 5px;
+    -fx-padding: 8px;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 12px;
+}
+
+.example-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #81302A;
+    -fx-font: 13px "Inter 18pt";
+    -fx-underline: true;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 5px 0;
+    -fx-cursor: hand;
+}
+
+.example-button:hover {
+    -fx-text-fill: #591C18;
+}
+
+.example-button:focused {
+    -fx-border-color: #81302A;
+    -fx-border-radius: 3px;
+}
+
+.input-status {
+    -fx-text-fill: #81302A;
+    -fx-font-size: 12px;
+}
+
+.failed-command-status {
+    -fx-text-fill: #81302A;
+    -fx-background-color: #FFF0ED;
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 4px 12px;
+    -fx-font-size: 12px;
+}
+
+#userInput {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 6px;
+    -fx-border-color: #A9C1AC;
+    -fx-border-radius: 6px;
+    -fx-font-size: 15px;
+}
+
+#userInput:invalid-input {
+    -fx-border-color: #B65449;
+}
+
+#userInput:focused {
+    -fx-border-color: #187D37;
+    -fx-border-width: 2px;
+}
+
+#sendButton {
+    -fx-background-radius: 6px;
 }
