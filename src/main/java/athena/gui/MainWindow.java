@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
  */
 public class MainWindow extends AnchorPane {
     private static final PseudoClass INVALID_INPUT = PseudoClass.getPseudoClass("invalid-input");
+    private static final double AUTO_SCROLL_THRESHOLD = 32.0;
 
     @FXML
     private ScrollPane scrollPane;
@@ -50,11 +51,10 @@ public class MainWindow extends AnchorPane {
     private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaAthena.jpg"));
 
     /**
-     * Keeps the newest reply visible and preserves correction guidance while editing.
+     * Keeps correction guidance available while editing.
      */
     @FXML
     public void initialize() {
-        scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
         errorPanel.managedProperty().bind(errorPanel.visibleProperty());
         inputStatus.managedProperty().bind(inputStatus.visibleProperty());
         errorScroll.visibleProperty().bind(errorPanel.visibleProperty());
@@ -92,9 +92,13 @@ public class MainWindow extends AnchorPane {
             return;
         }
 
+        double previousScrollOffset = getConversationScrollOffset();
+        boolean shouldFollowConversation = getConversationScrollableHeight() - previousScrollOffset
+                <= AUTO_SCROLL_THRESHOLD;
         dialogContainer.getChildren().add(DialogBox.getUserDialog(input));
         if (response.isError()) {
             showError(input, response.message());
+            restoreConversationScroll(previousScrollOffset, shouldFollowConversation);
             return;
         }
 
@@ -106,6 +110,45 @@ public class MainWindow extends AnchorPane {
         errorGuidance = null;
         userInput.clear();
         userInput.requestFocus();
+        restoreConversationScroll(previousScrollOffset, shouldFollowConversation);
+    }
+
+    /**
+     * Returns the conversation height outside the viewport, including any introductory content.
+     */
+    private double getConversationScrollableHeight() {
+        return Math.max(0.0, scrollPane.getContent().getLayoutBounds().getHeight()
+                - scrollPane.getViewportBounds().getHeight());
+    }
+
+    /**
+     * Returns the distance already scrolled from the start of the conversation in pixels.
+     */
+    private double getConversationScrollOffset() {
+        double valueRange = scrollPane.getVmax() - scrollPane.getVmin();
+        if (valueRange <= 0.0) {
+            return 0.0;
+        }
+        double fraction = (scrollPane.getVvalue() - scrollPane.getVmin()) / valueRange;
+        return getConversationScrollableHeight() * Math.max(0.0, Math.min(1.0, fraction));
+    }
+
+    /**
+     * Follows new replies only when the reader was near the bottom; otherwise preserves the reading position.
+     */
+    private void restoreConversationScroll(double previousScrollOffset, boolean shouldFollowConversation) {
+        Platform.runLater(() -> {
+            windowLayout.applyCss();
+            windowLayout.layout();
+            double scrollableHeight = getConversationScrollableHeight();
+            if (shouldFollowConversation || scrollableHeight <= 0.0) {
+                scrollPane.setVvalue(scrollPane.getVmax());
+                return;
+            }
+            double fraction = Math.max(0.0, Math.min(1.0, previousScrollOffset / scrollableHeight));
+            scrollPane.setVvalue(scrollPane.getVmin()
+                    + fraction * (scrollPane.getVmax() - scrollPane.getVmin()));
+        });
     }
 
     /**

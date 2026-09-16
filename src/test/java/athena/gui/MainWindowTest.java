@@ -384,6 +384,183 @@ class MainWindowTest {
         saveScreenshot(robot, Path.of("build", "reports", "gui", "task-rows.png"));
     }
 
+    @Test
+    void conversation_newReplyWhileReadingEarlier_preservesPosition(FxRobot robot) throws InterruptedException {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        ScrollPane scrollPane = robot.lookup("#scrollPane").queryAs(ScrollPane.class);
+        VBox dialogContainer = robot.lookup("#dialogContainer").queryAs(VBox.class);
+        populateConversation(robot);
+        awaitLayoutPulse(robot);
+
+        for (String input : List.of("todo A newly added task", "dance")) {
+            robot.interact(() -> scrollPane.setVvalue(scrollPane.getVmin()
+                    + 0.4 * (scrollPane.getVmax() - scrollPane.getVmin())));
+            awaitLayoutPulse(robot);
+            AtomicReference<Double> previousPosition = new AtomicReference<>();
+            Node earlierReply = dialogContainer.getChildren().get(6);
+            robot.interact(() -> {
+                double scrollableHeight = scrollPane.getContent().getLayoutBounds().getHeight()
+                        - scrollPane.getViewportBounds().getHeight();
+                assertTrue(scrollableHeight > 200.0, "Expected a conversation longer than its viewport");
+                previousPosition.set(earlierReply.localToScene(earlierReply.getLayoutBounds()).getMinY());
+                userInput.setText(input);
+                userInput.fireEvent(new ActionEvent());
+            });
+            awaitLayoutPulse(robot);
+
+            robot.interact(() -> {
+                double currentPosition = earlierReply.localToScene(earlierReply.getLayoutBounds()).getMinY();
+                assertEquals(previousPosition.get(), currentPosition, 2.0,
+                        "Expected the earlier reply to stay in place after " + input);
+                assertTrue(scrollPane.getVvalue() < scrollPane.getVmax(),
+                        "Expected the reader to remain away from the conversation bottom");
+            });
+        }
+    }
+
+    @Test
+    void conversation_newReplyNearBottom_followsLatestReply(FxRobot robot) throws InterruptedException {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        ScrollPane scrollPane = robot.lookup("#scrollPane").queryAs(ScrollPane.class);
+        VBox dialogContainer = robot.lookup("#dialogContainer").queryAs(VBox.class);
+        populateConversation(robot);
+        awaitLayoutPulse(robot);
+
+        robot.interact(() -> {
+            double scrollableHeight = scrollPane.getContent().getLayoutBounds().getHeight()
+                    - scrollPane.getViewportBounds().getHeight();
+            assertTrue(scrollableHeight > 200.0, "Expected a conversation longer than its viewport");
+            double fraction = 1.0 - 16.0 / scrollableHeight;
+            scrollPane.setVvalue(scrollPane.getVmin()
+                    + fraction * (scrollPane.getVmax() - scrollPane.getVmin()));
+        });
+        awaitLayoutPulse(robot);
+        robot.interact(() -> {
+            userInput.setText("todo The latest task");
+            userInput.fireEvent(new ActionEvent());
+        });
+        awaitLayoutPulse(robot);
+
+        robot.interact(() -> {
+            Node viewport = scrollPane.lookup(".viewport");
+            Node latestReply = dialogContainer.getChildren().get(dialogContainer.getChildren().size() - 1);
+            Bounds viewportBounds = viewport.localToScene(viewport.getLayoutBounds());
+            Bounds replyBounds = latestReply.localToScene(latestReply.getLayoutBounds());
+            String layoutDetails = "reply=" + replyBounds + ", viewport=" + viewportBounds;
+            assertEquals(scrollPane.getVmax(), scrollPane.getVvalue(), 0.0001);
+            assertTrue(replyBounds.getMinY() >= viewportBounds.getMinY() - 1.0,
+                    "Expected latest reply top in viewport: " + layoutDetails);
+            assertTrue(replyBounds.getMaxY() <= viewportBounds.getMaxY() + 1.0,
+                    "Expected latest reply bottom in viewport: " + layoutDetails);
+        });
+    }
+
+    @Test
+    void taskRows_windowResizeAndEnlargedText_reflowsWithinViewport(FxRobot robot)
+            throws InterruptedException, IOException {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        VBox dialogContainer = robot.lookup("#dialogContainer").queryAs(VBox.class);
+        robot.interact(() -> {
+            setSceneSize(400.0, 400.0);
+            userInput.setText("structured-list");
+            userInput.fireEvent(new ActionEvent());
+        });
+        awaitLayoutPulse(robot);
+        AtomicReference<Double> narrowHeight = new AtomicReference<>();
+        robot.interact(() -> {
+            assertConversationFits(robot);
+            assertEquals(2, dialogContainer.lookupAll(".task-description").size());
+            assertEquals(2, dialogContainer.lookupAll(".task-schedule").size());
+            narrowHeight.set(dialogContainer.getHeight());
+        });
+
+        robot.interact(() -> setSceneSize(720.0, 600.0));
+        awaitLayoutPulse(robot);
+        robot.interact(() -> {
+            assertConversationFits(robot);
+            assertTrue(dialogContainer.getHeight() < narrowHeight.get(),
+                    "Expected fewer wrapped lines at 720 px: narrow=" + narrowHeight.get()
+                            + ", wide=" + dialogContainer.getHeight());
+        });
+
+        robot.interact(() -> {
+            setSceneSize(400.0, 400.0);
+            for (Node node : dialogContainer.lookupAll(".label")) {
+                node.setStyle("-fx-font-size: 22px;");
+            }
+            userInput.setStyle("-fx-font-size: 22px;");
+            robot.lookup("#sendButton").queryAs(Button.class).setStyle("-fx-font-size: 22px;");
+        });
+        awaitLayoutPulse(robot);
+        robot.interact(() -> {
+            assertConversationFits(robot);
+            assertTrue(dialogContainer.getHeight() > narrowHeight.get(),
+                    "Expected the narrow conversation to grow for enlarged text");
+            ScrollPane scrollPane = robot.lookup("#scrollPane").queryAs(ScrollPane.class);
+            scrollPane.setVvalue(scrollPane.getVmin());
+        });
+        awaitLayoutPulse(robot);
+        saveScreenshot(robot, Path.of("build", "reports", "gui", "responsive-enlarged-text.png"));
+    }
+
+    /**
+     * Adds enough messages to test scrolling without controlling the system mouse pointer.
+     */
+    private void populateConversation(FxRobot robot) {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        robot.interact(() -> {
+            for (int i = 0; i < 18; i++) {
+                userInput.setText("todo Read chapter " + i);
+                userInput.fireEvent(new ActionEvent());
+            }
+        });
+    }
+
+    /**
+     * Resizes the content area while allowing for native window decorations.
+     */
+    private void setSceneSize(double width, double height) {
+        stage.setWidth(width + stage.getWidth() - stage.getScene().getWidth());
+        stage.setHeight(height + stage.getHeight() - stage.getScene().getHeight());
+    }
+
+    /**
+     * Checks wrapping labels and the pinned editor on the JavaFX application thread.
+     */
+    private void assertConversationFits(FxRobot robot) {
+        ScrollPane scrollPane = robot.lookup("#scrollPane").queryAs(ScrollPane.class);
+        VBox dialogContainer = robot.lookup("#dialogContainer").queryAs(VBox.class);
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        Button sendButton = robot.lookup("#sendButton").queryAs(Button.class);
+        Node viewport = scrollPane.lookup(".viewport");
+        Bounds viewportBounds = viewport.localToScene(viewport.getLayoutBounds());
+        Bounds inputBounds = userInput.localToScene(userInput.getLayoutBounds());
+        Bounds sendBounds = sendButton.localToScene(sendButton.getLayoutBounds());
+        String layoutDetails = "viewport=" + viewportBounds + ", input=" + inputBounds + ", send=" + sendBounds;
+        assertTrue(viewportBounds.getHeight() > 0.0, layoutDetails);
+        assertTrue(inputBounds.getMinY() >= viewportBounds.getMaxY() - 1.0, layoutDetails);
+        assertTrue(inputBounds.getWidth() > 0.0, layoutDetails);
+        assertTrue(inputBounds.getMaxY() <= stage.getScene().getHeight() + 1.0, layoutDetails);
+        assertTrue(sendBounds.getMaxX() <= stage.getScene().getWidth() + 1.0, layoutDetails);
+        assertTrue(sendBounds.getMaxY() <= stage.getScene().getHeight() + 1.0, layoutDetails);
+        assertTrue(sendButton.getWidth() >= sendButton.prefWidth(-1) - 1.0,
+                "Expected the complete Send label to fit: " + layoutDetails);
+
+        for (Node node : dialogContainer.lookupAll(".label")) {
+            Label label = assertInstanceOf(Label.class, node);
+            if (!label.isVisible() || !label.isManaged()) {
+                continue;
+            }
+            Bounds labelBounds = label.localToScene(label.getLayoutBounds());
+            String labelDetails = "label=" + label.getText() + ", bounds=" + labelBounds
+                    + ", viewport=" + viewportBounds;
+            assertTrue(labelBounds.getMinX() >= viewportBounds.getMinX() - 1.0, labelDetails);
+            assertTrue(labelBounds.getMaxX() <= viewportBounds.getMaxX() + 1.0, labelDetails);
+            assertTrue(label.getHeight() + 1.0 >= label.prefHeight(label.getWidth()),
+                    "Expected unclipped label height: " + labelDetails);
+        }
+    }
+
     /**
      * Returns predictable responses without parsing commands or accessing task storage.
      */

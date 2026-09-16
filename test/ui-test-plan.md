@@ -93,6 +93,15 @@ The GUI acceptance checks cover the following behavior:
   Saved replies retain their original completion state and tags when subsequent commands change a task.
 - Adjacent message containers leave 8 px of vertical padding between them. Existing avatars, speech
   bubbles, and tails remain present. Review `build/reports/gui/task-rows.png` for the compact layout.
+- The conversation scrollbar remains reader-controlled. New successful replies and failed-command entries
+  preserve the position of earlier messages when the reader is more than 32 px from the bottom, including
+  when error guidance reduces the conversation viewport. Replies follow the bottom when the reader is
+  within 32 px of it; the automated near-bottom case begins 16 px from the bottom.
+- Resizing the content area from 400 by 400 px to 720 by 600 px and back reflows long task names, dates,
+  tags, and status columns within the conversation viewport. With conversation labels, command input,
+  and Send enlarged to 22 px, labels remain fully readable and the editor stays inside the window.
+  The complete Send label must fit without ellipsis; its width is at least its preferred width.
+  Review `build/reports/gui/responsive-enlarged-text.png` for the narrow layout with enlarged text.
 - A failed command displays a tinted panel beside the editor with a clear error heading, the explanation,
   command-specific advice, and a valid example. A text status identifies the failure without relying on color.
   Athena's advice, explanation, and correction status remain courteous and address "Your Majesty".
