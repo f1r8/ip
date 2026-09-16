@@ -74,6 +74,11 @@ on Unix. Stop on the first failure. Only after the CLI cases and these tests pas
 `gradlew.bat --console=plain checkstyleMain checkstyleTest` on Windows or
 `./gradlew --console=plain checkstyleMain checkstyleTest` on Unix.
 
+Storage regression tests cover malformed records and dates, duplicate saved tasks, mixed line endings,
+invalid UTF-8, missing directories, paths blocked by files or directories, and read-only files on Windows.
+Command tests verify that failed saves restore additions, deletions, completion status, and original tags.
+The spacing cases below intentionally include trailing spaces in their input blocks.
+
 For background styling changes, also inspect the GUI at 400 by 600 px and 720 by 600 px before
 running Checkstyle. The conversation should have a uniform warm ivory background without
 wallpaper or repeated graphics. Confirm that message bubbles, the composer, and the tinted error
@@ -594,3 +599,178 @@ ____________________________________________________________
 ```
 
 Expected exit code: 0
+
+## Test case 10: Reject invalid dates and event ranges
+
+Aim: Impossible dates, invalid times, and nonpositive event durations must be rejected without adding tasks.
+
+Inputs:
+
+```text
+deadline Report /by 2026-02-30 1200
+deadline Report /by 2026-02-29 1200
+deadline Report /by 2026-04-31 1200
+deadline Report /by 2026-12-31 2400
+event Meeting /from 2026-12-31 1200 /to 2026-12-31 1200
+event Meeting /from 2026-12-31 1300 /to 2026-12-31 1200
+list
+bye
+```
+
+Expected output:
+
+```text
+File not found at: ./data/athena.txt
+____________________________________________________________
+    _  _____ _   _ _____ _   _    _
+   / \|_   _| | | | ____| \ | |  / \
+  / _ \ | | | |_| |  _| |  \| | / _ \
+ / ___ \| | |  _  | |___| |\  |/ ___ \
+/_/   \_\_| |_| |_|_____|_| \_/_/   \_\
+Hello, Your Majesty! I'm Athena.
+Let us put your tasks in order.
+____________________________________________________________
+____________________________________________________________
+Please use 'yyyy-MM-dd HHmm' for the date and time, Your Majesty (e.g. 2026-12-31 2359).
+____________________________________________________________
+____________________________________________________________
+Please use 'yyyy-MM-dd HHmm' for the date and time, Your Majesty (e.g. 2026-12-31 2359).
+____________________________________________________________
+____________________________________________________________
+Please use 'yyyy-MM-dd HHmm' for the date and time, Your Majesty (e.g. 2026-12-31 2359).
+____________________________________________________________
+____________________________________________________________
+Please use 'yyyy-MM-dd HHmm' for the date and time, Your Majesty (e.g. 2026-12-31 2359).
+____________________________________________________________
+____________________________________________________________
+An event must end after it starts, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+An event must end after it starts, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Your list awaits its first task. Try todo Read a book.
+____________________________________________________________
+____________________________________________________________
+____________________________________________________________
+Farewell, Your Majesty. I hope to serve you again soon!
+____________________________________________________________
+```
+
+## Test case 11: Reject malformed parameters and unsafe descriptions
+
+Aim: Extra, repeated, reordered, and empty parameters must fail safely; storage separators cannot enter descriptions.
+
+Inputs:
+
+```text
+list extra
+bye extra
+deadline Report /by 2026-12-31 1200 /by 2026-12-31 1300
+event Meeting /to 2026-12-31 1300 /from 2026-12-31 1200
+todo A | B
+deadline Report /by
+list
+bye
+```
+
+Expected output:
+
+```text
+File not found at: ./data/athena.txt
+____________________________________________________________
+    _  _____ _   _ _____ _   _    _
+   / \|_   _| | | | ____| \ | |  / \
+  / _ \ | | | |_| |  _| |  \| | / _ \
+ / ___ \| | |  _  | |___| |\  |/ ___ \
+/_/   \_\_| |_| |_|_____|_| \_/_/   \_\
+Hello, Your Majesty! I'm Athena.
+Let us put your tasks in order.
+____________________________________________________________
+____________________________________________________________
+The list command takes no parameters, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+The bye command takes no parameters, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Use each date parameter once and in the correct order, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Use each date parameter once and in the correct order, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Task descriptions cannot contain | or control characters, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Please provide a deadline and /by date, Your Majesty.
+____________________________________________________________
+____________________________________________________________
+Your list awaits its first task. Try todo Read a book.
+____________________________________________________________
+____________________________________________________________
+____________________________________________________________
+Farewell, Your Majesty. I hope to serve you again soon!
+____________________________________________________________
+```
+
+## Test case 12: Normalize spacing and reject duplicate task details
+
+Aim: Whitespace is tolerated and a valid leap day accepted; status, tags, and case do not make duplicate details unique.
+
+Inputs:
+
+```text
+   ToDo   Read   book   
+mark 1
+tag 1 #Work
+todo read book
+  deadline  Leap day /by	2024-02-29   1200  
+list
+bye
+```
+
+Expected output:
+
+```text
+File not found at: ./data/athena.txt
+____________________________________________________________
+    _  _____ _   _ _____ _   _    _
+   / \|_   _| | | | ____| \ | |  / \
+  / _ \ | | | |_| |  _| |  \| | / _ \
+ / ___ \| | |  _  | |___| |\  |/ ___ \
+/_/   \_\_| |_| |_|_____|_| \_/_/   \_\
+Hello, Your Majesty! I'm Athena.
+Let us put your tasks in order.
+____________________________________________________________
+____________________________________________________________
+As you wish. I've added this task:
+  [T][ ] Read book
+You now have 1 task in your list.
+____________________________________________________________
+____________________________________________________________
+Well done, Your Majesty. This task is complete:
+  [T][X] Read book
+____________________________________________________________
+____________________________________________________________
+I've added the tags to this task:
+  [T][X] Read book #Work
+____________________________________________________________
+____________________________________________________________
+That task already exists, Your Majesty. Use list to find it.
+____________________________________________________________
+____________________________________________________________
+As you wish. I've added this task:
+  [D][ ] Leap day (by: Feb 29, 2024, 12:00)
+You now have 2 tasks in your list.
+____________________________________________________________
+____________________________________________________________
+Your Majesty, here are the tasks in your list:
+1. [T][X] Read book #Work
+2. [D][ ] Leap day (by: Feb 29, 2024, 12:00)
+____________________________________________________________
+____________________________________________________________
+____________________________________________________________
+Farewell, Your Majesty. I hope to serve you again soon!
+____________________________________________________________
+```

@@ -3,6 +3,8 @@ package athena.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import athena.exception.AthenaException;
+
 /**
  * Stores the in-memory collection of Athena tasks.
  */
@@ -22,7 +24,8 @@ public class TaskList {
      * @param tasks Initial tasks to copy into the task list.
      */
     public TaskList(List<Task> tasks) {
-        this.tasks = new ArrayList<>(tasks);
+        this.tasks = new ArrayList<>();
+        tasks.forEach(this::add);
     }
 
     /**
@@ -60,6 +63,9 @@ public class TaskList {
      */
     public void add(Task task) {
         assert task != null : "TaskList cannot contain null Task";
+        if (tasks.stream().anyMatch(existing -> existing.hasSameDetails(task))) {
+            throw new AthenaException("That task already exists, Your Majesty. Use list to find it.");
+        }
         tasks.add(task);
     }
 

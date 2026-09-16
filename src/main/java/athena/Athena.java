@@ -3,6 +3,7 @@ package athena;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import athena.exception.AthenaException;
 import athena.gui.CommandResponder;
 import athena.gui.CommandResponse;
 import athena.gui.GuiUi;
@@ -46,7 +47,14 @@ public class Athena implements CommandResponder {
     public static void main(String[] args) {
         Storage storage = new Storage(DATA_FILE_PATH);
         Ui ui = new Ui(System.in, System.out);
-        TaskList taskList = new TaskList(storage.loadTasks());
+        TaskList taskList;
+        try {
+            taskList = new TaskList(storage.loadTasks());
+        } catch (AthenaException e) {
+            ui.showError("Cannot open Athena: " + e.getMessage());
+            ui.showError("Your saved file has not been changed. Repair it and restart Athena.");
+            return;
+        }
         CommandHandler commandHandler = new CommandHandler(storage, ui, taskList);
 
         ui.showLoadingStatus(storage.wasLoadSuccessful(), DATA_FILE_PATH);

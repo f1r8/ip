@@ -3,16 +3,14 @@ package athena.task;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import athena.exception.AthenaException;
 import athena.parser.DateParser;
+import athena.parser.DateTaskInput;
 import athena.storage.Storage;
 
 /**
  * Represents an Athena task that must be completed by a specific date and time.
  */
 public class Deadline extends Task {
-    private static final String DATE_DELIMITER = "/by ";
-
     private final LocalDateTime deadline;
 
     /**
@@ -21,14 +19,9 @@ public class Deadline extends Task {
      * @param input String from command line.
      */
     public Deadline(String input) {
-        int dateDelimiterIndex = input.indexOf(DATE_DELIMITER);
-        if (dateDelimiterIndex < 0) {
-            throw new AthenaException("Please provide a deadline and /by date, Your Majesty.");
-        }
-
-        String description = input.substring(0, dateDelimiterIndex).trim();
-        String by = input.substring(dateDelimiterIndex + DATE_DELIMITER.length()).trim();
-        this(description, by);
+        String[] parts = DateTaskInput.parse(input,
+                "Please provide a deadline and /by date, Your Majesty.", "by");
+        this(parts[0], parts[1]);
     }
 
     /**

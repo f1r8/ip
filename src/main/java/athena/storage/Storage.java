@@ -1,10 +1,12 @@
 package athena.storage;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,6 +20,7 @@ import athena.task.Deadline;
 import athena.task.Event;
 import athena.task.Tag;
 import athena.task.Task;
+import athena.task.TaskList;
 import athena.task.Todo;
 
 /**
@@ -62,25 +65,28 @@ public class Storage {
     }
 
     private Path getPath() {
-        return Paths.get(filePath);
+        try {
+            return Paths.get(filePath);
+        } catch (InvalidPathException e) {
+            throw new AthenaException("The data file path is invalid. Check the storage location.");
+        }
     }
 
     /**
      * Ensures that the storage file and its parent directories exist.
      */
     public void ensureFileExists() {
-        File file = new File(filePath);
         try {
-            File parentDir = file.getParentFile();
-            if (parentDir != null && !parentDir.exists()) {
-                parentDir.mkdirs();
+            Path path = getPath().toAbsolutePath();
+            Files.createDirectories(path.getParent());
+            if (Files.notExists(path)) {
+                Files.createFile(path);
             }
-
-            if (!file.exists()) {
-                file.createNewFile();
+            if (!Files.isRegularFile(path)) {
+                throw new IOException("Storage path is not a file");
             }
-        } catch (IOException e) {
-            throw new AthenaException("Fatal Error. Data File cannot be created.");
+        } catch (IOException | SecurityException e) {
+            throw new AthenaException("Cannot create the data file. Check its location and permissions.");
         }
     }
 
@@ -90,11 +96,27 @@ public class Storage {
      * @param content Content to be written to storage.
      */
     public void overwrite(String content) {
-        ensureFileExists();
+        Path temporaryFile = null;
         try {
-            Files.writeString(getPath(), content); // Ensures null, no assert needed
-        } catch (IOException e) {
-            throw new AthenaException("Something went wrong overwriting the file");
+            Path path = getPath().toAbsolutePath();
+            Files.createDirectories(path.getParent());
+            if (Files.exists(path) && (!Files.isRegularFile(path) || !Files.isWritable(path))) {
+                throw new IOException("Storage file is not writable");
+            }
+            temporaryFile = Files.createTempFile(path.getParent(), ".athena-", ".tmp");
+            Files.writeString(temporaryFile, content);
+            Files.move(temporaryFile, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException | SecurityException e) {
+            throw new AthenaException("Cannot save tasks. No changes were applied. "
+                    + "Check the data file location, permissions, and free disk space, then try again.");
+        } finally {
+            if (temporaryFile != null) {
+                try {
+                    Files.deleteIfExists(temporaryFile);
+                } catch (IOException | SecurityException e) {
+                    //An unused temporary file must not turn a completed save into a failed command
+                }
+            }
         }
     }
 
@@ -112,8 +134,8 @@ public class Storage {
 
         try {
             return Files.readString(path);
-        } catch (IOException e) {
-            throw new AthenaException("Something went wrong reading the file");
+        } catch (IOException | SecurityException e) {
+            throw new AthenaException("Cannot read the data file. Check its location, permissions, and encoding.");
         }
     }
 
@@ -136,15 +158,22 @@ public class Storage {
      * @return Tasks read from storage.
      */
     public List<Task> loadTasks() {
+        wasLoadSuccessful = false;
         String input = read();
         if (input.isEmpty()) {
-            wasLoadSuccessful = false;
+            wasLoadSuccessful = Files.exists(getPath());
             return new ArrayList<>();
         }
 
-        List<Task> tasks = Arrays.stream(input.split(SAVE_NEWLINE))
-                .map(Storage::parseTask)
-                .toList();
+        TaskList loadedTasks = new TaskList();
+        for (String line : input.lines().toList()) {
+            try {
+                loadedTasks.add(parseTask(line));
+            } catch (DateTimeParseException e) {
+                throw new AthenaException("Storage File Corrupted by this line: " + line);
+            }
+        }
+        List<Task> tasks = loadedTasks.getTasks();
         wasLoadSuccessful = true;
         return tasks;
     }

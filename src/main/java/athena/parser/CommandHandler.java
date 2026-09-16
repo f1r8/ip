@@ -1,5 +1,6 @@
 package athena.parser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -78,10 +79,23 @@ public class CommandHandler {
      * @return Result indicating whether the command succeeds, fails, or exits Athena.
      */
     public CommandResult handleCommand(String inputLine) {
-        String trimmedInput = inputLine.trim();
+        try {
+            return executeCommand(inputLine);
+        } catch (AthenaException e) {
+            ui.showError(e.getMessage());
+            return CommandResult.ERROR;
+        }
+    }
+
+    private CommandResult executeCommand(String inputLine) {
+        String trimmedInput = inputLine == null ? "" : inputLine.strip().replaceAll("[ \t]+", " ");
         String[] commandParts = trimmedInput.split("\\s+", 2);
         Command command = Command.search(commandParts[0]);
         String arguments = commandParts.length > 1 ? commandParts[1] : "";
+
+        if ((command == Command.BYE || command == Command.LIST) && !arguments.isEmpty()) {
+            throw new AthenaException("The " + command.keyword + " command takes no parameters, Your Majesty.");
+        }
 
         return switch (command) {
             case BYE -> {
@@ -132,22 +146,34 @@ public class CommandHandler {
         }
 
         Task task = taskList.get(index);
+        boolean wasDone = task.isDone();
         if (shouldMarkAsDone) {
             task.markDone();
         } else {
             task.unmarkDone();
         }
+        try {
+            storage.saveTasks(taskList.getTasks());
+        } catch (AthenaException e) {
+            if (wasDone) {
+                task.markDone();
+            } else {
+                task.unmarkDone();
+            }
+            throw e;
+        }
         ui.showTaskStatusChanged(task, shouldMarkAsDone);
-        storage.saveTasks(taskList.getTasks());
         return CommandResult.CONTINUE;
     }
 
     private CommandResult createAndAddTask(String arguments, Function<String, Task> taskFactory) {
         try {
             Task task = taskFactory.apply(arguments);
+            TaskList updatedTasks = new TaskList(taskList.getTasks());
+            updatedTasks.add(task);
+            storage.saveTasks(updatedTasks.getTasks());
             taskList.add(task);
             ui.showTaskAdded(task, taskList.size());
-            storage.saveTasks(taskList.getTasks());
             return CommandResult.CONTINUE;
         } catch (AthenaException e) {
             ui.showError(e.getMessage());
@@ -169,8 +195,10 @@ public class CommandHandler {
             return CommandResult.ERROR;
         }
 
-        Task task = taskList.remove(index);
-        storage.saveTasks(taskList.getTasks());
+        List<Task> updatedTasks = new ArrayList<>(taskList.getTasks());
+        Task task = updatedTasks.remove(index);
+        storage.saveTasks(updatedTasks);
+        taskList.remove(index);
         ui.showTaskDeleted(task, taskList.size());
         return CommandResult.CONTINUE;
     }
@@ -228,6 +256,7 @@ public class CommandHandler {
         }
 
         Task task = taskList.get(index);
+        List<Tag> previousTags = task.getTags();
         boolean hasChanged = false;
         for (Tag tag : tags) {
             hasChanged |= shouldAdd ? task.addTag(tag) : task.removeTag(tag);
@@ -238,8 +267,14 @@ public class CommandHandler {
             return CommandResult.CONTINUE;
         }
 
+        try {
+            storage.saveTasks(taskList.getTasks());
+        } catch (AthenaException e) {
+            task.getTags().forEach(task::removeTag);
+            previousTags.forEach(task::addTag);
+            throw e;
+        }
         ui.showTaskTagsChanged(task, shouldAdd);
-        storage.saveTasks(taskList.getTasks());
         return CommandResult.CONTINUE;
     }
 
