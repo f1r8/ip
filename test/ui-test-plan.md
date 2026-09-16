@@ -81,6 +81,14 @@ panel remain visually distinct. Record the visual result and screenshot paths in
 
 The GUI acceptance checks cover the following behavior:
 
+- Success replies use concise captions that retain "Your Majesty". Added and removed tasks include the
+  updated count. Empty lists and searches explain that no tasks are available or match the request.
+- Task lists, search matches, and confirmations show structured task names, textual completion states,
+  task types, full dates and times, and tags. Numbers, details, and statuses align across rows. Long names,
+  dates, and tags wrap within a 400 px window without truncating or overlapping the status column.
+  Saved replies retain their original completion state and tags when subsequent commands change a task.
+- Adjacent message containers leave 8 px of vertical padding between them. Existing avatars, speech
+  bubbles, and tails remain present. Review `build/reports/gui/task-rows.png` for the compact layout.
 - A failed command displays a tinted panel beside the editor with a clear error heading, the explanation,
   command-specific advice, and a valid example. A text status identifies the failure without relying on color.
   Athena's advice, explanation, and correction status remain courteous and address "Your Majesty".

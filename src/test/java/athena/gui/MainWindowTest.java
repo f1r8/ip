@@ -343,6 +343,47 @@ class MainWindowTest {
         assertEquals(List.of("dance", "bye"), receivedInputs);
     }
 
+    @Test
+    void taskRows_narrowWindow_wrapsDetailsAndKeepsStatusesAligned(FxRobot robot)
+            throws IOException, InterruptedException {
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        robot.interact(() -> {
+            stage.setWidth(400.0 + stage.getWidth() - stage.getScene().getWidth());
+            userInput.setText("structured-list");
+            userInput.fireEvent(new ActionEvent());
+        });
+        awaitLayoutPulse(robot);
+
+        robot.interact(() -> {
+            List<Label> descriptions = robot.lookup(".task-description").queryAllAs(Label.class).stream().toList();
+            List<Label> statuses = robot.lookup(".task-status").queryAllAs(Label.class).stream().toList();
+            assertEquals(2, descriptions.size());
+            assertEquals(2, statuses.size());
+            double statusX = statuses.getFirst().localToScene(statuses.getFirst().getLayoutBounds()).getMinX();
+            for (Label status : statuses) {
+                Bounds bounds = status.localToScene(status.getLayoutBounds());
+                assertEquals(statusX, bounds.getMinX(), 1.0);
+                assertTrue(bounds.getMaxX() < stage.getScene().getWidth());
+                assertTrue(status.getWidth() >= status.prefWidth(-1) - 1.0,
+                        "Completion status must be fully readable");
+            }
+            for (Label description : descriptions) {
+                Bounds bounds = description.localToScene(description.getLayoutBounds());
+                assertTrue(description.isWrapText());
+                assertTrue(bounds.getMaxX() <= statusX);
+                assertTrue(description.getHeight() >= description.prefHeight(description.getWidth()) - 1.0,
+                        "Task description must wrap instead of truncating");
+            }
+            for (String selector : List.of(".task-schedule", ".task-tags")) {
+                for (Label label : robot.lookup(selector).queryAllAs(Label.class)) {
+                    assertTrue(label.getHeight() >= label.prefHeight(label.getWidth()) - 1.0,
+                            "Task details must remain fully readable");
+                }
+            }
+        });
+        saveScreenshot(robot, Path.of("build", "reports", "gui", "task-rows.png"));
+    }
+
     /**
      * Returns predictable responses without parsing commands or accessing task storage.
      */
@@ -354,6 +395,13 @@ class MainWindowTest {
         }
         if (command.equals("dance")) {
             return new CommandResponse("\n  Unknown command  \n", false, true);
+        }
+        if (command.equals("structured-list")) {
+            return new CommandResponse("Your tasks, Your Majesty.", false, false, List.of(
+                    new TaskView(1, "Read the full project brief before preparing the final report", false,
+                            "Deadline", "Due Dec 31, 2026, 23:59", List.of("#school", "#writing")),
+                    new TaskView(2, "Discuss the report", true, "Event",
+                            "From Dec 30, 2026, 14:00\nTo Dec 30, 2026, 15:00", List.of())));
         }
         if (command.startsWith("deadline ") && !command.endsWith("/by 2026-12-31 2359")) {
             return new CommandResponse("\n  " + DEADLINE_ERROR + "  \n", false, true);
@@ -457,11 +505,12 @@ class MainWindowTest {
                 .map(StackPane.class::cast)
                 .findFirst()
                 .orElseThrow();
-        Label label = bubbleContainer.getChildren().stream()
-                .filter(Label.class::isInstance)
-                .map(Label.class::cast)
+        VBox bubbleContent = bubbleContainer.getChildren().stream()
+                .filter(VBox.class::isInstance)
+                .map(VBox.class::cast)
                 .findFirst()
                 .orElseThrow();
+        Label label = assertInstanceOf(Label.class, bubbleContent.getChildren().getFirst());
         Pane tail = assertInstanceOf(Pane.class, bubbleContainer.getChildren().stream()
                 .filter(node -> "tail".equals(node.getId()))
                 .findFirst()
@@ -470,15 +519,15 @@ class MainWindowTest {
         SVGPath tailOutline = assertInstanceOf(SVGPath.class, tail.getChildren().get(1));
 
         robot.interact(dialogBox::applyCss);
-        Insets labelMargin = StackPane.getMargin(label);
+        Insets labelMargin = StackPane.getMargin(bubbleContent);
 
         assertEquals(expectedText, label.getText());
-        assertFalse(label.getBackground().getFills().isEmpty());
+        assertFalse(bubbleContent.getBackground().getFills().isEmpty());
         assertEquals(isAthenaDialog ? Pos.BOTTOM_LEFT : Pos.BOTTOM_RIGHT, bubbleContainer.getAlignment());
         assertEquals(isAthenaDialog ? 11.0 : 47.0, labelMargin.getLeft());
         assertEquals(isAthenaDialog ? 47.0 : 11.0, labelMargin.getRight());
         assertTrue(tailFill.getStyleClass().contains("bubble"));
-        assertEquals(label.getBackground().getFills().get(0).getFill(),
+        assertEquals(bubbleContent.getBackground().getFills().get(0).getFill(),
                 tailFill.getBackground().getFills().get(0).getFill());
         assertNotNull(tailFill.getShape());
         assertEquals(Color.TRANSPARENT, tailOutline.getFill());

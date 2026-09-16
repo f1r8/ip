@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import athena.gui.CommandResponder;
 import athena.gui.CommandResponse;
+import athena.gui.GuiUi;
 import athena.parser.CommandHandler;
 import athena.parser.CommandResult;
 import athena.storage.Storage;
@@ -21,6 +22,7 @@ public class Athena implements CommandResponder {
     private CommandHandler commandHandler;
 
     private ByteArrayOutputStream outputBuffer;
+    private GuiUi guiUi;
 
     /**
      * Constructs an Athena application orchestrator.
@@ -30,10 +32,10 @@ public class Athena implements CommandResponder {
 
         outputBuffer = new ByteArrayOutputStream();
         PrintStream guiOut = new PrintStream(outputBuffer);
-        Ui ui = new Ui(System.in, guiOut);
+        guiUi = new GuiUi(guiOut);
 
         TaskList taskList = new TaskList(storage.loadTasks());
-        commandHandler = new CommandHandler(storage, ui, taskList);
+        commandHandler = new CommandHandler(storage, guiUi, taskList);
     }
 
     /**
@@ -61,9 +63,10 @@ public class Athena implements CommandResponder {
     @Override
     public CommandResponse getResponse(String input) {
         outputBuffer.reset();
+        guiUi.clearTasks();
         CommandResult result = commandHandler.handleCommand(input);
         assert outputBuffer.size() > 0 : "A continuing command should produce a response";
         return new CommandResponse(outputBuffer.toString(), result == CommandResult.EXIT,
-                result == CommandResult.ERROR);
+                result == CommandResult.ERROR, guiUi.getTasks());
     }
 }

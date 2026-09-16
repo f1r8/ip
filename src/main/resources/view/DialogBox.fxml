@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
 
@@ -14,13 +15,17 @@
   <children>
     <StackPane fx:id="bubbleContainer" alignment="BOTTOM_RIGHT" HBox.hgrow="ALWAYS">
       <children>
-        <Label fx:id="dialog" minHeight="-Infinity" styleClass="bubble" text="Label" wrapText="true">
+        <VBox fx:id="bubbleContent" maxWidth="-Infinity" minWidth="0.0" spacing="6.0" styleClass="bubble">
                <StackPane.margin>
                   <Insets left="47.0" right="11.0" />
                </StackPane.margin>
                <padding>
                   <Insets bottom="6.0" left="6.0" right="6.0" top="6.0" />
-               </padding></Label>
+               </padding>
+               <children>
+                  <Label fx:id="dialog" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="0.0" text="Label" wrapText="true" />
+               </children>
+        </VBox>
         <Pane fx:id="tail" maxHeight="12.0" maxWidth="14.0" minHeight="12.0" minWidth="14.0" prefHeight="12.0" prefWidth="14.0">
           <children>
             <Region fx:id="tailFill" maxHeight="12.0" maxWidth="14.0" minHeight="12.0" minWidth="14.0" prefHeight="12.0" prefWidth="14.0" styleClass="bubble" />
@@ -36,6 +41,6 @@
     </ImageView>
   </children>
   <padding>
-    <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
+    <Insets bottom="4.0" left="5.0" right="5.0" top="4.0" />
   </padding>
 </fx:root>

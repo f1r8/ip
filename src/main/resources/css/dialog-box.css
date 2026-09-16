@@ -15,6 +15,42 @@
     -fx-border-radius: 1em 1em 1em 0;
 }
 
+.bubble .label {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 15px;
+    -fx-text-fill: #17251D;
+}
+
+.task-rows {
+    -fx-padding: 6px 0 0 0;
+    -fx-border-color: #DFE5DF transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.bubble .task-description {
+    -fx-font-weight: bold;
+}
+
+.bubble .task-number,
+.bubble .task-type,
+.bubble .task-schedule,
+.bubble .task-tags,
+.bubble .task-status {
+    -fx-font-size: 13px;
+    -fx-text-fill: #46564A;
+}
+
+.bubble .task-status {
+    -fx-padding: 2px 4px;
+    -fx-background-color: #EEF2EE;
+    -fx-background-radius: 4px;
+}
+
+.bubble .task-done {
+    -fx-text-fill: #285237;
+    -fx-background-color: #E3F0E3;
+}
+
 #tailFill {
     -fx-border-width: 0;
     -fx-shape: "M 0 0 H 3 C 4 6 8 9 14 9 C 11 10 8 11 3 12 H 0 Z";

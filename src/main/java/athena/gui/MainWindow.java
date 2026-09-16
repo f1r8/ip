@@ -98,7 +98,7 @@ public class MainWindow extends AnchorPane {
             return;
         }
 
-        dialogContainer.getChildren().add(DialogBox.getAthenaDialog(response.message(), athenaImage));
+        dialogContainer.getChildren().add(DialogBox.getAthenaDialog(response, athenaImage));
         errorPanel.setVisible(false);
         inputStatus.setVisible(false);
         userInput.pseudoClassStateChanged(INVALID_INPUT, false);
