@@ -1,19 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="athena.gui.MainWindow">
+<AnchorPane prefHeight="600.0" prefWidth="400.0" stylesheets="@../css/main.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="athena.gui.MainWindow">
     <children>
-        <TextField fx:id="userInput" layoutY="558.0" onAction="#handleUserInput" prefHeight="41.0" prefWidth="324.0" promptText="Tell Athena what you need..." AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="76.0" />
-        <Button fx:id="sendButton" layoutX="324.0" layoutY="558.0" mnemonicParsing="false" onAction="#handleUserInput" prefHeight="41.0" prefWidth="76.0" text="Send" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="0.0" />
-        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" hvalue="1.0" prefHeight="557.0" prefWidth="400.0" vvalue="1.0" AnchorPane.bottomAnchor="43.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <content>
-                <VBox fx:id="dialogContainer" prefHeight="552.0" prefWidth="388.0" />
-            </content>
-        </ScrollPane>
+        <VBox fx:id="windowLayout" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" minHeight="0.0"
+                            vvalue="1.0" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox fx:id="conversationContent">
+                            <children>
+                                <VBox fx:id="welcomePanel" spacing="9.0" styleClass="welcome-panel">
+                                    <children>
+                                        <Label text="Welcome, Your Majesty. I'm Athena." wrapText="true"
+                                               minHeight="-Infinity" maxWidth="Infinity"
+                                               styleClass="welcome-heading" />
+                                        <Label text="Start a task or see your list:" wrapText="true"
+                                               minHeight="-Infinity" maxWidth="Infinity" />
+                                        <Label fx:id="welcomeExamples" text="todo Read a book&#10;list"
+                                               wrapText="true" minHeight="-Infinity" maxWidth="Infinity"
+                                               styleClass="guide-example" />
+                                        <Label text="Press Enter to send. Commands has more examples, Your Majesty."
+                                               wrapText="true" minHeight="-Infinity" maxWidth="Infinity"
+                                               styleClass="welcome-hint" />
+                                    </children>
+                                </VBox>
+                                <VBox fx:id="dialogContainer" />
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+                <!-- Keep the capped error panel and editor visible when the conversation is long. -->
+                <VBox fx:id="composer" minHeight="-Infinity" spacing="9.0" styleClass="composer">
+                    <children>
+                        <HBox fx:id="composerHeader" alignment="CENTER_LEFT" spacing="8.0">
+                            <children>
+                                <Label text="Enter to send" styleClass="composer-hint" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button fx:id="commandsButton" onAction="#showCommands" text="_Commands"
+                                        mnemonicParsing="true" accessibleText="Commands"
+                                        accessibleHelp="Open a command reference without changing your draft."
+                                        styleClass="commands-button" />
+                            </children>
+                        </HBox>
+                        <ScrollPane fx:id="errorScroll" fitToWidth="true" hbarPolicy="NEVER"
+                                    minHeight="0.0" maxHeight="320.0" visible="false" managed="false"
+                                    styleClass="error-scroll">
+                            <content>
+                                <VBox fx:id="errorPanel" visible="false" managed="false" spacing="7.0"
+                                      styleClass="error-panel" accessibleText="Command error, Your Majesty.">
+                                    <children>
+                                        <Label fx:id="errorHeading" text="Command error, Your Majesty."
+                                               wrapText="true" minHeight="-Infinity" maxWidth="Infinity"
+                                               styleClass="error-heading" />
+                                        <Label fx:id="errorExplanation" wrapText="true" minHeight="-Infinity"
+                                               maxWidth="Infinity" styleClass="error-explanation" />
+                                        <Label fx:id="errorHint" wrapText="true" minHeight="-Infinity"
+                                               maxWidth="Infinity" styleClass="error-hint" />
+                                        <Label text="A valid example, Your Majesty:" wrapText="true"
+                                               minHeight="-Infinity" styleClass="example-heading" />
+                                        <Label fx:id="errorExample" wrapText="true" minHeight="-Infinity"
+                                               maxWidth="Infinity" styleClass="error-example" />
+                                        <Button fx:id="useExampleButton" onAction="#useExample"
+                                                mnemonicParsing="false" text="Place this example below"
+                                                wrapText="true" minHeight="-Infinity" maxWidth="Infinity"
+                                                styleClass="example-button" />
+                                    </children>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+                        <Label fx:id="inputStatus" visible="false" managed="false" wrapText="true"
+                               minHeight="-Infinity" maxWidth="Infinity" styleClass="input-status" />
+                        <HBox fx:id="commandInputRow" alignment="CENTER" spacing="8.0">
+                            <children>
+                                <TextField fx:id="userInput" onAction="#handleUserInput" minWidth="0.0"
+                                           prefHeight="41.0" promptText="Enter a command..."
+                                           accessibleText="Your command, Your Majesty" HBox.hgrow="ALWAYS" />
+                                <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleUserInput"
+                                        prefHeight="41.0" minWidth="-Infinity" text="Send" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
     </children>
 </AnchorPane>

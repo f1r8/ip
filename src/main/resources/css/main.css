@@ -1,41 +1,43 @@
 .root {
-    main-color: rgb(237, 255, 242);       /* Create a looked-up color called "main-color" within root. */
+    main-color: #F6F8F5;
     -fx-background-color: main-color;
-    -fx-background-image: url("../images/background.jpg");
-    -fx-background-size: cover;
-    -fx-background-size: 430px 240px;
-    -fx-background-repeat: repeat;
     -fx-font-family: "Inter 18pt";
+    -fx-font-size: 15px;
 }
 
 .text-field {
     -fx-background-color: #F0FFF0;
-    -fx-font: 20px "Inter 18pt";
-    -fx-prompt-text-fill: #6E836A;
+    -fx-font: 15px "Inter 18pt";
+    -fx-prompt-text-fill: #58695A;
 }
 
 .button {
-    -fx-background-color: #32CD32;
-    -fx-font: bold 16px "Inter 18pt";
+    -fx-background-color: #246542;
+    -fx-font: bold 15px "Inter 18pt";
 }
 
-/* A vibrant leaf-green primary action for sending messages. */
-#sendButton {
-    -fx-background-color: #22A447;
+/* A dark green primary action with readable white text in every state. */
+#sendButton,
+#closeCommandsButton {
+    -fx-background-color: #246542;
     -fx-border-color: transparent;
     -fx-border-width: 3px;
     -fx-text-fill: #FFFFFF;
 }
 
-#sendButton:hover {
-    -fx-background-color: #168A38;
-    -fx-font: bold 17px "Inter 18pt";
+#sendButton:hover,
+#closeCommandsButton:hover {
+    -fx-background-color: #1D5637;
 }
 
-#sendButton:pressed {
-    -fx-background-color: #0F6E2D;
+#sendButton:pressed,
+#closeCommandsButton:pressed {
+    -fx-background-color: #17452D;
+}
+
+#sendButton:focused,
+#closeCommandsButton:focused {
     -fx-border-color: #A8F0B9;
-    -fx-font: bold 15px "Inter 18pt";
 }
 
 .label .text,
@@ -45,7 +47,7 @@
 }
 
 .scroll-pane {
-    -fx-background-color: rgba(255,255,255,.25);
+    -fx-background-color: main-color;
 }
 
 .scroll-pane .viewport {
@@ -67,4 +69,164 @@
 .scroll-bar .decrement-button {
     -fx-pref-height: 0;
     -fx-opacity: 0;
+}
+
+/* Keep correction guidance beside the editor without covering the conversation. */
+.composer {
+    -fx-background-color: #F5FAF3;
+    -fx-padding: 12px;
+    -fx-border-color: #C9D9CA;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.error-panel {
+    -fx-background-color: #FFF0ED;
+    -fx-background-radius: 10px;
+    -fx-border-color: #D58B81;
+    -fx-border-width: 1px 1px 1px 4px;
+    -fx-border-radius: 10px;
+    -fx-padding: 12px;
+}
+
+.error-scroll {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.error-scroll > .viewport {
+    -fx-background-color: #F5FAF3;
+}
+
+.error-panel .label {
+    -fx-text-fill: #81302A;
+    -fx-font-size: 13px;
+}
+
+.error-panel .error-heading {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.error-panel .example-heading {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.error-panel .error-example {
+    -fx-background-color: #FFFAF8;
+    -fx-background-radius: 5px;
+    -fx-border-color: #D58B81;
+    -fx-border-radius: 5px;
+    -fx-padding: 8px;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 12px;
+}
+
+.example-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #81302A;
+    -fx-font: 13px "Inter 18pt";
+    -fx-underline: true;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 5px 0;
+    -fx-cursor: hand;
+}
+
+.example-button:hover {
+    -fx-text-fill: #591C18;
+}
+
+.example-button:focused {
+    -fx-border-color: #81302A;
+    -fx-border-radius: 3px;
+}
+
+.input-status {
+    -fx-text-fill: #81302A;
+    -fx-font-size: 12px;
+}
+
+.failed-command-status {
+    -fx-text-fill: #81302A;
+    -fx-background-color: #FFF0ED;
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 4px 12px;
+    -fx-font-size: 12px;
+}
+
+#userInput {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 6px;
+    -fx-border-color: #A9C1AC;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6px;
+    -fx-font-size: 15px;
+}
+
+#userInput:invalid-input {
+    -fx-border-color: #B65449;
+}
+
+#userInput:focused {
+    -fx-border-color: #187D37;
+}
+
+#sendButton,
+#closeCommandsButton {
+    -fx-background-radius: 6px;
+}
+
+/* Keep first-use guidance compact and remove it once a conversation begins. */
+.welcome-panel {
+    -fx-padding: 20px 16px;
+}
+
+.welcome-panel .label,
+.commands-guide .label {
+    -fx-text-fill: #293A2D;
+    -fx-font-size: 15px;
+}
+
+.welcome-panel .welcome-heading {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.welcome-panel .welcome-hint,
+.composer-hint {
+    -fx-text-fill: #536356;
+    -fx-font-size: 13px;
+}
+
+.commands-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #176B32;
+    -fx-font-size: 14px;
+    -fx-padding: 3px 6px;
+    -fx-border-color: transparent;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+}
+
+.commands-button:hover {
+    -fx-background-color: #E2EDE1;
+}
+
+.commands-button:focused {
+    -fx-border-color: #176B32;
+}
+
+.commands-guide {
+    -fx-padding: 10px;
+}
+
+.commands-guide .guide-heading {
+    -fx-font-weight: bold;
+}
+
+.guide-example {
+    -fx-background-color: #EDF3EB;
+    -fx-background-radius: 5px;
+    -fx-padding: 8px;
+    -fx-font-family: "Consolas";
 }

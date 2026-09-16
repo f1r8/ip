@@ -75,7 +75,7 @@ public class CommandHandler {
      * Handles an Athena command and returns the resulting application state.
      *
      * @param inputLine User input read by the UI.
-     * @return Result indicating whether Athena should continue or exit.
+     * @return Result indicating whether the command succeeds, fails, or exits Athena.
      */
     public CommandResult handleCommand(String inputLine) {
         String trimmedInput = inputLine.trim();
@@ -83,12 +83,15 @@ public class CommandHandler {
         Command command = Command.search(commandParts[0]);
         String arguments = commandParts.length > 1 ? commandParts[1] : "";
 
-        switch (command) {
+        return switch (command) {
             case BYE -> {
                 ui.showGoodbye();
-                return CommandResult.EXIT;
+                yield CommandResult.EXIT;
             }
-            case LIST -> ui.showTaskList(taskList.getTasks());
+            case LIST -> {
+                ui.showTaskList(taskList.getTasks());
+                yield CommandResult.CONTINUE;
+            }
             case MARK -> handleMarkCommand(arguments, true);
             case UNMARK -> handleMarkCommand(arguments, false);
             case TODO -> createAndAddTask(arguments, Todo::new);
@@ -99,11 +102,12 @@ public class CommandHandler {
             case TAG -> handleTagCommand(arguments, true);
             case UNTAG -> handleTagCommand(arguments, false);
             case FINDTAG -> handleFindTagCommand(arguments);
-            case UNKNOWN -> ui.showUnknownCommand();
-            default -> {
-                assert false : "Unhandled command: " + command + "add a case in handleCommand's switch"; }
-        }
-        return CommandResult.CONTINUE;
+            case UNKNOWN -> {
+                ui.showUnknownCommand();
+                yield CommandResult.ERROR;
+            }
+            default -> throw new AssertionError("Unhandled command: " + command);
+        };
     }
 
     /**
@@ -111,19 +115,20 @@ public class CommandHandler {
      *
      * @param arguments String arguments for handling mark/unmark.
      * @param shouldMarkAsDone {@code true} if task should be marked, {@code false} if unmarked.
+     * @return Result indicating whether the task status was updated.
      */
-    private void handleMarkCommand(String arguments, boolean shouldMarkAsDone) {
+    private CommandResult handleMarkCommand(String arguments, boolean shouldMarkAsDone) {
         int index;
         try {
             index = Integer.parseInt(arguments.trim()) - 1;
         } catch (NumberFormatException e) {
             ui.showMissingMarkIndex();
-            return;
+            return CommandResult.ERROR;
         }
 
         if (index < 0 || index >= taskList.size()) {
             ui.showInvalidTaskIndex();
-            return;
+            return CommandResult.ERROR;
         }
 
         Task task = taskList.get(index);
@@ -134,42 +139,46 @@ public class CommandHandler {
         }
         ui.showTaskStatusChanged(task, shouldMarkAsDone);
         storage.saveTasks(taskList.getTasks());
+        return CommandResult.CONTINUE;
     }
 
-    private void createAndAddTask(String arguments, Function<String, Task> taskFactory) {
+    private CommandResult createAndAddTask(String arguments, Function<String, Task> taskFactory) {
         try {
             Task task = taskFactory.apply(arguments);
             taskList.add(task);
             ui.showTaskAdded(task, taskList.size());
             storage.saveTasks(taskList.getTasks());
+            return CommandResult.CONTINUE;
         } catch (AthenaException e) {
             ui.showError(e.getMessage());
+            return CommandResult.ERROR;
         }
     }
 
-    private void handleDeleteCommand(String arguments) {
+    private CommandResult handleDeleteCommand(String arguments) {
         int index;
         try {
             index = Integer.parseInt(arguments.trim()) - 1;
         } catch (NumberFormatException e) {
             ui.showMissingDeleteIndex();
-            return;
+            return CommandResult.ERROR;
         }
 
         if (index < 0 || index >= taskList.size()) {
             ui.showInvalidTaskIndex();
-            return;
+            return CommandResult.ERROR;
         }
 
         Task task = taskList.remove(index);
         storage.saveTasks(taskList.getTasks());
         ui.showTaskDeleted(task, taskList.size());
+        return CommandResult.CONTINUE;
     }
 
-    private void handleFindCommand(String arguments) {
+    private CommandResult handleFindCommand(String arguments) {
         if (arguments.isBlank()) {
             ui.showMissingFindKeyword();
-            return;
+            return CommandResult.ERROR;
         }
 
         String normalizedKeyword = arguments.toLowerCase(Locale.ROOT);
@@ -179,13 +188,14 @@ public class CommandHandler {
                         .contains(normalizedKeyword))
                 .toList();
         ui.showMatchingTasks(matchingTasks);
+        return CommandResult.CONTINUE;
     }
 
-    private void handleTagCommand(String arguments, boolean shouldAdd) {
+    private CommandResult handleTagCommand(String arguments, boolean shouldAdd) {
         String[] parts = arguments.isBlank() ? new String[0] : arguments.trim().split("\\s+");
         if (parts.length == 0) {
             ui.showMissingTagIndex(shouldAdd);
-            return;
+            return CommandResult.ERROR;
         }
 
         int index;
@@ -193,12 +203,12 @@ public class CommandHandler {
             index = Integer.parseInt(parts[0]) - 1;
         } catch (NumberFormatException e) {
             ui.showMissingTagIndex(shouldAdd);
-            return;
+            return CommandResult.ERROR;
         }
 
         if (parts.length == 1) {
             ui.showMissingTagArguments(shouldAdd);
-            return;
+            return CommandResult.ERROR;
         }
 
         Set<Tag> tags;
@@ -209,12 +219,12 @@ public class CommandHandler {
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         } catch (AthenaException e) {
             ui.showError(e.getMessage());
-            return;
+            return CommandResult.ERROR;
         }
 
         if (index < 0 || index >= taskList.size()) {
             ui.showInvalidTaskIndex();
-            return;
+            return CommandResult.ERROR;
         }
 
         Task task = taskList.get(index);
@@ -225,17 +235,18 @@ public class CommandHandler {
 
         if (!hasChanged) {
             ui.showNoTagChanges(task);
-            return;
+            return CommandResult.CONTINUE;
         }
 
         ui.showTaskTagsChanged(task, shouldAdd);
         storage.saveTasks(taskList.getTasks());
+        return CommandResult.CONTINUE;
     }
 
-    private void handleFindTagCommand(String arguments) {
+    private CommandResult handleFindTagCommand(String arguments) {
         if (arguments.isBlank()) {
             ui.showMissingFindTags();
-            return;
+            return CommandResult.ERROR;
         }
 
         Set<Tag> requiredTags;
@@ -245,12 +256,13 @@ public class CommandHandler {
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         } catch (AthenaException e) {
             ui.showError(e.getMessage());
-            return;
+            return CommandResult.ERROR;
         }
 
         List<Task> matchingTasks = taskList.getTasks().stream()
                 .filter(task -> requiredTags.stream().allMatch(task::hasTag))
                 .toList();
         ui.showMatchingTasks(matchingTasks);
+        return CommandResult.CONTINUE;
     }
 }

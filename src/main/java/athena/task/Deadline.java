@@ -66,6 +66,10 @@ public class Deadline extends Task {
         this.deadline = LocalDateTime.parse(by);
     }
 
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
     /**
      * {@inheritDoc}
      *

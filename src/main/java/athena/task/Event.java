@@ -83,6 +83,14 @@ public class Event extends Task {
         this.endDateTime = LocalDateTime.parse(to);
     }
 
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
+    }
+
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
+    }
+
     /**
      * {@inheritDoc}
      *

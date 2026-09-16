@@ -47,7 +47,7 @@ public abstract class Task {
      */
     protected Task(boolean isDone, String description, List<Tag> tags) {
         if (description.isEmpty()) {
-            throw new AthenaException("Task description cannot be empty");
+            throw new AthenaException("Please provide a task description, Your Majesty.");
         }
         this.isDone = isDone;
         this.description = description;
@@ -66,6 +66,14 @@ public abstract class Task {
      */
     public void unmarkDone() {
         this.isDone = false;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean isDone() {
+        return isDone;
     }
 
     /**

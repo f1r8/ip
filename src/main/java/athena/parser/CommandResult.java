@@ -1,9 +1,10 @@
 package athena.parser;
 
 /**
- * Represents whether Athena should continue accepting commands after handling one.
+ * Represents whether a command succeeds, fails, or exits Athena.
  */
 public enum CommandResult {
     CONTINUE,
+    ERROR,
     EXIT
 }
