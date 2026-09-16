@@ -17,22 +17,26 @@
 }
 
 /* A dark green primary action with readable white text in every state. */
-#sendButton {
+#sendButton,
+#closeCommandsButton {
     -fx-background-color: #246542;
     -fx-border-color: transparent;
     -fx-border-width: 3px;
     -fx-text-fill: #FFFFFF;
 }
 
-#sendButton:hover {
+#sendButton:hover,
+#closeCommandsButton:hover {
     -fx-background-color: #1D5637;
 }
 
-#sendButton:pressed {
+#sendButton:pressed,
+#closeCommandsButton:pressed {
     -fx-background-color: #17452D;
 }
 
-#sendButton:focused {
+#sendButton:focused,
+#closeCommandsButton:focused {
     -fx-border-color: #A8F0B9;
 }
 
@@ -167,6 +171,62 @@
     -fx-border-color: #187D37;
 }
 
-#sendButton {
+#sendButton,
+#closeCommandsButton {
     -fx-background-radius: 6px;
+}
+
+/* Keep first-use guidance compact and remove it once a conversation begins. */
+.welcome-panel {
+    -fx-padding: 20px 16px;
+}
+
+.welcome-panel .label,
+.commands-guide .label {
+    -fx-text-fill: #293A2D;
+    -fx-font-size: 15px;
+}
+
+.welcome-panel .welcome-heading {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.welcome-panel .welcome-hint,
+.composer-hint {
+    -fx-text-fill: #536356;
+    -fx-font-size: 13px;
+}
+
+.commands-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #176B32;
+    -fx-font-size: 14px;
+    -fx-padding: 3px 6px;
+    -fx-border-color: transparent;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+}
+
+.commands-button:hover {
+    -fx-background-color: #E2EDE1;
+}
+
+.commands-button:focused {
+    -fx-border-color: #176B32;
+}
+
+.commands-guide {
+    -fx-padding: 10px;
+}
+
+.commands-guide .guide-heading {
+    -fx-font-weight: bold;
+}
+
+.guide-example {
+    -fx-background-color: #EDF3EB;
+    -fx-background-radius: 5px;
+    -fx-padding: 8px;
+    -fx-font-family: "Consolas";
 }

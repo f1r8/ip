@@ -81,6 +81,22 @@ panel remain visually distinct. Record the visual result and screenshot paths in
 
 The GUI acceptance checks cover the following behavior:
 
+- Startup displays a courteous welcome, `todo Read a book` and `list` examples, and a Commands button.
+  The welcome is accurate for both new and saved task lists: startup sends no synthetic command and
+  changes no tasks. The first non-exit command removes the welcome and its layout space.
+  The command editor has focus at startup so the user can immediately type a command.
+- Commands is keyboard focusable and has an Alt+C mnemonic. It opens an owned, resizable command
+  reference with wrapped syntax examples for every supported command, date/time format guidance,
+  and a reminder to inspect task numbers using `list`. Space activates the focused button and Escape
+  closes the guide. Tests use local JavaFX key events rather than system keyboard input.
+- Opening and closing Commands preserves a typed draft, active error guidance, and the conversation's
+  scroll position. It never calls the command responder. Close returns focus to the editor, and
+  reopening the guide reuses the same window. At 360 by 360 px, the guide scrolls to the final `bye`
+  example, wraps within its viewport, and keeps Close visible. Successful checks save
+  `build/reports/gui/welcome.png` and `build/reports/gui/commands-small-window.png`.
+- The error viewport budgets space using the composer's actual controls, wrapped status, padding,
+  and spacing, so the Commands row leaves the editor available at short window heights.
+
 - Body text, command input, and Send use a consistent 15 px baseline. The short input prompt fits at
   400 px. Send keeps the same font size in its normal, hover, pressed, and keyboard-focused states.
   Its dark green background has at least 4.5:1 contrast with the white label; the darker placeholder

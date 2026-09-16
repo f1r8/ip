@@ -4,12 +4,15 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
@@ -18,6 +21,8 @@ import javafx.scene.layout.VBox;
 public class MainWindow extends AnchorPane {
     private static final PseudoClass INVALID_INPUT = PseudoClass.getPseudoClass("invalid-input");
     private static final double AUTO_SCROLL_THRESHOLD = 32.0;
+    private static final double ERROR_VIEWPORT_MAX_HEIGHT = 320.0;
+    private static final double CONVERSATION_MIN_HEIGHT = 64.0;
 
     @FXML
     private ScrollPane scrollPane;
@@ -27,6 +32,14 @@ public class MainWindow extends AnchorPane {
     private VBox windowLayout;
     @FXML
     private VBox dialogContainer;
+    @FXML
+    private VBox welcomePanel;
+    @FXML
+    private VBox composer;
+    @FXML
+    private HBox composerHeader;
+    @FXML
+    private HBox commandInputRow;
     @FXML
     private TextField userInput;
     @FXML
@@ -47,6 +60,7 @@ public class MainWindow extends AnchorPane {
     private CommandResponder commandResponder;
     private Runnable exitHandler = Platform::exit;
     private ErrorGuidance errorGuidance;
+    private CommandsDialog commandsDialog;
 
     private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaAthena.jpg"));
 
@@ -55,12 +69,17 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     public void initialize() {
+        welcomePanel.managedProperty().bind(welcomePanel.visibleProperty());
         errorPanel.managedProperty().bind(errorPanel.visibleProperty());
         inputStatus.managedProperty().bind(inputStatus.visibleProperty());
         errorScroll.visibleProperty().bind(errorPanel.visibleProperty());
         errorScroll.managedProperty().bind(errorPanel.visibleProperty());
-        errorScroll.maxHeightProperty().bind(
-                Bindings.min(320, Bindings.max(80, windowLayout.heightProperty().subtract(150))));
+        errorScroll.maxHeightProperty().bind(Bindings.createDoubleBinding(this::getErrorViewportMaxHeight,
+                windowLayout.heightProperty(), composer.widthProperty(), composer.insetsProperty(),
+                composer.spacingProperty(), composerHeader.layoutBoundsProperty(),
+                commandInputRow.layoutBoundsProperty(), inputStatus.layoutBoundsProperty(),
+                inputStatus.managedProperty(), inputStatus.textProperty(), inputStatus.fontProperty(),
+                errorScroll.managedProperty()));
         inputStatus.setLabelFor(userInput);
         userInput.textProperty().addListener((observable, oldInput, newInput) -> {
             if (errorPanel.isVisible()) {
@@ -68,6 +87,7 @@ public class MainWindow extends AnchorPane {
                 userInput.pseudoClassStateChanged(INVALID_INPUT, false);
             }
         });
+        Platform.runLater(userInput::requestFocus);
     }
 
     /** Sets the component that processes user commands */
@@ -95,6 +115,7 @@ public class MainWindow extends AnchorPane {
         double previousScrollOffset = getConversationScrollOffset();
         boolean shouldFollowConversation = getConversationScrollableHeight() - previousScrollOffset
                 <= AUTO_SCROLL_THRESHOLD;
+        welcomePanel.setVisible(false);
         dialogContainer.getChildren().add(DialogBox.getUserDialog(input));
         if (response.isError()) {
             showError(input, response.message());
@@ -111,6 +132,48 @@ public class MainWindow extends AnchorPane {
         userInput.clear();
         userInput.requestFocus();
         restoreConversationScroll(previousScrollOffset, shouldFollowConversation);
+    }
+
+    /**
+     * Reserves the measured composer controls and a small conversation area before sizing error guidance.
+     */
+    private double getErrorViewportMaxHeight() {
+        Insets insets = composer.getInsets();
+        double contentWidth = Math.max(0.0, composer.getWidth() - insets.getLeft() - insets.getRight());
+        double controlsHeight = insets.getTop() + insets.getBottom();
+        int managedChildren = 0;
+        for (Node child : composer.getChildren()) {
+            if (!child.isManaged()) {
+                continue;
+            }
+            managedChildren++;
+            if (child != errorScroll) {
+                controlsHeight += child.prefHeight(contentWidth);
+                Insets margin = VBox.getMargin(child);
+                if (margin != null) {
+                    controlsHeight += margin.getTop() + margin.getBottom();
+                }
+            }
+        }
+        controlsHeight += composer.getSpacing() * Math.max(0, managedChildren - 1);
+        return Math.min(ERROR_VIEWPORT_MAX_HEIGHT,
+                Math.max(0.0, windowLayout.getHeight() - controlsHeight - CONVERSATION_MIN_HEIGHT));
+    }
+
+    /**
+     * Opens the command reference while keeping the draft and conversation position intact.
+     */
+    @FXML
+    private void showCommands() {
+        if (commandsDialog == null) {
+            commandsDialog = new CommandsDialog(userInput.getScene().getWindow());
+            commandsDialog.setOnHidden(event -> Platform.runLater(userInput::requestFocus));
+        }
+        if (commandsDialog.isShowing()) {
+            commandsDialog.getDialogPane().getScene().getWindow().requestFocus();
+            return;
+        }
+        commandsDialog.show();
     }
 
     /**
