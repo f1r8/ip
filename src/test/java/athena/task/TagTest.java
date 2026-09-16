@@ -18,6 +18,16 @@ import athena.exception.AthenaException;
 class TagTest {
 
     @Test
+    void equals_sameInstanceNullAndOtherType_obeysEqualityContract() {
+        Tag tag = new Tag("#Work");
+        assertEquals(tag, tag);
+        assertNotEquals(tag, null);
+        assertNotEquals(tag, "#Work");
+        assertEquals(0, tag.compareTo(new Tag("#WORK")));
+        assertEquals("#Work", tag.getName());
+    }
+
+    @Test
     void equality_differentCase_equalWithMatchingHashCode() {
         Tag first = new Tag("#Work");
         Tag second = new Tag("#wOrK");

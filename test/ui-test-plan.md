@@ -76,6 +76,12 @@ on Unix. Stop on the first failure. Only after the CLI cases and these tests pas
 
 Storage regression tests cover malformed records and dates, duplicate saved tasks, mixed line endings,
 invalid UTF-8, missing directories, paths blocked by files or directories, and read-only files on Windows.
+Additional JUnit regressions cover invalid paths, field counts for every saved task type, reload status
+after corruption and repair, Unicode round trips, and temporary-file cleanup after successful saves.
+Parser and task tests cover delimiter boundaries, date limits, task identity, and immutable snapshots.
+Athena startup and response tests launch isolated Java processes using temporary data directories;
+they cover end-of-input, exit, corrupt startup, saved state, and clearing previous responses.
+See `test/automated-test-coverage.md` for the automated scope and remaining manual checks.
 Command tests verify that failed saves restore additions, deletions, completion status, and original tags.
 The spacing cases below intentionally include trailing spaces in their input blocks.
 
