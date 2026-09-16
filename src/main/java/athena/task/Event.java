@@ -5,14 +5,13 @@ import java.util.List;
 
 import athena.exception.AthenaException;
 import athena.parser.DateParser;
+import athena.parser.DateTaskInput;
 import athena.storage.Storage;
 
 /**
  * Represents an Athena task scheduled between two dates and times.
  */
 public class Event extends Task {
-    private static final String START_DELIMITER = "/from ";
-    private static final String END_DELIMITER = "/to ";
     private static final String MISSING_DETAILS_MESSAGE =
             "Please provide an event with /from and /to times, Your Majesty.";
 
@@ -25,22 +24,8 @@ public class Event extends Task {
      * @param input String from command line.
      */
     public Event(String input) {
-        int startDelimiterIndex = input.indexOf(START_DELIMITER);
-        if (startDelimiterIndex < 0) {
-            throw new AthenaException(MISSING_DETAILS_MESSAGE);
-        }
-
-        int endDelimiterIndex = input.indexOf(END_DELIMITER,
-                startDelimiterIndex + START_DELIMITER.length());
-        if (endDelimiterIndex < 0) {
-            throw new AthenaException(MISSING_DETAILS_MESSAGE);
-        }
-
-        String description = input.substring(0, startDelimiterIndex).trim();
-        String from = input.substring(startDelimiterIndex + START_DELIMITER.length(),
-                endDelimiterIndex).trim();
-        String to = input.substring(endDelimiterIndex + END_DELIMITER.length()).trim();
-        this(description, from, to);
+        String[] parts = DateTaskInput.parse(input, MISSING_DETAILS_MESSAGE, "from", "to");
+        this(parts[0], parts[1], parts[2]);
     }
 
     /**
@@ -54,6 +39,7 @@ public class Event extends Task {
         super(description);
         this.startDateTime = DateParser.parse(from);
         this.endDateTime = DateParser.parse(to);
+        validateDateOrder();
     }
 
     /**
@@ -81,6 +67,13 @@ public class Event extends Task {
         super(isDone, description, tags);
         this.startDateTime = LocalDateTime.parse(from);
         this.endDateTime = LocalDateTime.parse(to);
+        validateDateOrder();
+    }
+
+    private void validateDateOrder() {
+        if (!startDateTime.isBefore(endDateTime)) {
+            throw new AthenaException("An event must end after it starts, Your Majesty.");
+        }
     }
 
     public LocalDateTime getStartDateTime() {

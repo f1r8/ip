@@ -37,7 +37,7 @@ public class Todo extends Task {
      * @param tags Saved tags to restore.
      */
     public Todo(boolean isDone, String description, List<Tag> tags) {
-        if (description.isEmpty()) {
+        if (description == null || description.isBlank()) {
             throw new AthenaException("Please provide a todo description, Your Majesty.");
         }
         super(isDone, description, tags);

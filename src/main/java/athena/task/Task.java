@@ -46,11 +46,15 @@ public abstract class Task {
      * @param tags Saved tags to restore.
      */
     protected Task(boolean isDone, String description, List<Tag> tags) {
-        if (description.isEmpty()) {
+        if (description == null || description.isBlank()) {
             throw new AthenaException("Please provide a task description, Your Majesty.");
         }
+        if (description.contains("|") || description.codePoints().anyMatch(character ->
+                Character.isISOControl(character) || character == 0x2028 || character == 0x2029)) {
+            throw new AthenaException("Task descriptions cannot contain | or control characters, Your Majesty.");
+        }
         this.isDone = isDone;
-        this.description = description;
+        this.description = description.strip().replaceAll(" +", " ");
         this.tags = new TreeSet<>(tags);
     }
 
@@ -74,6 +78,26 @@ public abstract class Task {
 
     public boolean isDone() {
         return isDone;
+    }
+
+    /**
+     * Compares task details independently of completion status and tags.
+     *
+     * @param other Task to compare.
+     * @return Whether the type, description, and scheduled times match.
+     */
+    public boolean hasSameDetails(Task other) {
+        if (getClass() != other.getClass() || !description.equalsIgnoreCase(other.description)) {
+            return false;
+        }
+        if (this instanceof Deadline deadline && other instanceof Deadline otherDeadline) {
+            return deadline.getDeadline().equals(otherDeadline.getDeadline());
+        }
+        if (this instanceof Event event && other instanceof Event otherEvent) {
+            return event.getStartDateTime().equals(otherEvent.getStartDateTime())
+                    && event.getEndDateTime().equals(otherEvent.getEndDateTime());
+        }
+        return true;
     }
 
     /**

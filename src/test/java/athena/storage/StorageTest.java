@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import athena.exception.AthenaException;
@@ -43,7 +45,7 @@ class StorageTest {
 
         AthenaException exception = assertThrows(AthenaException.class, storage::ensureFileExists);
 
-        assertEquals("Fatal Error. Data File cannot be created.", exception.getMessage());
+        assertEquals("Cannot create the data file. Check its location and permissions.", exception.getMessage());
     }
 
     @Test
@@ -64,7 +66,9 @@ class StorageTest {
         AthenaException exception = assertThrows(AthenaException.class, () ->
                 storage.overwrite("content"));
 
-        assertEquals("Something went wrong overwriting the file", exception.getMessage());
+        assertEquals("Cannot save tasks. No changes were applied. "
+                + "Check the data file location, permissions, and free disk space, then try again.",
+                exception.getMessage());
     }
 
     @Test
@@ -89,7 +93,8 @@ class StorageTest {
 
         AthenaException exception = assertThrows(AthenaException.class, storage::read);
 
-        assertEquals("Something went wrong reading the file", exception.getMessage());
+        assertEquals("Cannot read the data file. Check its location, permissions, and encoding.",
+                exception.getMessage());
     }
 
     @Test
@@ -291,5 +296,98 @@ class StorageTest {
         AthenaException exception = assertThrows(AthenaException.class, storage::loadTasks);
 
         assertEquals("Error converting save string to num: X", exception.getMessage());
+    }
+
+    @Test
+    void loadTasks_invalidDatesAndDuplicateTasks_rejectedWithoutChangingFile(@TempDir Path tempDir)
+            throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        List<String> contents = List.of(
+                "D | 0 | Report | 2026-02-30T12:00",
+                "E | 0 | Meeting | 2026-01-01T13:00 | 2026-01-01T12:00",
+                "E | 0 | Meeting | 2026-01-01T12:00 | 2026-01-01T12:00",
+                "\n", "T | 0 |    ", "T | 0 | Read book\nT | 1 | READ BOOK",
+                "T | 0 | Read book\n\nT | 0 | Second task");
+        for (String content : contents) {
+            Files.writeString(path, content);
+            Storage storage = new Storage(path.toString());
+            assertThrows(AthenaException.class, storage::loadTasks, content);
+            assertFalse(storage.wasLoadSuccessful());
+            assertEquals(content, Files.readString(path));
+        }
+    }
+
+    @Test
+    void loadTasks_mixedLineEndings_restoresEveryTask(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        Files.writeString(path, "T | 0 | First\nT | 1 | Second\r\nT | 0 | Third\r");
+
+        assertEquals(3, new Storage(path.toString()).loadTasks().size());
+    }
+
+    @Test
+    void read_directoryOrInvalidEncoding_reportsError(@TempDir Path tempDir) throws IOException {
+        assertThrows(AthenaException.class, () -> new Storage(tempDir.toString()).loadTasks());
+        Path path = tempDir.resolve("athena.txt");
+        byte[] invalidUtf8 = {(byte) 0xc3, (byte) 0x28};
+        Files.write(path, invalidUtf8);
+        assertThrows(AthenaException.class, () -> new Storage(path.toString()).loadTasks());
+    }
+
+    @Test
+    void saveTasks_parentIsFile_preservesExistingContent(@TempDir Path tempDir) throws IOException {
+        Path parent = tempDir.resolve("data");
+        Files.writeString(parent, "Keep this content");
+        Storage storage = new Storage(parent.resolve("athena.txt").toString());
+
+        assertThrows(AthenaException.class, () -> storage.saveTasks(List.of(new Todo("Read book"))));
+        assertEquals("Keep this content", Files.readString(parent));
+    }
+
+    @Test
+    void saveTasks_targetIsDirectory_preservesExistingContent(@TempDir Path tempDir) throws IOException {
+        Path target = Files.createDirectory(tempDir.resolve("athena.txt"));
+        Path child = target.resolve("keep.txt");
+        Files.writeString(child, "Keep this content");
+
+        assertThrows(AthenaException.class, () ->
+                new Storage(target.toString()).saveTasks(List.of(new Todo("Read book"))));
+        assertEquals("Keep this content", Files.readString(child));
+    }
+
+    @Test
+    void saveTasks_nestedMissingDirectories_createsReloadableFile(@TempDir Path tempDir) {
+        Storage storage = new Storage(tempDir.resolve("nested/data/athena.txt").toString());
+        storage.saveTasks(List.of(new Todo("Read book")));
+
+        assertEquals("[T][ ] Read book", storage.loadTasks().getFirst().toString());
+    }
+
+    @Test
+    void loadTasks_emptyExistingFile_reportsSuccessfulLoad(@TempDir Path tempDir) throws IOException {
+        Path path = Files.createFile(tempDir.resolve("athena.txt"));
+        Storage storage = new Storage(path.toString());
+
+        assertTrue(storage.loadTasks().isEmpty());
+        assertTrue(storage.wasLoadSuccessful());
+    }
+
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void saveTasks_readOnlyFile_preservesDataAndCanRetry(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        String original = "T | 0 | Read book";
+        Files.writeString(path, original);
+        Storage storage = new Storage(path.toString());
+        Files.setAttribute(path, "dos:readonly", true);
+        try {
+            assertThrows(AthenaException.class, () -> storage.saveTasks(List.of(new Todo("New task"))));
+            assertEquals(original, Files.readString(path));
+        } finally {
+            Files.setAttribute(path, "dos:readonly", false);
+        }
+
+        storage.saveTasks(List.of(new Todo("New task")));
+        assertEquals("[T][ ] New task", storage.loadTasks().getFirst().toString());
     }
 }
