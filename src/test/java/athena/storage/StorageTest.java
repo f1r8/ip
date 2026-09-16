@@ -29,6 +29,79 @@ import athena.task.Todo;
  */
 class StorageTest {
     @Test
+    void getPath_invalidPath_reportsConsistentError() {
+        Storage storage = new Storage("bad\u0000path");
+        String expected = "The data file path is invalid. Check the storage location.";
+        assertEquals(expected, assertThrows(AthenaException.class, storage::read).getMessage());
+        assertEquals(expected, assertThrows(AthenaException.class, storage::loadTasks).getMessage());
+        assertEquals(expected, assertThrows(AthenaException.class, storage::ensureFileExists).getMessage());
+        assertEquals(expected, assertThrows(AthenaException.class, () -> storage.overwrite("text")).getMessage());
+    }
+
+    @Test
+    void ensureFileExists_existingFile_preservesContent(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        Files.writeString(path, "Keep this content");
+        new Storage(path.toString()).ensureFileExists();
+        assertEquals("Keep this content", Files.readString(path));
+        assertThrows(AthenaException.class, () -> new Storage(tempDir.toString()).ensureFileExists());
+    }
+
+    @Test
+    void loadTasks_repeatedLoads_refreshesStatusAndContents(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        Storage storage = new Storage(path.toString());
+        assertFalse(storage.wasLoadSuccessful());
+        Files.writeString(path, "T | 0 | First");
+        List<Task> firstLoad = storage.loadTasks();
+        assertTrue(storage.wasLoadSuccessful());
+        Files.writeString(path, "broken");
+        assertThrows(AthenaException.class, storage::loadTasks);
+        assertFalse(storage.wasLoadSuccessful());
+        Files.writeString(path, "T | 1 | Repaired");
+        assertEquals("[T][X] Repaired", storage.loadTasks().getFirst().toString());
+        assertTrue(storage.wasLoadSuccessful());
+        Files.delete(path);
+        assertTrue(storage.loadTasks().isEmpty());
+        assertFalse(storage.wasLoadSuccessful());
+        assertEquals("[T][ ] First", firstLoad.getFirst().toString());
+    }
+
+    @Test
+    void loadTasks_wrongFieldCounts_rejectsEveryTaskType(@TempDir Path tempDir) throws IOException {
+        Path path = tempDir.resolve("athena.txt");
+        for (String line : List.of("T | 0", "T | 0 | Todo | #tag | extra", "D | 0 | Deadline",
+                "D | 0 | Deadline | 2026-01-01T12:00 | #tag | extra", "E | 0 | Event | 2026-01-01T12:00",
+                "E | 0 | Event | 2026-01-01T12:00 | 2026-01-01T13:00 | #tag | extra")) {
+            Files.writeString(path, line);
+            Storage storage = new Storage(path.toString());
+            assertEquals("Storage File Corrupted by this line: " + line,
+                    assertThrows(AthenaException.class, storage::loadTasks).getMessage());
+            assertFalse(storage.wasLoadSuccessful());
+            assertEquals(line, Files.readString(path));
+        }
+    }
+
+    @Test
+    void saveTasks_allTaggedTypes_roundTripsUnicodeAndLeavesNoTemporaryFiles(@TempDir Path tempDir)
+            throws IOException {
+        Storage storage = new Storage(tempDir.resolve("athena.txt").toString());
+        List<Tag> tags = List.of(new Tag("#Zulu"), new Tag("#Alpha"));
+        List<Task> tasks = List.of(new Todo(true, "Read café 猫 🦉", tags),
+                new Deadline(false, "Report", "2026-01-01T12:00", tags),
+                new Event(true, "Meeting", "2026-01-01T12:00", "2026-01-01T13:00", tags));
+        storage.saveTasks(tasks);
+        List<Task> restored = storage.loadTasks();
+        assertEquals(List.of("T | 1 | Read café 猫 🦉 | #Alpha,#Zulu",
+                "D | 0 | Report | 2026-01-01T12:00 | #Alpha,#Zulu",
+                "E | 1 | Meeting | 2026-01-01T12:00 | 2026-01-01T13:00 | #Alpha,#Zulu"),
+                restored.stream().map(Task::getSaveString).toList());
+        try (var files = Files.list(tempDir)) {
+            assertEquals(List.of("athena.txt"), files.map(path -> path.getFileName().toString()).toList());
+        }
+    }
+
+    @Test
     void ensureFileExists_nestedPath_directoriesAndFileCreated(@TempDir Path tempDir) {
         Path path = tempDir.resolve("nested").resolve("data").resolve("athena.txt");
         Storage storage = new Storage(path.toString());
