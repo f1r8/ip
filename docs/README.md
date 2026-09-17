@@ -1,5 +1,29 @@
 # Athena User Guide
 
+> [!NOTE]
+> This creates a blue alert box.
+
+> [!TIP]
+> This creates a green alert box.
+
+> [!IMPORTANT]
+> This creates a purple alert box.
+
+> [!WARNING]
+> This creates an orange alert box.
+
+> [!CAUTION]
+> This creates a red alert box.
+
+```diff
+- This line will be highlighted in red
++ This line will be highlighted in green
+! This line will be highlighted in orange/yellow
+```
+
+- ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) `#f03c15` (Red swatch)
+
+
 ## Correcting input errors
 
 Commands accept leading and trailing spaces, repeated spaces, and tabs. Command names are
