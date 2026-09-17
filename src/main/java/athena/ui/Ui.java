@@ -113,14 +113,17 @@ public class Ui {
     }
 
     /**
-     * Shows the tasks matching a search command.
+     * Shows matching tasks with their one-based positions in the full task list.
      *
      * @param tasks matching tasks to display.
+     * @param allTasks full task list containing the matching tasks in list order.
      */
-    public void showMatchingTasks(List<Task> tasks) {
+    public void showMatchingTasks(List<Task> tasks, List<Task> allTasks) {
         println(tasks.isEmpty() ? "No matching tasks. Try another keyword or use list to see all tasks."
                 : "Here are your matching tasks:");
-        showNumberedTasks(tasks);
+        for (Task task : tasks) {
+            println(allTasks.indexOf(task) + 1 + ". " + task);
+        }
     }
 
     /**

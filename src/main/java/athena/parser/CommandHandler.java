@@ -215,7 +215,7 @@ public class CommandHandler {
                         .toLowerCase(Locale.ROOT)
                         .contains(normalizedKeyword))
                 .toList();
-        ui.showMatchingTasks(matchingTasks);
+        ui.showMatchingTasks(matchingTasks, taskList.getTasks());
         return CommandResult.CONTINUE;
     }
 
@@ -297,7 +297,7 @@ public class CommandHandler {
         List<Task> matchingTasks = taskList.getTasks().stream()
                 .filter(task -> requiredTags.stream().allMatch(task::hasTag))
                 .toList();
-        ui.showMatchingTasks(matchingTasks);
+        ui.showMatchingTasks(matchingTasks, taskList.getTasks());
         return CommandResult.CONTINUE;
     }
 }

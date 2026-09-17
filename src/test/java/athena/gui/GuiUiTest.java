@@ -113,7 +113,7 @@ class GuiUiTest {
         assertEquals("Here are your matching tasks.", found.message());
         assertEquals(List.of(listed.tasks().get(1).description()),
                 found.tasks().stream().map(TaskView::description).toList());
-        assertEquals(1, found.tasks().getFirst().number());
+        assertEquals(2, found.tasks().getFirst().number());
         assertEquals(found.tasks(), respond("findtag #work").tasks());
 
         CommandResponse failed = respond("deadline Bad date /by tomorrow");
@@ -122,6 +122,34 @@ class GuiUiTest {
         assertTrue(failed.message().contains("yyyy-MM-dd HHmm"));
         assertEquals("No matching tasks. Try another keyword or use list to see all tasks.",
                 respond("find missing").message());
+    }
+
+    @Test
+    void search_taskListNumbers_targetCorrectTasksAfterDeletion() {
+        respond("todo Read book");
+        respond("todo Draft report");
+        respond("todo Buy groceries");
+        respond("todo Review report");
+        respond("tag 2 #work");
+        respond("tag 4 #work");
+
+        for (String command : List.of("find report", "findtag #work")) {
+            CommandResponse found = respond(command);
+            assertEquals(List.of(2, 4), found.tasks().stream().map(TaskView::number).toList());
+            int number = found.tasks().getLast().number();
+            assertTrue(respond("mark " + number).tasks().getFirst().isDone());
+            assertFalse(respond("unmark " + number).tasks().getFirst().isDone());
+        }
+
+        int number = respond("findtag #work").tasks().getFirst().number();
+        assertEquals("Draft report", respond("delete " + number).tasks().getFirst().description());
+        for (String command : List.of("find report", "findtag #work")) {
+            CommandResponse found = respond(command);
+            assertEquals(List.of(3), found.tasks().stream().map(TaskView::number).toList());
+            assertEquals("Review report", found.tasks().getFirst().description());
+        }
+        assertEquals(List.of("Read book", "Buy groceries", "Review report"),
+                respond("list").tasks().stream().map(TaskView::description).toList());
     }
 
     private CommandResponse respond(String command) {

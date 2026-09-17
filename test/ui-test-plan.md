@@ -522,8 +522,10 @@ Expected exit code: 0
 
 ## Test case 8: Find matching tasks
 
-Aim: Verify that the find command matches case-insensitively, prints only matching tasks, and numbers the
-matches from one.
+Aim: Verify that the find command matches case-insensitively, prints only matching tasks, and preserves
+their numbers from the full task list.
+Also verify findtag uses the same numbers, mark/unmark/delete target the matching task, and both
+searches reflect shifted indices after deletion.
 
 Inputs:
 
@@ -531,6 +533,15 @@ Inputs:
 todo Read the project brief
 todo Submit the Final REPORT
 find report
+tag 2 #work
+findtag #work
+mark 2
+unmark 2
+delete 1
+find report
+findtag #work
+delete 1
+findtag #work
 ```
 
 Expected output:
@@ -558,7 +569,44 @@ You now have 2 tasks in your list.
 ____________________________________________________________
 ____________________________________________________________
 Here are your matching tasks:
-1. [T][ ] Submit the Final REPORT
+2. [T][ ] Submit the Final REPORT
+____________________________________________________________
+____________________________________________________________
+I've added the tags to this task:
+  [T][ ] Submit the Final REPORT #work
+____________________________________________________________
+____________________________________________________________
+Here are your matching tasks:
+2. [T][ ] Submit the Final REPORT #work
+____________________________________________________________
+____________________________________________________________
+Well done, Your Majesty. This task is complete:
+  [T][X] Submit the Final REPORT #work
+____________________________________________________________
+____________________________________________________________
+Certainly. This task is back on your to-do list:
+  [T][ ] Submit the Final REPORT #work
+____________________________________________________________
+____________________________________________________________
+Certainly. I've removed this task:
+  [T][ ] Read the project brief
+You now have 1 task in your list.
+____________________________________________________________
+____________________________________________________________
+Here are your matching tasks:
+1. [T][ ] Submit the Final REPORT #work
+____________________________________________________________
+____________________________________________________________
+Here are your matching tasks:
+1. [T][ ] Submit the Final REPORT #work
+____________________________________________________________
+____________________________________________________________
+Certainly. I've removed this task:
+  [T][ ] Submit the Final REPORT #work
+You now have 0 tasks in your list.
+____________________________________________________________
+____________________________________________________________
+No matching tasks. Try another keyword or use list to see all tasks.
 ____________________________________________________________
 ```
 

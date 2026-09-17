@@ -111,10 +111,11 @@ class UiTest {
 
     @Test
     void showMatchingTasks_tasks_numberedMatchesPrinted() {
-        ui.showMatchingTasks(List.of(new Todo("Read report")));
+        Todo match = new Todo("Read report");
+        ui.showMatchingTasks(List.of(match), List.of(new Todo("Read book"), match));
 
         assertOutput("Here are your matching tasks:\n"
-                + "1. [T][ ] Read report\n");
+                + "2. [T][ ] Read report\n");
     }
 
     @Test

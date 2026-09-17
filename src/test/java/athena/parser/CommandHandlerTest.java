@@ -221,8 +221,8 @@ class CommandHandlerTest {
         assertEquals(CommandResult.CONTINUE, commandHandler.handleCommand("find report"));
 
         String output = outContent.toString();
-        assertTrue(output.contains("1. [T][ ] Submit Final Report"));
-        assertTrue(output.contains("2. [T][ ] Review REPORT"));
+        assertTrue(output.contains("2. [T][ ] Submit Final Report"));
+        assertTrue(output.contains("3. [T][ ] Review REPORT"));
         assertFalse(output.contains("Read project brief"));
     }
 
@@ -384,7 +384,7 @@ class CommandHandlerTest {
 
         String output = outContent.toString();
         assertTrue(output.contains("1. [T][ ] Prepare slides #Fun #school"));
-        assertTrue(output.contains("2. [T][ ] Review notes #fun #SCHOOL"));
+        assertTrue(output.contains("3. [T][ ] Review notes #fun #SCHOOL"));
         assertFalse(output.contains("Write report"));
         assertEquals(0, storage.getSaveCount());
     }

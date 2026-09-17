@@ -35,14 +35,14 @@ public class GuiUi extends Ui {
     public void showTaskList(List<Task> tasks) {
         println(tasks.isEmpty() ? "Your list awaits its first task. Try todo Read a book."
                 : "Your tasks, Your Majesty.");
-        showTasks(tasks);
+        showTasks(tasks, tasks);
     }
 
     @Override
-    public void showMatchingTasks(List<Task> tasks) {
+    public void showMatchingTasks(List<Task> tasks, List<Task> allTasks) {
         println(tasks.isEmpty() ? "No matching tasks. Try another keyword or use list to see all tasks."
                 : "Here are your matching tasks.");
-        showTasks(tasks);
+        showTasks(tasks, allTasks);
     }
 
     @Override
@@ -80,10 +80,10 @@ public class GuiUi extends Ui {
         tasks = List.of(TaskView.from(task, 0));
     }
 
-    private void showTasks(List<Task> tasks) {
+    private void showTasks(List<Task> tasks, List<Task> allTasks) {
         List<TaskView> views = new ArrayList<>();
-        for (int i = 0; i < tasks.size(); i++) {
-            views.add(TaskView.from(tasks.get(i), i + 1));
+        for (Task task : tasks) {
+            views.add(TaskView.from(task, allTasks.indexOf(task) + 1));
         }
         this.tasks = List.copyOf(views);
     }
