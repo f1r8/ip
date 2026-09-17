@@ -53,3 +53,43 @@ After every update to application code, tests, build configuration, or test tool
    * On Unix: `./gradlew --console=plain checkstyleMain checkstyleTest`
 6. If Checkstyle fails, stop and report its command and violations. Code-update verification passes only when both the UI test plan and Checkstyle pass.
 7. Show `test/ui-test-session.md`, including every executed case's command, console input, actual output, expected output, exit code, and result, and report the Checkstyle result.
+
+## Windows sandbox build recovery
+
+Verified on 2026-09-18 with Java 25: a restricted build failed in `compileJava`
+with `AccessDeniedException` for the cached `javafx-controls-17.0.7-linux.jar`.
+It also printed missing-package and missing-symbol errors for project classes.
+Rerunning the same build and UI plan outside the restricted sandbox, using the
+same workspace cache and a fresh Gradle process, passed all 12 CLI cases without
+source, dependency, cache, or permission changes.
+
+When this specific access failure recurs:
+
+1. Stop the failed verification run and show `test/ui-test-session.md`. Inspect
+   the final build exception before treating the earlier compiler messages as
+   source defects. Do not run later tests or Checkstyle after a failed build.
+2. Use Java 25 and set the workspace cache in each new PowerShell process:
+
+   ```powershell
+   $env:GRADLE_USER_HOME = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) '../.gradle'))
+   $env:GRADLE_OPTS = "$env:GRADLE_OPTS -Dorg.gradle.daemon=false"
+   ```
+
+3. Request approved execution outside the restricted sandbox for a fresh
+   verification attempt. Run the existing `test-ui` runner from `ip/`, including
+   its build step. If the workspace virtual environment reports access denied,
+   the bundled interpreter worked in this environment:
+
+   ```powershell
+   & "$env:USERPROFILE/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe" .codex/skills/test-ui/scripts/run-ui-tests.py
+   ```
+
+4. After the CLI plan passes, run the GUI/unit tests with
+   `gradlew.bat --console=plain --no-daemon test --fail-fast`, then Checkstyle
+   with `gradlew.bat --console=plain --no-daemon checkstyleMain checkstyleTest`
+   only if the tests pass. Use the same approved execution context and cache.
+
+This recovery permits a new attempt after addressing the environment failure;
+it does not permit continuing a failed run or bypassing approval. Do not delete
+the cache, change dependency versions, or broaden filesystem permissions to
+work around this error. Investigate and report any different failure separately.
