@@ -1,6 +1,9 @@
 package athena.gui;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +30,13 @@ record ErrorGuidance(String hint, String example, boolean isDeadline) {
      * @return Advice and an example appropriate to the command.
      */
     static ErrorGuidance forInput(String input) {
+        return forInput(input, List.of());
+    }
+
+    /**
+     * Returns repair guidance using current task names to avoid an already-taken event example.
+     */
+    static ErrorGuidance forInput(String input, List<String> taskDescriptions) {
         String command = input.trim().split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
         return switch (command) {
             case "todo" -> new ErrorGuidance(
@@ -39,7 +49,7 @@ record ErrorGuidance(String hint, String example, boolean isDeadline) {
             case "event" -> new ErrorGuidance(
                     "Give me an event followed by /from and /to. "
                             + "Each needs a date in YYYY-MM-DD format and a four-digit time in HHmm format.",
-                    "event Team meeting /from 2026-12-31 1400 /to 2026-12-31 1500", false);
+                    createEventExample(taskDescriptions), false);
             case "mark" -> new ErrorGuidance(INDEX_HINT + "Choose the task you wish to mark complete.",
                     "mark 1", false);
             case "unmark" -> new ErrorGuidance(INDEX_HINT + "Choose the task you wish to mark incomplete.",
@@ -61,6 +71,23 @@ record ErrorGuidance(String hint, String example, boolean isDeadline) {
                     "Open Commands for the full reference, or begin with the example below.",
                     "todo Read book", false);
         };
+    }
+
+    /**
+     * Uses the first available numbered name when the default event name is already taken.
+     */
+    private static String createEventExample(List<String> taskDescriptions) {
+        Set<String> existingNames = new HashSet<>();
+        for (String description : taskDescriptions) {
+            existingNames.add(description.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT));
+        }
+        String description = "Team meeting";
+        int suffix = 1;
+        while (existingNames.contains(description.toLowerCase(Locale.ROOT))) {
+            description = "Team meeting " + suffix;
+            suffix++;
+        }
+        return "event " + description + " /from 2026-12-31 1400 /to 2026-12-31 1500";
     }
 
     /**

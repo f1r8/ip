@@ -62,6 +62,7 @@ class MainWindowTest {
     private final List<String> receivedInputs = new ArrayList<>();
 
     private Stage stage;
+    private MainWindow mainWindow;
 
     @Start
     void start(Stage stage) throws IOException {
@@ -70,13 +71,44 @@ class MainWindowTest {
 
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
         AnchorPane root = fxmlLoader.load();
-        MainWindow mainWindow = fxmlLoader.getController();
+        mainWindow = fxmlLoader.getController();
         mainWindow.setCommandResponder(this::getResponse);
         mainWindow.setExitHandler(stage::close);
 
         stage.setScene(new Scene(root));
         stage.show();
         this.stage = stage;
+    }
+
+    @Test
+    void submitCommand_duplicateEvent_displaysAndInsertsAvailableName(FxRobot robot) {
+        String duplicate = "event Team meeting /from 2026-12-31 1400 /to 2026-12-31 1500";
+        String expected = "event Team meeting 2 /from 2026-12-31 1400 /to 2026-12-31 1500";
+        robot.interact(() -> mainWindow.setCommandResponder(new CommandResponder() {
+            @Override
+            public CommandResponse getResponse(String input) {
+                receivedInputs.add(input);
+                return new CommandResponse("That task already exists, Your Majesty. Use list to find it.",
+                        false, true, List.of());
+            }
+
+            @Override
+            public List<String> getTaskDescriptions() {
+                return List.of("Team meeting", "Team meeting 1");
+            }
+        }));
+        TextField userInput = robot.lookup("#userInput").queryAs(TextField.class);
+        robot.interact(() -> {
+            userInput.setText(duplicate);
+            userInput.fireEvent(new ActionEvent());
+        });
+
+        assertEquals(expected, robot.lookup("#errorExample").queryAs(Label.class).getText());
+        assertEquals(duplicate, userInput.getText());
+        Button useExample = robot.lookup("#useExampleButton").queryAs(Button.class);
+        robot.interact(useExample::fire);
+        assertEquals(expected, userInput.getText());
+        assertEquals(List.of(duplicate), receivedInputs);
     }
 
     @Test

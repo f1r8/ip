@@ -225,7 +225,7 @@ public class MainWindow extends AnchorPane {
         failureStatus.setMaxWidth(Double.MAX_VALUE);
         dialogContainer.getChildren().add(failureStatus);
 
-        errorGuidance = ErrorGuidance.forInput(input);
+        errorGuidance = ErrorGuidance.forInput(input, commandResponder.getTaskDescriptions());
         errorExplanation.setText(explanation.strip());
         errorHint.setText(errorGuidance.hint());
         errorExample.setText(errorGuidance.example());

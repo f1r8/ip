@@ -148,6 +148,11 @@ The GUI acceptance checks cover the following behavior:
   focus. It does not submit a command, add a task, or append a reply. If the editor has been changed to
   another command, the deadline repair leaves that edited command untouched.
 - Other command examples are placed in the editor only when "Use example" is chosen.
+  Event examples use `Team meeting` when available, or the first available numbered name
+  (`Team meeting 1`, `Team meeting 2`, and so on, including beyond 5). Existing names are compared
+  without regard to case or repeated whitespace. The displayed example and inserted draft match;
+  generating or inserting the example does not add a task. Regression tests check occupied suffixes,
+  gaps, and successful addition of the suggested event.
   They are not executed until the user sends them. The corrected successful command clears the editor,
   hides the panel and correction status, and removes their layout space. The success reply remains visible.
 - Invalid `todo`, `deadline`, `event`, `mark`, `unmark`, `delete`, `find`, `tag`, `untag`, `findtag`, blank,

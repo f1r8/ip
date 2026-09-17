@@ -2,6 +2,7 @@ package athena;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.List;
 
 import athena.exception.AthenaException;
 import athena.gui.CommandResponder;
@@ -10,6 +11,7 @@ import athena.gui.GuiUi;
 import athena.parser.CommandHandler;
 import athena.parser.CommandResult;
 import athena.storage.Storage;
+import athena.task.Task;
 import athena.task.TaskList;
 import athena.ui.Ui;
 
@@ -21,6 +23,7 @@ public class Athena implements CommandResponder {
     public static final String DATA_FILE_PATH = "./data/athena.txt";
 
     private CommandHandler commandHandler;
+    private final TaskList taskList;
 
     private ByteArrayOutputStream outputBuffer;
     private GuiUi guiUi;
@@ -35,7 +38,7 @@ public class Athena implements CommandResponder {
         PrintStream guiOut = new PrintStream(outputBuffer);
         guiUi = new GuiUi(guiOut);
 
-        TaskList taskList = new TaskList(storage.loadTasks());
+        taskList = new TaskList(storage.loadTasks());
         commandHandler = new CommandHandler(storage, guiUi, taskList);
     }
 
@@ -66,6 +69,11 @@ public class Athena implements CommandResponder {
             }
             ui.showDivider();
         }
+    }
+
+    @Override
+    public List<String> getTaskDescriptions() {
+        return taskList.getTasks().stream().map(Task::getDescription).toList();
     }
 
     @Override

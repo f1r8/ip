@@ -16,11 +16,37 @@ import athena.parser.CommandHandler;
 import athena.parser.CommandResult;
 import athena.storage.StorageStub;
 import athena.task.Deadline;
+import athena.task.Event;
 import athena.task.TaskList;
 import athena.task.Todo;
 import athena.ui.Ui;
 
 class ErrorGuidanceTest {
+    @Test
+    void forInput_eventExample_usesFirstAvailableNumberAndCanBeAdded() {
+        TaskList tasks = new TaskList();
+        String dates = " /from 2026-12-31 1400 /to 2026-12-31 1500";
+        tasks.add(new Event("Team meeting" + dates));
+        for (int suffix = 1; suffix <= 6; suffix++) {
+            ErrorGuidance guidance = ErrorGuidance.forInput("event Team meeting" + dates,
+                    tasks.getTasks().stream().map(task -> task.getDescription()).toList());
+
+            assertEquals("event Team meeting " + suffix + dates, guidance.example());
+            assertEquals(guidance.example(), guidance.getExampleFor("event Team meeting" + dates));
+            assertDoesNotThrow(() -> tasks.add(new Event(guidance.example().substring("event ".length()))));
+        }
+    }
+
+    @Test
+    void forInput_eventNamesWithGapsAndDifferentCase_usesFirstFreeSuffix() {
+        ErrorGuidance guidance = ErrorGuidance.forInput("event",
+                List.of(" TEAM  MEETING ", "team meeting 1", "Team meeting 3"));
+
+        assertEquals("event Team meeting 2 /from 2026-12-31 1400 /to 2026-12-31 1500", guidance.example());
+        assertEquals("event Team meeting /from 2026-12-31 1400 /to 2026-12-31 1500",
+                ErrorGuidance.forInput("event", List.of("Other meeting")).example());
+    }
+
     @Test
     void forInput_deadline_preservesDescriptionAndReplacesInvalidDate() {
         ErrorGuidance guidance = ErrorGuidance.forInput("deadline Submit final report /by tomorrow");
