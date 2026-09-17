@@ -26,7 +26,7 @@ Athena is a **desktop application for managing tasks by typing commands in a Gra
   - [Correcting input errors](#correcting-input-errors)
   - [Recovering from storage errors](#recovering-from-storage-errors)
 
-<img width="604" height="946" alt="Athena conversation showing a deadline being added and task 9 marked Done, with the command box, Commands button, and Send button below." src="https://github.com/f1r8/ip/blob/master/docs/Ui.png">
+<img width="604" height="946" alt="Athena conversation showing a deadline being added and task 9 marked Done, with the command box, Commands button, and Send button below." src="https://raw.githubusercontent.com/f1r8/ip/master/docs/Ui.png">
 
 *Figure 1: Adding a deadline and marking it as completed in Athena.*
 
