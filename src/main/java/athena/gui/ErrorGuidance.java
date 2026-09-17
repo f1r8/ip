@@ -1,6 +1,11 @@
 package athena.gui;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import athena.exception.AthenaException;
+import athena.task.Deadline;
 
 /**
  * Supplies courteous repair advice and editable examples for failed commands.
@@ -11,6 +16,7 @@ import java.util.Locale;
  */
 record ErrorGuidance(String hint, String example, boolean isDeadline) {
     private static final String EXAMPLE_DATE = "2026-12-31 2359";
+    private static final Pattern DATE_PARAMETER = Pattern.compile("(?<!\\S)/(by|from|to)(?=\\s|$)");
     private static final String INDEX_HINT = "Use list to inspect your task numbers. "
             + "This example assumes task 1 exists. ";
 
@@ -76,19 +82,19 @@ record ErrorGuidance(String hint, String example, boolean isDeadline) {
     }
 
     /**
-     * Replaces the deadline date using the parser's literal, case-sensitive /by delimiter.
-     * A trailing /by with no date is also treated as an unfinished delimiter.
+     * Retains the description before the first date parameter recognized by the parser.
+     * Supplies a default description when the retained text cannot form a valid deadline.
      */
     private static String createDeadlineExample(String input) {
         String[] parts = input.trim().split("\\s+", 2);
         String description = parts.length > 1 ? parts[1] : "";
-        int delimiterIndex = description.indexOf("/by ");
-        if (delimiterIndex >= 0) {
-            description = description.substring(0, delimiterIndex).trim();
-        } else if (description.endsWith("/by")) {
-            description = description.substring(0, description.length() - "/by".length()).trim();
+        Matcher matcher = DATE_PARAMETER.matcher(description);
+        if (matcher.find()) {
+            description = description.substring(0, matcher.start()).trim();
         }
-        if (description.isBlank()) {
+        try {
+            new Deadline(description + " /by " + EXAMPLE_DATE);
+        } catch (AthenaException exception) {
             description = "Submit report";
         }
         return "deadline " + description + " /by " + EXAMPLE_DATE;

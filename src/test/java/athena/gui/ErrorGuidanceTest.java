@@ -1,5 +1,6 @@
 package athena.gui;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import athena.parser.CommandHandler;
 import athena.parser.CommandResult;
 import athena.storage.StorageStub;
+import athena.task.Deadline;
 import athena.task.TaskList;
 import athena.task.Todo;
 import athena.ui.Ui;
@@ -35,6 +37,33 @@ class ErrorGuidanceTest {
         }
         assertEquals("deadline Read book /by 2026-12-31 2359",
                 ErrorGuidance.forInput("deadline Read book /by").example());
+    }
+
+    @Test
+    void forInput_malformedDeadlineParameters_suppliesExecutableExample() {
+        for (String input : List.of("deadline /from /to /by", "deadline /to /by",
+                "deadline /by\ttomorrow", "deadline A | B /by tomorrow")) {
+            ErrorGuidance guidance = ErrorGuidance.forInput(input);
+
+            assertEquals("deadline Submit report /by 2026-12-31 2359", guidance.example());
+            assertEquals(guidance.example(), guidance.getExampleFor(input));
+            assertDoesNotThrow(() -> new Deadline(guidance.example().substring("deadline ".length())));
+        }
+    }
+
+    @Test
+    void getExampleFor_dateParameters_preservesOnlyValidDescription() {
+        ErrorGuidance guidance = ErrorGuidance.forInput("deadline /from /to /by");
+
+        for (String input : List.of("deadline Read book /from /to /by",
+                "deadline Read book /by\ttomorrow", "deadline Read book /to tomorrow")) {
+            String example = guidance.getExampleFor(input);
+
+            assertEquals("deadline Read book /by 2026-12-31 2359", example);
+            assertDoesNotThrow(() -> new Deadline(example.substring("deadline ".length())));
+        }
+        assertEquals("deadline Read/by notes /by 2026-12-31 2359",
+                guidance.getExampleFor("deadline Read/by notes"));
     }
 
     @Test

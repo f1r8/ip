@@ -615,11 +615,14 @@ Expected exit code: 0
 ## Test case 9: Correct a failed deadline without adding a duplicate
 
 Aim: Verify that an invalid deadline receives in-character date guidance, adds no task, and can be corrected
-in the same session so only the successful deadline appears in the list.
+in the same session so only the successful deadline appears in the list. Reject misplaced date parameters
+and verify the replacement example uses a valid description. GUI guidance regressions also check both
+the displayed example and the editable draft against the deadline parser.
 
 Inputs:
 
 ```text
+deadline /from /to /by
 deadline Submit report /by tomorrow
 deadline Submit report /by 2026-12-31 2359
 list
@@ -637,6 +640,9 @@ ____________________________________________________________
 /_/   \_\_| |_| |_|_____|_| \_/_/   \_\
 Hello, Your Majesty! I'm Athena.
 Let us put your tasks in order.
+____________________________________________________________
+____________________________________________________________
+Use each date parameter once and in the correct order, Your Majesty.
 ____________________________________________________________
 ____________________________________________________________
 Please use 'yyyy-MM-dd HHmm' for the date and time, Your Majesty (e.g. 2026-12-31 2359).
