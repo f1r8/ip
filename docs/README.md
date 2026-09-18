@@ -25,6 +25,7 @@ Athena is a **desktop application for managing tasks by typing commands in a Gra
 - [Troubleshooting](#troubleshooting)
   - [Correcting input errors](#correcting-input-errors)
   - [Recovering from storage errors](#recovering-from-storage-errors)
+- [Acknowledgements](#acknowledgements)
 
 <img width="604" height="946" alt="Athena conversation showing a deadline being added and task 9 marked Done, with the command box, Commands button, and Send button below." src="https://raw.githubusercontent.com/f1r8/ip/master/docs/Ui.png">
 
@@ -260,3 +261,7 @@ Athena creates `data/athena.txt` and missing parent folders when first saving a 
 *Figure 2: A duplicate task in the saved data prevents startup without changing the saved file.*
 
 If saved data is unreadable or malformed, Athena reports the problem and stops startup without overwriting the file. Close Athena and back up the file before attempting repairs. Correct the damaged record or restore a known good copy, then restart Athena. Saved files must be UTF-8; Windows and Unix line endings are accepted. Duplicate saved tasks and events with invalid date ranges must be corrected before startup. Prefer restoring a backup to manually editing the file: saved dates use a different format from command input, for example `2026-09-17T23:59`.
+
+## Acknowledgements
+- Thanks to [BryanKCodes](https://github.com/BryanKCodes) for inspiring the message timestamps in Athena's GUI.
+- I would like to thank my good friend Codex for helping to write the majority of the code.
