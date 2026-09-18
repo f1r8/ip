@@ -34,7 +34,7 @@ Athena is a **desktop application for managing tasks by typing commands in a Gra
 
 1. Ensure that Java `25` is installed on your computer. Run `java -version` in a terminal to check the version used to launch Athena.\
    **Mac Users**: Follow the installation guide [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
-2. Download [athena.jar](https://github.com/f1r8/ip/releases/download/A-Jar/athena.jar).
+2. Download [athena.jar](https://github.com/f1r8/ip/releases/download/Final/athena.jar).
 3. Copy the file to the folder you want to use as the *home folder* for your Athena.
 4. Open a terminal, `cd` to that folder, and run `java -jar athena.jar`. Use the exact filename of your downloaded JAR.
 5. Click the **Commands** button to view the command reference. On Windows, you can also press Alt + C. Close the reference to return to your command draft.
