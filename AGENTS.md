@@ -93,3 +93,35 @@ This recovery permits a new attempt after addressing the environment failure;
 it does not permit continuing a failed run or bypassing approval. Do not delete
 the cache, change dependency versions, or broaden filesystem permissions to
 work around this error. Investigate and report any different failure separately.
+
+## Windows sandbox JUnit cleanup recovery
+
+Verified on 2026-09-19 with Java 25.0.4: the restricted GUI/unit test run failed in
+`AthenaTest.getResponse_savedTasks_loadsExistingState()` with
+`JUnitException: Failed to close extension context`. Its cause was
+`AccessDeniedException` for a `C:\Users\jiang\AppData\Local\Temp\junit-*`
+directory during `WindowsPath.toRealPath` in JUnit cleanup.
+Rerunning the same test command outside the restricted sandbox, with the existing
+workspace cache and a fresh Gradle process, passed all 250 tests with no failures
+or skips. No source, dependency, cache, or filesystem-permission changes were needed.
+
+When this specific cleanup failure recurs:
+
+1. Stop the failed run, record the expected successful cleanup and actual exception
+   in `test/ui-test-session.md`, and show that record. Do not run Checkstyle yet.
+2. If all CLI cases already passed for the unchanged application and resources,
+   retain that result. Otherwise, first run the existing `test-ui` skill with its
+   build step and stop on any failure.
+3. Verify Java 25 and set `GRADLE_USER_HOME` to the workspace cache as described
+   above. Request approved execution outside the restricted sandbox for a fresh
+   `gradlew.bat --console=plain --no-daemon test --fail-fast` attempt. Keep the
+   existing test automation that does not move the user's mouse pointer.
+4. Only after the CLI cases and GUI/unit tests pass, run
+   `gradlew.bat --console=plain --no-daemon checkstyleMain checkstyleTest` in the
+   same approved execution context. Record the retry and Checkstyle results in
+   `test/ui-test-session.md`, preserving the initial failure record.
+
+If the approved retry still fails, stop and investigate the new evidence. Do not
+disable JUnit cleanup, skip failing tests, delete caches, or broaden filesystem
+permissions to make verification pass. This recovery applies to the cleanup
+failure described here; investigate different failures separately.
